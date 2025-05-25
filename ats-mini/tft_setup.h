@@ -3,9 +3,9 @@
 #define USER_SETUP_ID 206
 
 #define ST7789_DRIVER
-#define INIT_SEQUENCE_3 // Using this initialisation sequence improves the display image
+#define INIT_SEQUENCE_3  // Using this initialisation sequence improves the display image
 
-#define CGRAM_OFFSET
+// #define CGRAM_OFFSET
 #define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
 //#define TFT_RGB_ORDER TFT_BGR // Colour order Blue-Green-Red
 
@@ -14,11 +14,11 @@
 
 #define TFT_PARALLEL_8_BIT
 
-#define TFT_WIDTH 170
+#define TFT_WIDTH 240
 #define TFT_HEIGHT 320
 
-#define TFT_CS  6
-#define TFT_DC  7
+#define TFT_CS 6
+#define TFT_DC 7
 #define TFT_RST 5
 
 #define TFT_WR 8

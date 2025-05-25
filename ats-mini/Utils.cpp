@@ -19,40 +19,36 @@ static bool sleep_on = false;
 static bool ssbLoaded = false;
 
 // Time
-static bool clockHasBeenSet  = false;
-static uint32_t clockTimer   = 0;
+static bool clockHasBeenSet = false;
+static uint32_t clockTimer = 0;
 static uint32_t clockSeconds = 0;
 static uint32_t clockMinutes = 0;
-static uint32_t clockHours   = 0;
-static char     clockText[8] = {0};
+static uint32_t clockHours = 0;
+static char clockText[8] = { 0 };
 
 //
 // Get firmware version and build time, as a string
 //
-const char *getVersion(bool shorter)
-{
+const char *getVersion(bool shorter) {
   static char versionString[35] = "\0";
 
   sprintf(versionString, "%s%sF/W: v%1.1d.%2.2d %s",
-    shorter ? "" : FIRMWARE_NAME,
-    shorter ? "" : " ",
-    APP_VERSION / 100,
-    APP_VERSION % 100,
-    __DATE__
-  );
+          shorter ? "" : FIRMWARE_NAME,
+          shorter ? "" : " ",
+          APP_VERSION / 100,
+          APP_VERSION % 100,
+          __DATE__);
 
-  return(versionString);
+  return (versionString);
 }
 
 //
 // Get MAC address
 //
-const char *getMACAddress()
-{
+const char *getMACAddress() {
   static char macString[20] = "\0";
 
-  if(!macString[0])
-  {
+  if (!macString[0]) {
     uint64_t mac = ESP.getEfuseMac();
     sprintf(
       macString,
@@ -62,20 +58,17 @@ const char *getMACAddress()
       (uint8_t)(mac >> 16),
       (uint8_t)(mac >> 24),
       (uint8_t)(mac >> 32),
-      (uint8_t)(mac >> 40)
-    );
+      (uint8_t)(mac >> 40));
   }
-  return(macString);
+  return (macString);
 }
 
 //
 // Load SSB patch into SI4735
 //
-void loadSSB(uint8_t bandwidth, bool draw)
-{
-  if(!ssbLoaded)
-  {
-    if(draw) drawLoadingSSB();
+void loadSSB(uint8_t bandwidth, bool draw) {
+  if (!ssbLoaded) {
+    if (draw) drawLoadingSSB();
     // You can try rx.setI2CFastModeCustom(700000); or greater value
     rx.setI2CFastModeCustom(400000);
     rx.loadPatch(ssb_patch_content, sizeof(ssb_patch_content), bandwidth);
@@ -84,8 +77,7 @@ void loadSSB(uint8_t bandwidth, bool draw)
   }
 }
 
-void unloadSSB()
-{
+void unloadSSB() {
   // Just mark SSB patch as unloaded
   ssbLoaded = false;
 }
@@ -93,26 +85,26 @@ void unloadSSB()
 //
 // Mute sound on (1) or off (0), or get current status (2)
 //
-bool muteOn(int x)
-{
-  if((x==0) && muted)
-  {
+bool muteOn(int x) {
+  if ((x == 0) && muted) {
     rx.setVolume(volume);
     // Enable audio amplifier to restore speaker output
-    digitalWrite(PIN_AMP_EN, HIGH);
+    // digitalWrite(PIN_AMP_EN, HIGH);
+    io.configPort(ExtensionIOXL9555::PORT1, 0xfc);  // 1 1 1 1 1 1 0 0
     rx.setHardwareAudioMute(false);
     muted = false;
-  }
-  else if((x==1) && !muted)
-  {
+  } else if ((x == 1) && !muted) {
     rx.setVolume(0);
     // Disable audio amplifier to silence speaker
-    digitalWrite(PIN_AMP_EN, LOW);
+    // digitalWrite(PIN_AMP_EN, LOW);
+    io.configPort(ExtensionIOXL9555::PORT1, 0xcc);  // 1 1 0 0 1 1 0 0
+    io.digitalWrite(PIN_NS4160_EN, LOW);
+    io.digitalWrite(PIN_MAX97220_EN, LOW);
     rx.setHardwareAudioMute(true);
     muted = true;
   }
 
-  return(muted);
+  return (muted);
 }
 
 //
@@ -120,17 +112,12 @@ bool muteOn(int x)
 // Do not drive PIN_AMP_EN here because a short impulse can trigger amplifier mode D,
 // see the NS4160 datasheet https://esp32-si4732.github.io/ats-mini/hardware.html#datasheets
 //
-void tempMuteOn(bool x)
-{
-  if(!muteOn())
-  {
-    if(x)
-    {
+void tempMuteOn(bool x) {
+  if (!muteOn()) {
+    if (x) {
       rx.setVolume(0);
       rx.setHardwareAudioMute(true);
-    }
-    else
-    {
+    } else {
       rx.setVolume(volume);
       rx.setHardwareAudioMute(false);
     }
@@ -141,10 +128,8 @@ void tempMuteOn(bool x)
 //
 // Turn sleep on (1) or off (0), or get current status (2)
 //
-bool sleepOn(int x)
-{
-  if((x==1) && !sleep_on)
-  {
+bool sleepOn(int x) {
+  if ((x == 1) && !sleep_on) {
     sleep_on = true;
     ledcWrite(PIN_LCD_BL, 0);
     spr.fillSprite(TFT_BLACK);
@@ -152,54 +137,85 @@ bool sleepOn(int x)
     tft.writecommand(ST7789_DISPOFF);
     tft.writecommand(ST7789_SLPIN);
 
+    int8_t pushButton1 = HIGH;
+    int8_t pushButton2 = HIGH;
+    uint16_t all_val = io.read();
+    for (int i = 0; i <= 15; i++) {
+      int val = all_val & 1;
+      if (!val) {
+        Serial.print("GPIO: ");
+        Serial.print(i);
+        Serial.println(" is low");
+      }
+      if (i == ENCODER1_PUSH_BUTTON) {
+        pushButton1 = val;
+      } else if (i == ENCODER2_PUSH_BUTTON) {
+        pushButton2 = val;
+      }
+      all_val >>= 1;
+    }
+
     // Wait till the button is released to prevent immediate wakeup
-    while(pb1.update(digitalRead(ENCODER_PUSH_BUTTON) == LOW).isPressed)
+    while (pb1.update(pushButton1 == LOW).isPressed)
       delay(100);
 
-    if(sleepModeIdx == SLEEP_LIGHT)
-    {
+    if (sleepModeIdx == SLEEP_LIGHT) {
       // Disable WiFi
       netStop();
 
       // Unmute squelch
-      if(squelchCutoff) tempMuteOn(false);
+      if (squelchCutoff) tempMuteOn(false);
 
-      while(true)
-      {
-        esp_sleep_enable_ext0_wakeup((gpio_num_t)ENCODER_PUSH_BUTTON, LOW);
-        rtc_gpio_pullup_en((gpio_num_t)ENCODER_PUSH_BUTTON);
-        rtc_gpio_pulldown_dis((gpio_num_t)ENCODER_PUSH_BUTTON);
+      while (true) {
+        esp_sleep_enable_ext0_wakeup((gpio_num_t)IOINT_PIN, LOW);
+        rtc_gpio_pullup_en((gpio_num_t)IOINT_PIN);
+        rtc_gpio_pulldown_dis((gpio_num_t)IOINT_PIN);
         esp_light_sleep_start();
 
         // Waking up here
-        if(currentSleep) break; // Short click is enough to exit from sleep if timeout is enabled
+        if (currentSleep) break;  // Short click is enough to exit from sleep if timeout is enabled
 
         // Wait for a long press, otherwise enter the sleep again
-        pb1.reset(); // Reset the button state (its timers could be stale due to CPU sleep)
+        pb1.reset();  // Reset the button state (its timers could be stale due to CPU sleep)
 
         bool wasLongPressed = false;
-        while(true)
-        {
-          ButtonTracker::State pb1st = pb1.update(digitalRead(ENCODER_PUSH_BUTTON) == LOW, 0);
+        while (true) {
+          int8_t pushButton1 = HIGH;
+          int8_t pushButton2 = HIGH;
+          uint16_t all_val = io.read();
+          for (int i = 0; i <= 15; i++) {
+            int val = all_val & 1;
+            if (!val) {
+              Serial.print("GPIO: ");
+              Serial.print(i);
+              Serial.println(" is low");
+            }
+            if (i == ENCODER1_PUSH_BUTTON) {
+              pushButton1 = val;
+            } else if (i == ENCODER2_PUSH_BUTTON) {
+              pushButton2 = val;
+            }
+            all_val >>= 1;
+          }
+
+          ButtonTracker::State pb1st = pb1.update(pushButton1 == LOW, 0);
           wasLongPressed |= pb1st.isLongPressed;
-          if(wasLongPressed || !pb1st.isPressed) break;
+          if (wasLongPressed || !pb1st.isPressed) break;
           delay(100);
         }
 
-        if(wasLongPressed) break;
+        if (wasLongPressed) break;
       }
       // Reenable the pin as well as the display
-      rtc_gpio_pullup_dis((gpio_num_t)ENCODER_PUSH_BUTTON);
-      rtc_gpio_pulldown_dis((gpio_num_t)ENCODER_PUSH_BUTTON);
-      rtc_gpio_deinit((gpio_num_t)ENCODER_PUSH_BUTTON);
-      pinMode(ENCODER_PUSH_BUTTON, INPUT_PULLUP);
+      rtc_gpio_pullup_dis((gpio_num_t)IOINT_PIN);
+      rtc_gpio_pulldown_dis((gpio_num_t)IOINT_PIN);
+      rtc_gpio_deinit((gpio_num_t)IOINT_PIN);
+      pinMode(IOINT_PIN, INPUT_PULLUP);
       sleepOn(false);
       // Enable WiFi
       netInit(wifiModeIdx, false);
     }
-  }
-  else if((x==0) && sleep_on)
-  {
+  } else if ((x == 0) && sleep_on) {
     sleep_on = false;
     tft.writecommand(ST7789_SLPOUT);
     delay(120);
@@ -207,83 +223,92 @@ bool sleepOn(int x)
     drawScreen();
     ledcWrite(PIN_LCD_BL, currentBrt);
     // Wait till the button is released to prevent the main loop clicks
-    pb1.reset(); // Reset the button state (its timers could be stale due to CPU sleep)
-    while(pb1.update(digitalRead(ENCODER_PUSH_BUTTON) == LOW, 0).isPressed)
+    pb1.reset();  // Reset the button state (its timers could be stale due to CPU sleep)
+
+    int8_t pushButton1 = HIGH;
+    int8_t pushButton2 = HIGH;
+    uint16_t all_val = io.read();
+    for (int i = 0; i <= 15; i++) {
+      int val = all_val & 1;
+      if (!val) {
+        Serial.print("GPIO: ");
+        Serial.print(i);
+        Serial.println(" is low");
+      }
+      if (i == ENCODER1_PUSH_BUTTON) {
+        pushButton1 = val;
+      } else if (i == ENCODER2_PUSH_BUTTON) {
+        pushButton2 = val;
+      }
+      all_val >>= 1;
+    }
+
+    while (pb1.update(pushButton1 == LOW, 0).isPressed)
       delay(100);
   }
 
-  return(sleep_on);
+  return (sleep_on);
 }
 
 //
 // Set and count time
 //
 
-const char *clockGet()
-{
-  if(switchThemeEditor())
-    return("00:00");
+const char *clockGet() {
+  if (switchThemeEditor())
+    return ("00:00");
   else
-    return(clockHasBeenSet? clockText : NULL);
+    return (clockHasBeenSet ? clockText : NULL);
 }
 
-void clockReset()
-{
+void clockReset() {
   clockHasBeenSet = false;
   clockText[0] = '\0';
   clockTimer = 0;
   clockHours = clockMinutes = clockSeconds = 0;
 }
 
-static void formatClock(uint8_t hours, uint8_t minutes)
-{
+static void formatClock(uint8_t hours, uint8_t minutes) {
   int t = (int)hours * 60 + minutes + getCurrentUTCOffset() * 30;
-  t = t < 0? t + 24*60 : t;
+  t = t < 0 ? t + 24 * 60 : t;
   sprintf(clockText, "%02d:%02d", (t / 60) % 24, t % 60);
 }
 
-void clockRefreshTime()
-{
-  if(clockHasBeenSet) formatClock(clockHours, clockMinutes);
+void clockRefreshTime() {
+  if (clockHasBeenSet) formatClock(clockHours, clockMinutes);
 }
 
-bool clockSet(uint8_t hours, uint8_t minutes, uint8_t seconds)
-{
+bool clockSet(uint8_t hours, uint8_t minutes, uint8_t seconds) {
   // Verify input before setting clock
-  if(!clockHasBeenSet && hours < 24 && minutes < 60 && seconds < 60)
-  {
+  if (!clockHasBeenSet && hours < 24 && minutes < 60 && seconds < 60) {
     clockHasBeenSet = true;
-    clockTimer   = micros();
-    clockHours   = hours;
+    clockTimer = micros();
+    clockHours = hours;
     clockMinutes = minutes;
     clockSeconds = seconds;
     clockRefreshTime();
-    return(true);
+    return (true);
   }
 
   // Failed
-  return(false);
+  return (false);
 }
 
-bool clockTickTime()
-{
+bool clockTickTime() {
   // Need to set the clock first, then accumulate one second of time
-  if(clockHasBeenSet && (micros() - clockTimer >= 1000000))
-  {
+  if (clockHasBeenSet && (micros() - clockTimer >= 1000000)) {
     uint32_t delta;
 
     delta = (micros() - clockTimer) / 1000000;
     clockTimer += delta * 1000000;
     clockSeconds += delta;
 
-    if(clockSeconds>=60)
-    {
+    if (clockSeconds >= 60) {
       delta = clockSeconds / 60;
       clockSeconds -= delta * 60;
       clockMinutes += delta;
 
-      if(clockMinutes>=60)
-      {
+      if (clockMinutes >= 60) {
         delta = clockMinutes / 60;
         clockMinutes -= delta * 60;
         clockHours = (clockHours + delta) % 24;
@@ -291,84 +316,79 @@ bool clockTickTime()
 
       // Format clock for display and ask for screen update
       clockRefreshTime();
-      return(true);
+      return (true);
     }
   }
 
   // No screen update
-  return(false);
+  return (false);
 }
 
 //
 // Check if given memory entry belongs to given band
 //
-bool isMemoryInBand(const Band *band, const Memory *memory)
-{
-  if(memory->freq<band->minimumFreq) return(false);
-  if(memory->freq>band->maximumFreq) return(false);
-  if(memory->freq==band->maximumFreq && memory->hz100) return(false);
-  if(memory->mode==FM && band->bandMode!=FM) return(false);
-  if(memory->mode!=FM && band->bandMode==FM) return(false);
-  return(true);
+bool isMemoryInBand(const Band *band, const Memory *memory) {
+  if (memory->freq < band->minimumFreq) return (false);
+  if (memory->freq > band->maximumFreq) return (false);
+  if (memory->freq == band->maximumFreq && memory->hz100) return (false);
+  if (memory->mode == FM && band->bandMode != FM) return (false);
+  if (memory->mode != FM && band->bandMode == FM) return (false);
+  return (true);
 }
 
 //
 // Get S-level signal strength from RSSI value
 //
-int getStrength(int rssi)
-{
-  if(switchThemeEditor()) return(17);
+int getStrength(int rssi) {
+  if (switchThemeEditor()) return (17);
 
-  if(currentMode!=FM)
-  {
+  if (currentMode != FM) {
     // dBuV to S point conversion HF
-    if (rssi <=  1) return  1; // S0
-    if (rssi <=  2) return  2; // S1
-    if (rssi <=  3) return  3; // S2
-    if (rssi <=  4) return  4; // S3
-    if (rssi <= 10) return  5; // S4
-    if (rssi <= 16) return  6; // S5
-    if (rssi <= 22) return  7; // S6
-    if (rssi <= 28) return  8; // S7
-    if (rssi <= 34) return  9; // S8
-    if (rssi <= 44) return 10; // S9
-    if (rssi <= 54) return 11; // S9 +10
-    if (rssi <= 64) return 12; // S9 +20
-    if (rssi <= 74) return 13; // S9 +30
-    if (rssi <= 84) return 14; // S9 +40
-    if (rssi <= 94) return 15; // S9 +50
-    if (rssi <= 95) return 16; // S9 +60
-    return                 17; //>S9 +60
-  }
-  else
-  {
+    if (rssi <= 1) return 1;    // S0
+    if (rssi <= 2) return 2;    // S1
+    if (rssi <= 3) return 3;    // S2
+    if (rssi <= 4) return 4;    // S3
+    if (rssi <= 10) return 5;   // S4
+    if (rssi <= 16) return 6;   // S5
+    if (rssi <= 22) return 7;   // S6
+    if (rssi <= 28) return 8;   // S7
+    if (rssi <= 34) return 9;   // S8
+    if (rssi <= 44) return 10;  // S9
+    if (rssi <= 54) return 11;  // S9 +10
+    if (rssi <= 64) return 12;  // S9 +20
+    if (rssi <= 74) return 13;  // S9 +30
+    if (rssi <= 84) return 14;  // S9 +40
+    if (rssi <= 94) return 15;  // S9 +50
+    if (rssi <= 95) return 16;  // S9 +60
+    return 17;                  //>S9 +60
+  } else {
     // dBuV to S point conversion FM
-    if (rssi <=  1) return  1; // S0
-    if (rssi <=  2) return  7; // S6
-    if (rssi <=  8) return  8; // S7
-    if (rssi <= 14) return  9; // S8
-    if (rssi <= 24) return 10; // S9
-    if (rssi <= 34) return 11; // S9 +10
-    if (rssi <= 44) return 12; // S9 +20
-    if (rssi <= 54) return 13; // S9 +30
-    if (rssi <= 64) return 14; // S9 +40
-    if (rssi <= 74) return 15; // S9 +50
-    if (rssi <= 76) return 16; // S9 +60
-    return                 17; //>S9 +60
+    if (rssi <= 1) return 1;    // S0
+    if (rssi <= 2) return 7;    // S6
+    if (rssi <= 8) return 8;    // S7
+    if (rssi <= 14) return 9;   // S8
+    if (rssi <= 24) return 10;  // S9
+    if (rssi <= 34) return 11;  // S9 +10
+    if (rssi <= 44) return 12;  // S9 +20
+    if (rssi <= 54) return 13;  // S9 +30
+    if (rssi <= 64) return 14;  // S9 +40
+    if (rssi <= 74) return 15;  // S9 +50
+    if (rssi <= 76) return 16;  // S9 +60
+    return 17;                  //>S9 +60
   }
 }
 
 
 int getInterpolatedStrength(int rssi) {
-  const int am_thresholds[] = {1, 2, 3, 4, 10, 16, 22, 28, 34, 44, 54, 64, 74, 84, 94, 95, 96};
-  const int am_values[] = {1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49};
-  const int fm_thresholds[] = {1, 2, 8, 14, 24, 34, 44, 54, 64, 74, 76, 77};
-  const int fm_values[] =  {1, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49};
+  const int am_thresholds[] = { 1, 2, 3, 4, 10, 16, 22, 28, 34, 44, 54, 64, 74, 84, 94, 95, 96 };
+  const int am_values[] = { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49 };
+  const int fm_thresholds[] = { 1, 2, 8, 14, 24, 34, 44, 54, 64, 74, 76, 77 };
+  const int fm_values[] = { 1, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49 };
   int num_thresholds;
   const int *thresholds;
   const int *values;
 
-  if(currentMode!=FM) {
+  if (currentMode != FM) {
     num_thresholds = ITEM_COUNT(am_thresholds);
     thresholds = am_thresholds;
     values = am_values;
@@ -381,10 +401,10 @@ int getInterpolatedStrength(int rssi) {
   for (int i = 0; i < num_thresholds; i++) {
     if (rssi <= thresholds[i]) {
       if (i == 0) return values[i];
-      int interval = thresholds[i] - thresholds[i-1];
+      int interval = thresholds[i] - thresholds[i - 1];
       if (interval == 0) return values[i];
-      float position = (float)(rssi - thresholds[i-1]) / interval;
-      float interpolated = values[i-1] + position * (values[i] - values[i-1]);
+      float position = (float)(rssi - thresholds[i - 1]) / interval;
+      float interpolated = values[i - 1] + position * (values[i] - values[i - 1]);
       return (int)(interpolated + 0.5);
     }
   }
