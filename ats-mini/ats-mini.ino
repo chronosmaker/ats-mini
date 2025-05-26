@@ -33,6 +33,7 @@ uint8_t disableAgc = 0;
 int8_t agcNdx = 0;
 int8_t softMuteMaxAttIdx = 4;
 
+bool ioInterrupt = false;
 bool seekStop = false;       // G8PTN: Added flag to abort seeking on rotary encoder detection
 bool pushAndRotate = false;  // Push and rotate is active, ignore the long press
 
@@ -90,16 +91,14 @@ uint8_t snr = 0;
 //
 // Devices
 //
-bool ioInterrupt = false;
-int8_t pushButton1 = HIGH;
-int8_t pushButton2 = HIGH;
-
 ExtensionIOXL9555 io;
 
 Rotary encoder1 = Rotary(ENCODER1_PIN_B, ENCODER1_PIN_A);
 Rotary encoder2 = Rotary(ENCODER2_PIN_B, ENCODER2_PIN_A);
 ButtonTracker pb1 = ButtonTracker();
 ButtonTracker pb2 = ButtonTracker();
+ButtonTracker::State pb1st;
+ButtonTracker::State pb2st;
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite spr = TFT_eSprite(&tft);
@@ -119,7 +118,7 @@ void setup() {
     Serial.print("Free PSRAM: ");
     Serial.println(ESP.getFreePsram());  // 输出剩余PSRAM容量
   } else {
-    Serial.println("PSRAM未启用，请检查配置！");
+    Serial.println("PSRAM未启用, 请检查配置!");
     while (1)
       ;
   }
@@ -127,32 +126,37 @@ void setup() {
   // The line below may be necessary to setup I2C pins on ESP32
   Wire.begin(ESP32_I2C_SDA, ESP32_I2C_SCL);
 
-  // 初始化TCA9555
+  // 初始化扩展 IO
   if (!io.begin(Wire, TCA9555_ADDR, ESP32_I2C_SDA, ESP32_I2C_SCL)) {
     Serial.println("TCA9555 not detected");
     while (1)
       ;
   }
 
-  // 配置引脚方向
+  // 配置 IO 方向
   io.configPort(ExtensionIOXL9555::PORT0, 0x00);
-  io.configPort(ExtensionIOXL9555::PORT1, 0xcc);  // 1 1 0 0 1 1 0 0
+  io.pinMode(PIN_BT_CON, INPUT);
+  io.pinMode(PCF85063_INT, INPUT);
 
   // Encoder pins. Enable internal pull-ups
-  // pinMode(ENCODER_PUSH_BUTTON, INPUT_PULLUP);
-  // pinMode(ENCODER_PIN_A, INPUT_PULLUP);
-  // pinMode(ENCODER_PIN_B, INPUT_PULLUP);
+  pinMode(ENCODER1_PIN_A, INPUT);
+  pinMode(ENCODER1_PIN_B, INPUT);
+  pinMode(ENCODER2_PIN_A, INPUT);
+  pinMode(ENCODER2_PIN_B, INPUT);
+
+  io.pinMode(ENCODER1_PUSH_BUTTON, INPUT);
+  io.pinMode(ENCODER2_PUSH_BUTTON, INPUT);
 
   // Enable audio amplifier
   // Initally disable the audio amplifier until the SI4732 has been setup
-  // pinMode(PIN_AMP_EN, OUTPUT);
-  // digitalWrite(PIN_AMP_EN, LOW);
+  io.pinMode(PIN_NS4160_EN, OUTPUT);
+  io.pinMode(PIN_MAX97220_EN, OUTPUT);
   io.digitalWrite(PIN_NS4160_EN, LOW);
   io.digitalWrite(PIN_MAX97220_EN, LOW);
 
   // Enable SI4732 VDD
-  // pinMode(PIN_POWER_ON, OUTPUT);
-  // digitalWrite(PIN_POWER_ON, HIGH);
+  io.pinMode(PIN_RADIO_EN, OUTPUT);
+  io.pinMode(PIN_PCM5102_EN, OUTPUT);
   io.digitalWrite(PIN_RADIO_EN, HIGH);
   io.digitalWrite(PIN_PCM5102_EN, LOW);
 
@@ -183,19 +187,19 @@ void setup() {
 
   // Press and hold Encoder button to force an EEPROM reset
   // Note: EEPROM reset is recommended after firmware updates
-  // if (digitalRead(ENCODER_PUSH_BUTTON) == LOW) {
-  //   netClearPreferences();
-  //   eepromInvalidate();
+  if (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW) {
+    netClearPreferences();
+    eepromInvalidate();
 
-  //   ledcWrite(PIN_LCD_BL, 255);  // Default value 255 = 100%
-  //   tft.setTextSize(2);
-  //   tft.setTextColor(TH.text, TH.bg);
-  //   tft.println(getVersion(true));
-  //   tft.println();
-  //   tft.setTextColor(TH.text_warn, TH.bg);
-  //   tft.print("EEPROM Resetting");
-  //   while (digitalRead(ENCODER_PUSH_BUTTON) == LOW) delay(100);
-  // }
+    ledcWrite(PIN_LCD_BL, 255);  // Default value 255 = 100%
+    tft.setTextSize(2);
+    tft.setTextColor(TH.text, TH.bg);
+    tft.println(getVersion(true));
+    tft.println();
+    tft.setTextColor(TH.text_warn, TH.bg);
+    tft.print("EEPROM Resetting");
+    while (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW) delay(100);
+  }
 
   // Check for SI4732 connected on I2C interface
   // If the SI4732 is not detected, then halt with no further processing
@@ -225,8 +229,8 @@ void setup() {
 
   // Audio Amplifier Enable. G8PTN: Added
   // After the SI4732 has been setup, enable the audio amplifier
-  // digitalWrite(PIN_AMP_EN, HIGH);
-  io.configPort(ExtensionIOXL9555::PORT1, 0xfc);  // 1 1 1 1 1 1 0 0
+  io.pinMode(PIN_NS4160_EN, INPUT);
+  io.pinMode(PIN_MAX97220_EN, INPUT);
 
   // If EEPROM contents are ok...
   if (eepromVerify()) {
@@ -251,8 +255,8 @@ void setup() {
     ledcWrite(PIN_LCD_BL, currentBrt);
     drawAboutHelp(0);
     delay(1000);
-    // while (digitalRead(ENCODER_PUSH_BUTTON) != LOW) delay(100);
-    // while (digitalRead(ENCODER_PUSH_BUTTON) == LOW) delay(100);
+    while (io.digitalRead(ENCODER1_PUSH_BUTTON) != LOW) delay(100);
+    while (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW) delay(100);
   }
 
   // Draw display for the first time
@@ -262,17 +266,16 @@ void setup() {
   // Interrupt actions for Rotary encoder
   // Note: Moved to end of setup to avoid inital interrupt actions
   // ICACHE_RAM_ATTR void rotaryEncoder(); see rotaryEncoder implementation below.
-  // attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), rotaryEncoder, CHANGE);
-  // attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_B), rotaryEncoder, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER1_PIN_A), rotaryEncoder1, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER1_PIN_B), rotaryEncoder1, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER2_PIN_A), rotaryEncoder2, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER2_PIN_B), rotaryEncoder2, CHANGE);
 
-  // 配置中断引脚
-  pinMode(IOINT_PIN, INPUT_PULLUP);
+  // 配置 IO 中断引脚
+  pinMode(IOINT_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(IOINT_PIN), handleIOInterrupt, CHANGE);
-  
+
+  // 读取 IO 引脚状态，重置中断标志
   io.read();
 
   // Connect WiFi, if necessary
@@ -284,7 +287,6 @@ void setup() {
 // 中断服务函数（IRAM_ATTR确保在RAM中运行）
 ICACHE_RAM_ATTR void handleIOInterrupt() {
   ioInterrupt = true;
-  Serial.println("ioInterrupt");
 }
 
 //
@@ -302,6 +304,7 @@ ICACHE_RAM_ATTR void rotaryEncoder1() {
     seekStop = true;
   }
 }
+
 ICACHE_RAM_ATTR void rotaryEncoder2() {
   // Rotary encoder events
   uint8_t encoderStatus = encoder2.process();
@@ -384,29 +387,11 @@ bool checkStopSeeking() {
   // Returns true if the user rotates the encoder
   if (seekStop) return true;
 
-  int8_t pushButton1 = HIGH;
-  int8_t pushButton2 = HIGH;
-  uint16_t all_val = io.read();
-  for (int i = 0; i <= 15; i++) {
-    int val = all_val & 1;
-    if (!val) {
-      Serial.print("GPIO: ");
-      Serial.print(i);
-      Serial.println(" is low");
-    }
-    if (i == ENCODER1_PUSH_BUTTON) {
-      pushButton1 = val;
-    } else if (i == ENCODER2_PUSH_BUTTON) {
-      pushButton2 = val;
-    }
-    all_val >>= 1;
-  }
-
   // Checking isPressed without debouncing because this callback
   // is not invoked often enough to register a click
-  if (pb1.update(pushButton1 == LOW, 0).isPressed) {
+  if (pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW, 0).isPressed) {
     // Wait till the button is released, otherwise the main loop will register a click
-    while (pb1.update(pushButton1 == LOW).isPressed) delay(100);
+    while (pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW).isPressed) delay(100);
     return true;
   };
   return false;
@@ -686,40 +671,31 @@ bool processRssiSnr() {
 // Main event loop
 //
 void loop() {
-  while (Serial0.available()) {
-    Serial.write(Serial0.read());
-  }
+  // while (Serial0.available()) {
+  //   Serial.write(Serial0.read());
+  // }
 
   uint32_t currentTime = millis();
   bool needRedraw = false;
 
-  // 处理IO中断事件
+  // 处理 IO 中断事件
   if (ioInterrupt) {
+    Serial.println("ioInterrupt");
     ioInterrupt = false;
 
-    uint16_t all_val = io.read();
-    for (int i = 0; i <= 15; i++) {
-      int val = all_val & 1;
-      if (!val) {
-        Serial.print("GPIO: ");
-        Serial.print(i);
-        Serial.println(" is low");
-      }
-      if (i == ENCODER1_PUSH_BUTTON) {
-        pushButton1 = val;
-      } else if (i == ENCODER2_PUSH_BUTTON) {
-        pushButton2 = val;
-      }
-      all_val >>= 1;
-    }
-
-    Serial.print("pushButton1: ");
-    Serial.println(pushButton1);
-    Serial.print("pushButton2: ");
-    Serial.println(pushButton2);
+    // uint16_t all_val = io.read();
+    // for (int i = 0; i <= 15; i++) {
+    //   int val = all_val & 1;
+    //   if (!val) {
+    //     Serial.print("GPIO: ");
+    //     Serial.print(i);
+    //     Serial.println(" is low");
+    //   }
+    //   all_val >>= 1;
+    // }
   }
-  // ButtonTracker::State pb1st = pb1.update(digitalRead(ENCODER_PUSH_BUTTON) == LOW);
-  ButtonTracker::State pb1st = pb1.update(pushButton1 == LOW);
+  pb1st = pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW);
+  pb2st = pb2.update(io.digitalRead(ENCODER2_PUSH_BUTTON) == LOW);
 
 #ifndef DISABLE_REMOTE
   // Periodically print status to serial

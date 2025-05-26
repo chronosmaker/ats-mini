@@ -89,15 +89,15 @@ bool muteOn(int x) {
   if ((x == 0) && muted) {
     rx.setVolume(volume);
     // Enable audio amplifier to restore speaker output
-    // digitalWrite(PIN_AMP_EN, HIGH);
-    io.configPort(ExtensionIOXL9555::PORT1, 0xfc);  // 1 1 1 1 1 1 0 0
+    io.pinMode(PIN_NS4160_EN, INPUT);
+    io.pinMode(PIN_MAX97220_EN, INPUT);
     rx.setHardwareAudioMute(false);
     muted = false;
   } else if ((x == 1) && !muted) {
     rx.setVolume(0);
     // Disable audio amplifier to silence speaker
-    // digitalWrite(PIN_AMP_EN, LOW);
-    io.configPort(ExtensionIOXL9555::PORT1, 0xcc);  // 1 1 0 0 1 1 0 0
+    io.pinMode(PIN_NS4160_EN, OUTPUT);
+    io.pinMode(PIN_MAX97220_EN, OUTPUT);
     io.digitalWrite(PIN_NS4160_EN, LOW);
     io.digitalWrite(PIN_MAX97220_EN, LOW);
     rx.setHardwareAudioMute(true);
@@ -137,26 +137,8 @@ bool sleepOn(int x) {
     tft.writecommand(ST7789_DISPOFF);
     tft.writecommand(ST7789_SLPIN);
 
-    int8_t pushButton1 = HIGH;
-    int8_t pushButton2 = HIGH;
-    uint16_t all_val = io.read();
-    for (int i = 0; i <= 15; i++) {
-      int val = all_val & 1;
-      if (!val) {
-        Serial.print("GPIO: ");
-        Serial.print(i);
-        Serial.println(" is low");
-      }
-      if (i == ENCODER1_PUSH_BUTTON) {
-        pushButton1 = val;
-      } else if (i == ENCODER2_PUSH_BUTTON) {
-        pushButton2 = val;
-      }
-      all_val >>= 1;
-    }
-
     // Wait till the button is released to prevent immediate wakeup
-    while (pb1.update(pushButton1 == LOW).isPressed)
+    while (pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW).isPressed)
       delay(100);
 
     if (sleepModeIdx == SLEEP_LIGHT) {
@@ -180,25 +162,7 @@ bool sleepOn(int x) {
 
         bool wasLongPressed = false;
         while (true) {
-          int8_t pushButton1 = HIGH;
-          int8_t pushButton2 = HIGH;
-          uint16_t all_val = io.read();
-          for (int i = 0; i <= 15; i++) {
-            int val = all_val & 1;
-            if (!val) {
-              Serial.print("GPIO: ");
-              Serial.print(i);
-              Serial.println(" is low");
-            }
-            if (i == ENCODER1_PUSH_BUTTON) {
-              pushButton1 = val;
-            } else if (i == ENCODER2_PUSH_BUTTON) {
-              pushButton2 = val;
-            }
-            all_val >>= 1;
-          }
-
-          ButtonTracker::State pb1st = pb1.update(pushButton1 == LOW, 0);
+          ButtonTracker::State pb1st = pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW, 0);
           wasLongPressed |= pb1st.isLongPressed;
           if (wasLongPressed || !pb1st.isPressed) break;
           delay(100);
@@ -225,25 +189,7 @@ bool sleepOn(int x) {
     // Wait till the button is released to prevent the main loop clicks
     pb1.reset();  // Reset the button state (its timers could be stale due to CPU sleep)
 
-    int8_t pushButton1 = HIGH;
-    int8_t pushButton2 = HIGH;
-    uint16_t all_val = io.read();
-    for (int i = 0; i <= 15; i++) {
-      int val = all_val & 1;
-      if (!val) {
-        Serial.print("GPIO: ");
-        Serial.print(i);
-        Serial.println(" is low");
-      }
-      if (i == ENCODER1_PUSH_BUTTON) {
-        pushButton1 = val;
-      } else if (i == ENCODER2_PUSH_BUTTON) {
-        pushButton2 = val;
-      }
-      all_val >>= 1;
-    }
-
-    while (pb1.update(pushButton1 == LOW, 0).isPressed)
+    while (pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW, 0).isPressed)
       delay(100);
   }
 

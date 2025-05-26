@@ -110,13 +110,12 @@ void drawWiFiIndicator(int x, int y) {
   int8_t status = getWiFiStatus();
 
   // If need to draw WiFi icon...
-  if(status || switchThemeEditor())
-  {
-    uint16_t color = (status>0) ? TH.wifi_icon_conn : TH.wifi_icon;
+  if (status || switchThemeEditor()) {
+    uint16_t color = (status > 0) ? TH.wifi_icon_conn : TH.wifi_icon;
 
     // For the editor, alternate between WiFi states every ~8 seconds
-    if(switchThemeEditor())
-      color = millis()&0x2000? TH.wifi_icon_conn : TH.wifi_icon;
+    if (switchThemeEditor())
+      color = millis() & 0x2000 ? TH.wifi_icon_conn : TH.wifi_icon;
 
     spr.drawSmoothArc(x, 15 + y, 14, 13, 150, 210, color, TH.bg);
     spr.drawSmoothArc(x, 15 + y, 9, 8, 150, 210, color, TH.bg);
@@ -271,25 +270,7 @@ static bool wifiConnect() {
         wifiCheck++;
         delay(500);
 
-        int8_t pushButton1 = HIGH;
-        int8_t pushButton2 = HIGH;
-        uint16_t all_val = io.read();
-        for (int i = 0; i <= 15; i++) {
-          int val = all_val & 1;
-          if (!val) {
-            Serial.print("GPIO: ");
-            Serial.print(i);
-            Serial.println(" is low");
-          }
-          if (i == ENCODER1_PUSH_BUTTON) {
-            pushButton1 = val;
-          } else if (i == ENCODER2_PUSH_BUTTON) {
-            pushButton2 = val;
-          }
-          all_val >>= 1;
-        }
-
-        if (pushButton1 == LOW) {
+        if (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW) {
           WiFi.disconnect();
           wifiCheck = 30;
         }
