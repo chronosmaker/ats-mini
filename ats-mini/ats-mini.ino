@@ -92,6 +92,7 @@ uint8_t snr = 0;
 // Devices
 //
 ExtensionIOXL9555 io;
+IOStatus ioStatus;
 
 Rotary encoder1 = Rotary(ENCODER1_PIN_B, ENCODER1_PIN_A);
 Rotary encoder2 = Rotary(ENCODER2_PIN_B, ENCODER2_PIN_A);
@@ -132,16 +133,18 @@ void setup() {
       ;
   }
 
-  // 配置 IO 方向
-  io.configPort(ExtensionIOXL9555::PORT0, 0x00);
-  io.pinMode(PIN_BT_CON, INPUT);
-  io.pinMode(PCF85063_INT, INPUT);
-
+  // IO 中断引脚
+  pinMode(IOINT_PIN, INPUT);
   // Encoder pins. Enable internal pull-ups
   pinMode(ENCODER1_PIN_A, INPUT);
   pinMode(ENCODER1_PIN_B, INPUT);
   pinMode(ENCODER2_PIN_A, INPUT);
   pinMode(ENCODER2_PIN_B, INPUT);
+
+  // 配置扩展 IO 方向
+  io.configPort(ExtensionIOXL9555::PORT0, 0xff);
+  io.pinMode(PIN_BT_CON, INPUT);
+  io.pinMode(PCF85063_INT, INPUT);
 
   io.pinMode(ENCODER1_PUSH_BUTTON, INPUT);
   io.pinMode(ENCODER2_PUSH_BUTTON, INPUT);
@@ -262,6 +265,9 @@ void setup() {
   drawScreen();
   ledcWrite(PIN_LCD_BL, currentBrt);
 
+  // Connect WiFi, if necessary
+  netInit(wifiModeIdx);
+
   // Interrupt actions for Rotary encoder
   // Note: Moved to end of setup to avoid inital interrupt actions
   // ICACHE_RAM_ATTR void rotaryEncoder(); see rotaryEncoder implementation below.
@@ -270,15 +276,9 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ENCODER2_PIN_A), rotaryEncoder2, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER2_PIN_B), rotaryEncoder2, CHANGE);
 
-  // 配置 IO 中断引脚
-  pinMode(IOINT_PIN, INPUT);
+  // 配置 IO 中断
   attachInterrupt(digitalPinToInterrupt(IOINT_PIN), handleIOInterrupt, CHANGE);
-
-  // 读取 IO 引脚状态，重置中断标志
-  io.read();
-
-  // Connect WiFi, if necessary
-  netInit(wifiModeIdx);
+  updateIOStatus();
 
   Serial.println("System Ready");
 }
@@ -310,6 +310,23 @@ ICACHE_RAM_ATTR void rotaryEncoder2() {
   if (encoderStatus) {
     encoderCount = encoderStatus == DIR_CW ? 1 : -1;
     seekStop = true;
+  }
+}
+
+void updateIOStatus() {
+  uint16_t all_val = io.read();
+  for (int i = 0; i <= 15; i++) {
+    int val = all_val & 1;
+    if (!val) Serial.printf("GPIO: %d is LOW\n", i);
+    if (i == PIN_RADIO_EN) ioStatus.localRadioEnable = val;
+    if (i == PIN_PCM5102_EN) ioStatus.netRadioEnable = val;
+    if (i == PIN_MAX97220_EN) ioStatus.epAmpEnable = val;
+    if (i == PIN_NS4160_EN) ioStatus.spAmpEnable = val;
+    if (i == PIN_BT_CON) ioStatus.btCon = val;
+    if (i == PCF85063_INT) ioStatus.timeInt = val;
+    if (i == ENCODER1_PUSH_BUTTON) ioStatus.pb1 = val;
+    if (i == ENCODER2_PUSH_BUTTON) ioStatus.pb2 = val;
+    all_val >>= 1;
   }
 }
 
@@ -679,22 +696,11 @@ void loop() {
 
   // 处理 IO 中断事件
   if (ioInterrupt) {
-    Serial.println("ioInterrupt");
     ioInterrupt = false;
-
-    // uint16_t all_val = io.read();
-    // for (int i = 0; i <= 15; i++) {
-    //   int val = all_val & 1;
-    //   if (!val) {
-    //     Serial.print("GPIO: ");
-    //     Serial.print(i);
-    //     Serial.println(" is low");
-    //   }
-    //   all_val >>= 1;
-    // }
+    updateIOStatus();
   }
-  ButtonTracker::State pb1st = pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW);
-  ButtonTracker::State pb2st = pb2.update(io.digitalRead(ENCODER2_PUSH_BUTTON) == LOW);
+  ButtonTracker::State pb1st = pb1.update(ioStatus.pb1 == LOW);
+  ButtonTracker::State pb2st = pb2.update(ioStatus.pb2 == LOW);
 
 #ifndef DISABLE_REMOTE
   // Periodically print status to serial

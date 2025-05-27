@@ -97,6 +97,17 @@
 //
 // Data Types
 //
+typedef struct
+{
+  int localRadioEnable;
+  int netRadioEnable;
+  int epAmpEnable;
+  int spAmpEnable;
+  int btCon;
+  int timeInt;
+  int pb1;
+  int pb2;
+} IOStatus;
 
 typedef struct
 {
@@ -143,6 +154,7 @@ typedef struct
 // Global Variables
 //
 extern ExtensionIOXL9555 io;
+extern IOStatus ioStatus;
 
 extern SI4735_fixed rx;
 extern TFT_eSprite spr;
@@ -190,6 +202,7 @@ static inline bool isSSB() {
   return (currentMode > FM && currentMode < AM);
 }
 
+void updateIOStatus();
 void useBand(const Band *band);
 bool updateBFO(int newBFO, bool wrap = true);
 bool doSeek(int8_t dir);
