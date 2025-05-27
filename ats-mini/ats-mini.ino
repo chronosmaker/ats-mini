@@ -95,10 +95,9 @@ ExtensionIOXL9555 io;
 
 Rotary encoder1 = Rotary(ENCODER1_PIN_B, ENCODER1_PIN_A);
 Rotary encoder2 = Rotary(ENCODER2_PIN_B, ENCODER2_PIN_A);
+
 ButtonTracker pb1 = ButtonTracker();
 ButtonTracker pb2 = ButtonTracker();
-ButtonTracker::State pb1st;
-ButtonTracker::State pb2st;
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite spr = TFT_eSprite(&tft);
@@ -694,8 +693,8 @@ void loop() {
     //   all_val >>= 1;
     // }
   }
-  pb1st = pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW);
-  pb2st = pb2.update(io.digitalRead(ENCODER2_PUSH_BUTTON) == LOW);
+  ButtonTracker::State pb1st = pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW);
+  ButtonTracker::State pb2st = pb2.update(io.digitalRead(ENCODER2_PUSH_BUTTON) == LOW);
 
 #ifndef DISABLE_REMOTE
   // Periodically print status to serial
