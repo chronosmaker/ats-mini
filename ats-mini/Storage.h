@@ -10,11 +10,14 @@ bool eepromVerify(const uint8_t *buf = 0);
 void eepromSaveConfig();
 void eepromLoadConfig();
 
+bool eepromRequestUpdate(const uint8_t *eepromUpdate, uint32_t size);
 bool eepromReadBinary(uint8_t *buf, uint32_t size);
 bool eepromWriteBinary(const uint8_t *buf, uint32_t size);
 
 void drawEepromIndicator(int x, int y);
 
+
+bool diskInit(bool force = false);
 void eepromRequestSave(bool now = false);
 void eepromRequestLoad();
 

@@ -10,19 +10,22 @@
 #include "Menu.h"
 #include "Storage.h"
 #include "Themes.h"
+#include "Utils.h"
+#include "EIBI.h"
 
 // SI473/5 and UI
-#define MIN_ELAPSED_TIME 5            // 300
-#define MIN_ELAPSED_RSSI_TIME 200     // RSSI check uses IN_ELAPSED_RSSI_TIME * 6 = 1.2s
-#define ELAPSED_COMMAND 10000         // time to turn off the last command controlled by encoder. Time to goes back to the VFO control // G8PTN: Increased time and corrected comment
-#define DEFAULT_VOLUME 35             // change it for your favorite sound volume
-#define DEFAULT_SLEEP 0               // Default sleep interval, range = 0 (off) to 255 in steps of 5
-#define STRENGTH_CHECK_TIME 1500      // Not used
-#define RDS_CHECK_TIME 250            // Increased from 90
-#define SEEK_TIMEOUT 600000           // Max seek timeout (ms)
-#define NTP_CHECK_TIME 60000          // NTP time refresh period (ms)
-#define BACKGROUND_REFRESH_TIME 5000  // Background screen refresh time. Covers the situation where there are no other events causing a refresh
-#define TUNE_HOLDOFF_TIME 90          // Timer to hold off display whilst tuning
+#define MIN_ELAPSED_TIME         5  // 300
+#define MIN_ELAPSED_RSSI_TIME  200  // RSSI check uses IN_ELAPSED_RSSI_TIME * 6 = 1.2s
+#define ELAPSED_COMMAND      10000  // time to turn off the last command controlled by encoder. Time to goes back to the VFO control // G8PTN: Increased time and corrected comment
+#define DEFAULT_VOLUME          35  // change it for your favorite sound volume
+#define DEFAULT_SLEEP            0  // Default sleep interval, range = 0 (off) to 255 in steps of 5
+#define STRENGTH_CHECK_TIME   1500  // Not used
+#define RDS_CHECK_TIME         250  // Increased from 90
+#define SEEK_TIMEOUT        600000  // Max seek timeout (ms)
+#define NTP_CHECK_TIME       60000  // NTP time refresh period (ms)
+#define SCHEDULE_CHECK_TIME   2000  // How often to identify the same frequency (ms)
+#define BACKGROUND_REFRESH_TIME 5000    // Background screen refresh time. Covers the situation where there are no other events causing a refresh
+#define TUNE_HOLDOFF_TIME       90  // Timer to hold off display whilst tuning
 
 // =================================
 // CONSTANTS AND VARIABLES
@@ -43,6 +46,7 @@ long elapsedButton = millis();
 long lastStrengthCheck = millis();
 long lastRDSCheck = millis();
 long lastNTPCheck = millis();
+long lastScheduleCheck = millis();
 
 long elapsedCommand = millis();
 volatile int encoderCount = 0;
@@ -113,6 +117,9 @@ void setup() {
 
   Serial0.begin(115200);
   Serial0.println("AT+POWER_OFF");
+
+  // Initialize flash file system
+  diskInit();
 
   if (psramFound()) {
     Serial.print("Free PSRAM: ");
@@ -192,6 +199,7 @@ void setup() {
   if (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW) {
     netClearPreferences();
     eepromInvalidate();
+    diskInit(true);
 
     ledcWrite(PIN_LCD_BL, 255);  // Default value 255 = 100%
     tft.setTextSize(2);
@@ -505,20 +513,40 @@ bool updateFrequency(int newFreq, bool wrap) {
 //
 // Handle encoder rotation in seek mode
 //
-bool doSeek(int8_t dir) {
-  if (isSSB()) {
+bool doSeek(int8_t dir)
+{
+  if(seekMode() == SEEK_DEFAULT)
+  {
+    if(isSSB())
+    {
 #ifdef ENABLE_HOLDOFF
-    // Tuning timer to hold off (FM/AM) display updates
-    tuning_flag = true;
-    tuning_timer = millis();
+      // Tuning timer to hold off (FM/AM) display updates
+      tuning_flag = true;
+      tuning_timer = millis();
 #endif
 
-    updateBFO(currentBFO + dir * getCurrentStep(true)->step, true);
-  } else {
-    // G8PTN: Flag is set by rotary encoder and cleared on seek entry
-    seekStop = false;
-    rx.seekStationProgress(showFrequencySeek, checkStopSeeking, dir > 0 ? 1 : 0);
-    updateFrequency(rx.getFrequency(), true);
+      updateBFO(currentBFO + dir * getCurrentStep(true)->step, true);
+    }
+    else
+    {
+      // G8PTN: Flag is set by rotary encoder and cleared on seek entry
+      seekStop = false;
+      rx.seekStationProgress(showFrequencySeek, checkStopSeeking, dir>0? 1 : 0);
+      updateFrequency(rx.getFrequency(), true);
+    }
+  }
+  else if(seekMode() == SEEK_SCHEDULE && dir)
+  {
+    uint8_t hour, minute;
+    // Clock is valid because the above seekMode() call checks that
+    clockGetHM(&hour, &minute);
+
+    size_t offset = -1;
+    const StationSchedule *schedule = dir > 0 ?
+      eibiNext(currentFrequency + currentBFO / 1000, hour, minute, &offset) :
+      eibiPrev(currentFrequency + currentBFO / 1000, hour, minute, &offset);
+
+    if(schedule) updateFrequency(schedule->freq, false);
   }
 
   // Clear current station name and information
@@ -810,7 +838,12 @@ void loop() {
       } else if (clickHandler(currentCmd, pb1st.wasShortPressed)) {
         // Command handled, redraw screen
         needRedraw = true;
-      } else if (currentCmd != CMD_NONE) {
+
+        // EiBi can take long time, renew the timestamps
+        elapsedSleep = elapsedCommand = currentTime = millis();
+      }
+      else if(currentCmd != CMD_NONE)
+      {
         // Deactivate modal mode
         currentCmd = CMD_NONE;
         needRedraw = true;
@@ -858,6 +891,13 @@ void loop() {
   if ((currentTime - lastRDSCheck) > RDS_CHECK_TIME) {
     needRedraw |= (currentMode == FM) && (snr >= 12) && checkRds();
     lastRDSCheck = currentTime;
+  }
+
+  // Periodically check schedule
+  if((currentTime - lastScheduleCheck) > SCHEDULE_CHECK_TIME)
+  {
+    needRedraw |= identifyFrequency(currentFrequency + currentBFO / 1000, true);
+    lastScheduleCheck = currentTime;
   }
 
   // Periodically synchronize time via NTP

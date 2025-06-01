@@ -6,16 +6,16 @@
 #include <SI4735-fixed.h>
 #include "ExtensionIOXL9555.hpp"
 
-#define RECEIVER_NAME "ESP32-SI4732 Receiver"
-#define FIRMWARE_NAME "ATS-Mini"
-#define FIRMWARE_URL "https://github.com/esp32-si4732/ats-mini"
-#define MANUAL_URL "https://esp32-si4732.github.io/ats-mini/manual.html"
-#define AUTHORS_LINE1 "Authors: PU2CLR (Ricardo Caratti),"
-#define AUTHORS_LINE2 "Volos Projects, Ralph Xavier, Sunnygold,"
-#define AUTHORS_LINE3 "Goshante, G8PTN (Dave), R9UCL (Max Arnold),"
-#define AUTHORS_LINE4 "Marat Fayzullin"
-#define APP_VERSION 223    // FIRMWARE VERSION
-#define EEPROM_VERSION 71  // EEPROM VERSION (forces reset)
+#define RECEIVER_NAME  "ESP32-SI4732 Receiver"
+#define FIRMWARE_NAME  "ATS-Mini"
+#define FIRMWARE_URL   "https://github.com/esp32-si4732/ats-mini"
+#define MANUAL_URL     "https://esp32-si4732.github.io/ats-mini/manual.html"
+#define AUTHORS_LINE1  "Authors: PU2CLR (Ricardo Caratti),"
+#define AUTHORS_LINE2  "Volos Projects, Ralph Xavier, Sunnygold,"
+#define AUTHORS_LINE3  "Goshante, G8PTN (Dave), R9UCL (Max Arnold),"
+#define AUTHORS_LINE4  "Marat Fayzullin"
+#define APP_VERSION    225  // FIRMWARE VERSION
+#define EEPROM_VERSION 71   // EEPROM VERSION (forces reset)
 
 // Modes
 #define FM 0
@@ -209,23 +209,6 @@ bool doSeek(int8_t dir);
 bool clickFreq(bool shortPress);
 uint8_t doAbout(int dir);
 
-// Utils.c
-void loadSSB(uint8_t bandwidth, bool draw = true);
-void unloadSSB();
-const char *getVersion(bool shorter = false);
-const char *getMACAddress();
-int getStrength(int rssi);
-int getInterpolatedStrength(int rssi);
-bool sleepOn(int x = 2);
-bool muteOn(int x = 2);
-void tempMuteOn(bool x);
-const char *clockGet();
-bool clockSet(uint8_t hours, uint8_t minutes, uint8_t seconds = 0);
-void clockReset();
-bool clockTickTime();
-void clockRefreshTime();
-bool isMemoryInBand(const Band *band, const Memory *memory);
-
 // Draw.c
 void drawLoadingSSB();
 void drawZoomedMenu(const char *text);
@@ -244,7 +227,7 @@ const char *getRdsTime();
 uint16_t getRdsPiCode();
 void clearStationInfo();
 bool checkRds();
-bool identifyFrequency(uint16_t freq);
+bool identifyFrequency(uint16_t freq, bool periodic = false);
 
 // Network.cpp
 void netClearPreferences();
@@ -252,6 +235,7 @@ void netInit(uint8_t netMode, bool showStatus = true);
 void netStop();
 bool ntpIsAvailable();
 bool ntpSyncTime();
+
 void netRequestConnect();
 void netTickTime();
 void drawWiFiIndicator(int x, int y);

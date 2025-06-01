@@ -1,6 +1,8 @@
 #include "Common.h"
 #include "Themes.h"
+#include "Utils.h"
 #include "Menu.h"
+#include "EIBI.h"
 
 // CB frequency range
 #define MIN_CB_FREQUENCY 26060
@@ -99,11 +101,19 @@ void clearStationInfo()
   piCode = 0x0000;
 }
 
-static bool showStationName(const char *stationName)
+static bool showStationName(const char *stationName, bool isLong = false)
 {
-  if(stationName && strcmp(bufStationName, stationName))
+  if(stationName && strcmp((isLong && bufStationName[0] == 0xFF) ? bufStationName + 1 : bufStationName, stationName))
   {
-    strcpy(bufStationName, stationName);
+    // If the name is explicitly marked as long, add 0xFF in front of it
+    // This is done to display the EiBi names differently
+    if(isLong)
+    {
+      bufStationName[0] = 0xFF;
+      strcpy(bufStationName + 1, stationName);
+    }
+    else
+      strcpy(bufStationName, stationName);
     return(true);
   }
 
@@ -277,16 +287,83 @@ static const char *findNameByFreq(uint16_t freq, const NamedFreq *db, uint16_t d
   return(0);
 }
 
-bool identifyFrequency(uint16_t freq)
+static const char *findScheduleByFreq(uint16_t freq, bool periodic)
+{
+  uint8_t hour, minute;
+
+  if(currentMode==FM) return(0);
+
+  // Must have valid time
+  if(!clockGetHM(&hour, &minute)) return(0);
+
+  static uint16_t last_freq = 0;
+  static uint8_t last_minute = 255;
+  static size_t first_offset = (size_t)-1;
+  static size_t last_offset = (size_t)-1;
+  const StationSchedule *entry = NULL;
+
+  // Try EIBI lookup at the next offset and same freq
+  if(periodic && freq == last_freq && last_offset != (size_t)-1)
+  {
+    entry = eibiAtSameFreq(hour, minute, &last_offset, false);
+
+    // Try EIBI lookup at the first offset and same freq
+    if(!entry)
+    {
+      last_offset = first_offset;
+      entry = eibiAtSameFreq(hour, minute, &last_offset, true);
+    }
+  }
+
+  // Try new EIBI lookup if not found or once per minute
+  if(!periodic || (!entry && last_offset != (size_t)-1) || last_minute != minute)
+  {
+    last_freq = freq;
+    last_minute = minute;
+    last_offset = (size_t)-1;
+    entry = eibiLookup(freq, hour, minute, &last_offset);
+    first_offset = last_offset = entry ? last_offset : (size_t)-1;
+  }
+
+  // Return just the station name
+  return(entry? entry->name : 0);
+}
+
+bool identifyFrequency(uint16_t freq, bool periodic)
 {
   const char *name;
+  static uint16_t last_freq = 0;
+  static bool name_found = false;
 
-  // Try list of named frequencies first
-  name = findNameByFreq(freq, namedFrequencies, ITEM_COUNT(namedFrequencies));
+  // RDS has priority on FM
+  if(currentMode==FM) return(false);
 
-  // Try CB channel names
-  name = name? name : findCBChannelByFreq(freq);
+  // Do not try to look up static names more than once for the same freq
+  if(periodic && last_freq==freq && name_found) return(false);
+  last_freq = freq;
+  name_found = false;
 
-  // Done
-  return(showStationName(name? name : ""));
+  // For non-periodic calls the name will be found earlier
+  if(!periodic)
+  {
+    // Try list of named frequencies first
+    name = findNameByFreq(freq, namedFrequencies, ITEM_COUNT(namedFrequencies));
+    if(name)
+    {
+      name_found = true;
+      return(showStationName(name));
+    }
+
+    // Try CB channel names
+    name = findCBChannelByFreq(freq);
+    if(name)
+    {
+      name_found = true;
+      return(showStationName(name));
+    }
+  }
+
+  // Try EIBI schedule
+  name = findScheduleByFreq(freq, periodic);
+  return(showStationName(name? name : "", true));
 }
