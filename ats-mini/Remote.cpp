@@ -23,6 +23,7 @@ static uint8_t char2nibble(char key)
 //
 static void remoteCaptureScreen()
 {
+  /*
   uint16_t width  = spr.width();
   uint16_t height = spr.height();
 
@@ -58,6 +59,7 @@ static void remoteCaptureScreen()
     }
     Serial.println("");
   }
+  */
 }
 
 char readSerialChar()

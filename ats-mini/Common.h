@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 #include <TFT_eSPI.h>
+#include <ui.h>
+#include <vars.h>
+#include <actions.h>
 #include <SI4735-fixed.h>
 #include "ExtensionIOXL9555.hpp"
 

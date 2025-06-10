@@ -138,8 +138,8 @@ bool sleepOn(int x) {
   if ((x == 1) && !sleep_on) {
     sleep_on = true;
     ledcWrite(PIN_LCD_BL, 0);
-    spr.fillSprite(TFT_BLACK);
-    spr.pushSprite(0, 0);
+    // spr.fillSprite(TFT_BLACK);
+    // spr.pushSprite(0, 0);
     tft.writecommand(ST7789_DISPOFF);
     tft.writecommand(ST7789_SLPIN);
 

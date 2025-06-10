@@ -941,6 +941,7 @@ void selectBand(uint8_t idx, bool drawLoadingSSB)
 
 static void drawCommon(const char *title, int x, int y, int sx, bool cursor = false)
 {
+  /*
   spr.setTextDatum(MC_DATUM);
 
   spr.setTextColor(TH.menu_hdr, TH.menu_bg);
@@ -954,10 +955,12 @@ static void drawCommon(const char *title, int x, int y, int sx, bool cursor = fa
   spr.setTextColor(TH.menu_item, TH.menu_bg);
   if(cursor)
     spr.fillRoundRect(6+x, 24+y+(2*16), 66+sx, 16, 2, TH.menu_hl_bg);
+  */
 }
 
 static void drawMenu(int x, int y, int sx)
 {
+  /*
   spr.setTextDatum(MC_DATUM);
 
   spr.fillSmoothRoundRect(1+x, 1+y, 76+sx, 110, 4, TH.menu_border);
@@ -983,10 +986,12 @@ static void drawMenu(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(menu[abs((menuIdx+count+i)%count)], 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawSettings(int x, int y, int sx)
 {
+  /*
   spr.setTextDatum(MC_DATUM);
 
   spr.fillSmoothRoundRect(1+x, 1+y, 76+sx, 110, 4, TH.menu_border);
@@ -1012,10 +1017,12 @@ static void drawSettings(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(settings[abs((settingsIdx+count+i)%count)], 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawMode(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_MODE], x, y, sx, true);
 
   int count = ITEM_COUNT(bandModeDesc);
@@ -1032,10 +1039,12 @@ static void drawMode(int x, int y, int sx)
     if((currentMode!=FM) || (i==0))
      spr.drawString(bandModeDesc[abs((currentMode+count+i)%count)], 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawStep(int x, int y, int sx)
 {
+  /*
   int count = getLastStep(currentMode) + 1;
   int idx   = stepIdx[currentMode] + count;
 
@@ -1053,10 +1062,12 @@ static void drawStep(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(steps[currentMode][abs((idx+i)%count)].desc, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawSeek(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_SEEK], x, y, sx);
   drawZoomedMenu(menu[MENU_SEEK]);
   spr.drawSmoothArc(40+x+(sx/2), 66+y, 30, 27, 45, 180, TH.menu_param, TH.menu_bg);
@@ -1070,10 +1081,12 @@ static void drawSeek(int x, int y, int sx)
     spr.drawLine(40+x+(sx/2), 66+y, 40+x+(sx/2), 66+y-7, TH.menu_param);
     spr.drawLine(40+x+(sx/2), 66+y, 40+x+(sx/2)+4, 66+y+4, TH.menu_param);
   }
+  */
 }
 
 static void drawBand(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_BAND], x, y, sx, true);
 
   int count = ITEM_COUNT(bands);
@@ -1089,10 +1102,12 @@ static void drawBand(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(bands[abs((bandIdx+count+i)%count)].bandName, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawBandwidth(int x, int y, int sx)
 {
+  /*
   int count = getLastBandwidth(currentMode) + 1;
   int idx   = bwIdx[currentMode] + count;
 
@@ -1110,10 +1125,12 @@ static void drawBandwidth(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(bandwidths[currentMode][abs((idx+i)%count)].desc, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawSleepMode(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_SLEEPMODE], x, y, sx, true);
 
   int count = ITEM_COUNT(sleepModeDesc);
@@ -1129,10 +1146,12 @@ static void drawSleepMode(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(sleepModeDesc[abs((sleepModeIdx+count+i)%count)], 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawWiFiMode(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_WIFIMODE], x, y, sx, true);
 
   int count = ITEM_COUNT(wifiModeDesc);
@@ -1148,10 +1167,12 @@ static void drawWiFiMode(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(wifiModeDesc[abs((wifiModeIdx+count+i)%count)], 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawTheme(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_THEME], x, y, sx, true);
 
   int count = getTotalThemes();
@@ -1167,10 +1188,12 @@ static void drawTheme(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(theme[abs((themeIdx+count+i)%count)].name, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawUILayout(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_UI], x, y, sx, true);
 
   int count = ITEM_COUNT(uiLayoutDesc);
@@ -1191,10 +1214,12 @@ static void drawUILayout(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(uiLayoutDesc[abs((uiLayoutIdx+count+i)%count)], 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawRDSMode(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_RDS], x, y, sx, true);
 
   int count = ITEM_COUNT(rdsMode);
@@ -1210,10 +1235,12 @@ static void drawRDSMode(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(rdsMode[abs((rdsModeIdx+count+i)%count)].desc, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawUTCOffset(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_UTCOFFSET], x, y, sx, true);
 
   int count = ITEM_COUNT(utcOffsets);
@@ -1234,10 +1261,12 @@ static void drawUTCOffset(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(utcOffsets[abs((idx+count+i)%count)].desc, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawMemory(int x, int y, int sx)
 {
+  /*
   char label_memory[16];
   sprintf(label_memory, "%s %2.2d", menu[MENU_MEMORY], memoryIdx + 1);
   drawCommon(label_memory, x, y, sx, true);
@@ -1268,10 +1297,12 @@ static void drawMemory(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(text, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawVolume(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_VOLUME], x, y, sx);
   drawZoomedMenu(menu[MENU_VOLUME]);
   spr.setTextDatum(MC_DATUM);
@@ -1286,10 +1317,12 @@ static void drawVolume(int x, int y, int sx)
       spr.drawLine(40+x+(sx/2) + 30 + i, 66 + y - 30 + i, 40+x+(sx/2) - 30 + i, 66 + y + 30 + i, TH.menu_param);
     }
   }
+  */
 }
 
 static void drawAgc(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_AGC_ATT], x, y, sx);
   drawZoomedMenu(menu[MENU_AGC_ATT]);
   spr.setTextDatum(MC_DATUM);
@@ -1310,10 +1343,12 @@ static void drawAgc(int x, int y, int sx)
     sprintf(text, "%2.2d", agcNdx);
     spr.drawString(text, 40+x+(sx/2), 60+y, 7);
   }
+  */
 }
 
 static void drawSquelch(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_SQUELCH], x, y, sx);
   drawZoomedMenu(menu[MENU_SQUELCH]);
   spr.setTextDatum(MC_DATUM);
@@ -1327,10 +1362,12 @@ static void drawSquelch(int x, int y, int sx)
   {
     spr.drawString("Off", 40+x+(sx/2), 60+y, 4);
   }
+  */
 }
 
 static void drawSoftMuteMaxAtt(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_SOFTMUTE], x, y, sx);
   drawZoomedMenu(menu[MENU_SOFTMUTE]);
   spr.setTextDatum(MC_DATUM);
@@ -1339,10 +1376,12 @@ static void drawSoftMuteMaxAtt(int x, int y, int sx)
   spr.drawString("Max Attn", 40+x+(sx/2), 32+y, 2);
   spr.drawNumber(softMuteMaxAttIdx, 40+x+(sx/2), 60+y, 4);
   spr.drawString("dB", 40+x+(sx/2), 90+y, 4);
+  */
 }
 
 static void drawCal(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_CALIBRATION], x, y, sx);
   drawZoomedMenu(settings[MENU_CALIBRATION]);
   spr.setTextDatum(MC_DATUM);
@@ -1350,10 +1389,12 @@ static void drawCal(int x, int y, int sx)
   spr.setTextColor(TH.menu_param, TH.menu_bg);
   spr.drawNumber(getCurrentBand()->bandCal, 40+x+(sx/2), 60+y, 4);
   spr.drawString("Hz", 40+x+(sx/2), 90+y, 4);
+  */
 }
 
 static void drawAvc(int x, int y, int sx)
 {
+  /*
   drawCommon(menu[MENU_AVC], x, y, sx);
   drawZoomedMenu(menu[MENU_AVC]);
   spr.setTextDatum(MC_DATUM);
@@ -1368,10 +1409,12 @@ static void drawAvc(int x, int y, int sx)
     spr.drawNumber(currentAvc, 40+x+(sx/2), 60+y, 4);
     spr.drawString("dB", 40+x+(sx/2), 90+y, 4);
   }
+  */
 }
 
 static void drawFmRegion(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_FM_REGION], x, y, sx, true);
 
   int count = ITEM_COUNT(fmRegions);
@@ -1392,40 +1435,48 @@ static void drawFmRegion(int x, int y, int sx)
     spr.setTextDatum(MC_DATUM);
     spr.drawString(fmRegions[abs((FmRegionIdx+count+i)%count)].desc, 40+x+(sx/2), 64+y+(i*16), 2);
   }
+  */
 }
 
 static void drawBrt(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_BRIGHTNESS], x, y, sx);
   drawZoomedMenu(settings[MENU_BRIGHTNESS]);
   spr.setTextDatum(MC_DATUM);
 
   spr.setTextColor(TH.menu_param, TH.menu_bg);
   spr.drawNumber(currentBrt, 40+x+(sx/2), 60+y, 4);
+  */
 }
 
 static void drawSleep(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_SLEEP], x, y, sx);
   drawZoomedMenu(settings[MENU_SLEEP]);
   spr.setTextDatum(MC_DATUM);
 
   spr.setTextColor(TH.menu_param, TH.menu_bg);
   spr.drawNumber(currentSleep, 40+x+(sx/2), 60+y, 4);
+  */
 }
 
 static void drawZoom(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_ZOOM], x, y, sx);
   drawZoomedMenu(settings[MENU_ZOOM]);
   spr.setTextDatum(MC_DATUM);
 
   spr.setTextColor(TH.menu_param, TH.menu_bg);
   spr.drawString(zoomMenu ? "On" : "Off", 40+x+(sx/2), 60+y, 4);
+  */
 }
 
 static void drawScrollDir(int x, int y, int sx)
 {
+  /*
   drawCommon(settings[MENU_SCROLL], x, y, sx);
   drawZoomedMenu(settings[MENU_SCROLL]);
 
@@ -1434,10 +1485,12 @@ static void drawScrollDir(int x, int y, int sx)
     spr.fillTriangle(39+x+(sx/2)-5, 45+y, 39+x+(sx/2)+5, 45+y, 39+x+(sx/2), 45+y-5, TH.menu_param);
   else
     spr.fillTriangle(39+x+(sx/2)-5, 85+y, 39+x+(sx/2)+5, 85+y, 39+x+(sx/2), 85+y+5, TH.menu_param);
+  */
 }
 
 static void drawInfo(int x, int y, int sx)
 {
+  /*
   char text[16];
 
   // Info box
@@ -1506,6 +1559,7 @@ static void drawInfo(int x, int y, int sx)
     spr.drawString("Time:", 6+x, 64+y+(2*16), 2);
     spr.drawString(clockGet(), 48+x, 64+y+(2*16), 2);
   }
+  */
 }
 
 //
@@ -1514,7 +1568,7 @@ static void drawInfo(int x, int y, int sx)
 void drawSideBar(uint16_t cmd, int x, int y, int sx)
 {
   if(sleepOn()) return;
-
+  /*
   switch(cmd)
   {
     case CMD_MENU:      drawMenu(x, y, sx);      break;
@@ -1544,4 +1598,5 @@ void drawSideBar(uint16_t cmd, int x, int y, int sx)
     case CMD_SQUELCH:   drawSquelch(x, y, sx);   break;
     default:            drawInfo(x, y, sx);      break;
   }
+  */
 }

@@ -72,7 +72,8 @@ bool drawBattery(int x, int y)
 
   // Measure battery voltage and status
   batteryMonitor();
-
+  return false;
+  /*
   // Set display information
   spr.drawRoundRect(x, y + 1, 28, 14, 3, TH.batt_border);
   spr.drawLine(x + 29, y + 5, x + 29, y + 10, TH.batt_border);
@@ -141,4 +142,5 @@ bool drawBattery(int x, int y)
     spr.drawString(voltage, x - 3, y, 2);
     return true;
   }
+  */
 }

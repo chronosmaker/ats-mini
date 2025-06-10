@@ -6,6 +6,7 @@
 
 void drawLayoutDefault(const char *statusLine1, const char *statusLine2)
 {
+  /*
   // Draw EEPROM write request icon
   drawEepromIndicator(SAVE_OFFSET_X, SAVE_OFFSET_Y);
 
@@ -64,4 +65,5 @@ void drawLayoutDefault(const char *statusLine1, const char *statusLine2)
     else
       drawScale(isSSB()? (currentFrequency + currentBFO/1000) : currentFrequency);
   }
+  */
 }

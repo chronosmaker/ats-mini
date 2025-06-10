@@ -47,6 +47,7 @@ static int getInterpolatedStrength(int rssi)
 //
 static void drawSmallScale(uint32_t freq, int y)
 {
+  /*
   const Band *band = getCurrentBand();
   const uint16_t scaleStart = 51;
   const uint16_t scaleEnd = 269;
@@ -69,6 +70,7 @@ static void drawSmallScale(uint32_t freq, int y)
   else
     sprintf(lim, "%u", band->maximumFreq);
   spr.drawString(lim, scaleEnd+27, y, 2);
+  */
 }
 
 //
@@ -76,16 +78,19 @@ static void drawSmallScale(uint32_t freq, int y)
 //
 static void drawAltStereoIndicator(int x, int y, bool stereo = true)
 {
+  /*
   if(stereo)
   {
     spr.drawCircle(x - 4, y, 7, TH.stereo_icon);
     spr.drawCircle(x + 4, y, 7, TH.stereo_icon);
   }
   // Add an "else" statement here to draw a mono indicator
+  */
 }
 
 static void drawLargeSMeter(int rssi, int strength, int x, int y)
 {
+  /*
   // S-Meter legend
   for(int i=x; i<=x+15*16 + 2; i+=2) spr.drawPixel(i, 28+y, TH.scale_line);
   spr.setTextDatum(TC_DATUM);
@@ -115,10 +120,12 @@ static void drawLargeSMeter(int rssi, int strength, int x, int y)
       spr.fillRect(x+(i*5), 11+y, 3, 10, TH.smeter_bar_plus);
     else
       spr.fillRect(x+(i*5), 11+y, 3, 10, TH.smeter_bar_empty);
+  */
 }
 
 static void drawLargeSNMeter(int snr, int x, int y)
 {
+  /*
   spr.setTextColor(TH.scale_text, TH.bg);
   spr.setTextDatum(BL_DATUM);
   spr.drawString("N", x - 10, 12 + y, 2);
@@ -132,6 +139,7 @@ static void drawLargeSNMeter(int snr, int x, int y)
       spr.fillRect(x+(i*5), y - 1, 3, 10, TH.smeter_bar);
     else
       spr.fillRect(x+(i*5), y - 1, 3, 10, TH.smeter_bar_empty);
+  */
 }
 
 //
@@ -139,6 +147,7 @@ static void drawLargeSNMeter(int snr, int x, int y)
 //
 void drawLayoutSmeter(const char *statusLine1, const char *statusLine2)
 {
+  /*
   // Draw EEPROM write request icon
   drawEepromIndicator(SAVE_OFFSET_X, SAVE_OFFSET_Y);
 
@@ -202,4 +211,5 @@ void drawLayoutSmeter(const char *statusLine1, const char *statusLine2)
       drawLargeSMeter(rssi, getInterpolatedStrength(rssi), ALT_METER_OFFSET_X, ALT_METER_OFFSET_Y);
     }
   }
+  */
 }
