@@ -8,6 +8,7 @@
 #include "Rotary.h"
 #include "Button.h"
 #include "Menu.h"
+#include "Draw.h"
 #include "Storage.h"
 #include "Themes.h"
 #include "Utils.h"
@@ -417,7 +418,8 @@ bool checkStopSeeking() {
     // Wait till the button is released, otherwise the main loop will register a click
     while (pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW).isPressed) delay(100);
     return true;
-  };
+  }
+
   return false;
 }
 
@@ -487,12 +489,13 @@ bool updateFrequency(int newFreq, bool wrap) {
   Band *band = getCurrentBand();
 
   // Do not let new frequency exceed band limits
-  if (newFreq < band->minimumFreq) {
-    if (!wrap) return false;
-    newFreq = band->maximumFreq;
-  } else if (newFreq > band->maximumFreq) {
-    if (!wrap) return false;
-    newFreq = band->minimumFreq;
+  if(newFreq < band->minimumFreq)
+  {
+    if(!wrap) return false; else newFreq = band->maximumFreq;
+  }
+  else if(newFreq > band->maximumFreq)
+  {
+    if(!wrap) return false; else newFreq = band->minimumFreq;
   }
 
   // Set new frequency
@@ -529,6 +532,10 @@ bool doSeek(int8_t dir)
     }
     else
     {
+      // Clear stale parameters
+      clearStationInfo();
+      rssi = snr = 0;
+
       // G8PTN: Flag is set by rotary encoder and cleared on seek entry
       seekStop = false;
       rx.seekStationProgress(showFrequencySeek, checkStopSeeking, dir>0? 1 : 0);
@@ -866,8 +873,10 @@ void loop() {
   }
 
   // Disable commands control
-  if ((currentTime - elapsedCommand) > ELAPSED_COMMAND) {
-    if (currentCmd != CMD_NONE) {
+  if((currentTime - elapsedCommand) > ELAPSED_COMMAND)
+  {
+    if(currentCmd != CMD_NONE && currentCmd != CMD_SEEK)
+    {
       currentCmd = CMD_NONE;
       needRedraw = true;
     }

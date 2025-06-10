@@ -14,7 +14,7 @@
 #define AUTHORS_LINE2  "Volos Projects, Ralph Xavier, Sunnygold,"
 #define AUTHORS_LINE3  "Goshante, G8PTN (Dave), R9UCL (Max Arnold),"
 #define AUTHORS_LINE4  "Marat Fayzullin"
-#define APP_VERSION    225  // FIRMWARE VERSION
+#define APP_VERSION    227  // FIRMWARE VERSION
 #define EEPROM_VERSION 71   // EEPROM VERSION (forces reset)
 
 // Modes
@@ -209,15 +209,14 @@ bool doSeek(int8_t dir);
 bool clickFreq(bool shortPress);
 uint8_t doAbout(int dir);
 
-// Draw.c
-void drawLoadingSSB();
-void drawZoomedMenu(const char *text);
-void drawScreen(const char *statusLine1 = 0, const char *statusLine2 = 0);
-void drawAboutHelp(uint8_t arrow);
-
 // Battery.c
 float batteryMonitor();
 bool drawBattery(int x, int y);
+
+// Scan.c
+void scanRun(uint16_t centerFreq, uint16_t step);
+float scanGetRSSI(uint16_t freq);
+float scanGetSNR(uint16_t freq);
 
 // Station.c
 const char *getStationName();
@@ -230,6 +229,8 @@ bool checkRds();
 bool identifyFrequency(uint16_t freq, bool periodic = false);
 
 // Network.cpp
+int8_t getWiFiStatus();
+char *getWiFiIPAddress();
 void netClearPreferences();
 void netInit(uint8_t netMode, bool showStatus = true);
 void netStop();
@@ -238,7 +239,6 @@ bool ntpSyncTime();
 
 void netRequestConnect();
 void netTickTime();
-void drawWiFiIndicator(int x, int y);
 
 #ifndef DISABLE_REMOTE
 // Remote.c
