@@ -143,7 +143,6 @@ void tft_init() {
     tft.writedata(TFT_MAD_MV | TFT_MAD_MX | TFT_MAD_MY | TFT_MAD_BGR);
   }
 
-
   tft.fillScreen(TFT_BLACK);
   // spr.createSprite(TFT_HEIGHT, TFT_WIDTH);
   // spr.setTextDatum(MC_DATUM);
@@ -348,7 +347,7 @@ ICACHE_RAM_ATTR void rotaryEncoder1() {
   uint8_t encoderStatus = encoder1.process();
   if (encoderStatus) {
     encoderCount1 = encoderStatus == DIR_CW ? 1 : -1;
-    seekStop = true;
+    // seekStop = true;
   }
 }
 
@@ -549,7 +548,6 @@ bool updateFrequency(int newFreq, bool wrap) {
   return true;
 }
 
-
 //
 // Handle encoder rotation in seek mode
 //
@@ -684,7 +682,6 @@ bool doDigit(int8_t dir) {
   return (updated);
 }
 
-
 bool clickFreq(bool shortPress) {
   if (shortPress) {
     bool updated = false;
@@ -746,57 +743,14 @@ bool processRssiSnr() {
   return needRedraw;
 }
 
-//
-// Main event loop
-//
-void loop() {
+/*
+void main_loop() {
   // while (Serial0.available()) {
   //   Serial.write(Serial0.read());
   // }
 
   uint32_t currentTime = millis();
   bool needRedraw = false;
-
-  // 处理 IO 中断事件
-  if (ioInterrupt) {
-    ioInterrupt = false;
-    updateIOStatus();
-  }
-
-  ButtonTracker::State pb1st = pb1.update(ioStatus.pb1 == LOW);
-  ButtonTracker::State pb2st = pb2.update(ioStatus.pb2 == LOW);
-
-  if (get_var_pb1_is_pressed() != pb1st.isPressed) {
-    set_var_pb1_is_pressed(pb1st.isPressed);
-  }
-  if (get_var_pb1_was_clicked() != pb1st.wasClicked) {
-    set_var_pb1_was_clicked(pb1st.wasClicked);
-  }
-  if (get_var_pb1_was_short_pressed() != pb1st.wasShortPressed) {
-    set_var_pb1_was_short_pressed(pb1st.wasShortPressed);
-  }
-  if (get_var_pb1_is_long_pressed() != pb1st.isLongPressed) {
-    set_var_pb1_is_long_pressed(pb1st.isLongPressed);
-  }
-  if (get_var_pb2_is_pressed() != pb2st.isPressed) {
-    set_var_pb2_is_pressed(pb2st.isPressed);
-  }
-  if (get_var_pb2_was_clicked() != pb2st.wasClicked) {
-    set_var_pb2_was_clicked(pb2st.wasClicked);
-  }
-  if (get_var_pb2_was_short_pressed() != pb2st.wasShortPressed) {
-    set_var_pb2_was_short_pressed(pb2st.wasShortPressed);
-  }
-  if (get_var_pb2_is_long_pressed() != pb2st.isLongPressed) {
-    set_var_pb2_is_long_pressed(pb2st.isLongPressed);
-  }
-
-  if (get_var_encoder1_count() != encoderCount1) {
-    set_var_encoder1_count(encoderCount1);
-  }
-  if (get_var_encoder2_count() != encoderCount2) {
-    set_var_encoder2_count(encoderCount2);
-  }
 
 #ifndef DISABLE_REMOTE
   // Periodically print status to serial
@@ -925,9 +879,6 @@ void loop() {
     }
   }
 
-  if (encoderCount2) {
-    encoderCount2 = 0;
-  }
 
   // Deactivate push and rotate mode
   if (!pb1st.isPressed && pushAndRotate) {
@@ -1003,6 +954,63 @@ void loop() {
 
   // Redraw screen if necessary
   // if (needRedraw) drawScreen();
+}
+*/
+
+//
+// Main event loop
+//
+void loop() {
+  // 处理 IO 中断事件
+  if (ioInterrupt) {
+    ioInterrupt = false;
+    updateIOStatus();
+  }
+
+  ButtonTracker::State pb1st = pb1.update(ioStatus.pb1 == LOW);
+  ButtonTracker::State pb2st = pb2.update(ioStatus.pb2 == LOW);
+
+  if (get_var_pb1_is_pressed() != pb1st.isPressed) {
+    set_var_pb1_is_pressed(pb1st.isPressed);
+  }
+  if (get_var_pb1_was_clicked() != pb1st.wasClicked) {
+    set_var_pb1_was_clicked(pb1st.wasClicked);
+  }
+  if (get_var_pb1_was_short_pressed() != pb1st.wasShortPressed) {
+    set_var_pb1_was_short_pressed(pb1st.wasShortPressed);
+  }
+  if (get_var_pb1_is_long_pressed() != pb1st.isLongPressed) {
+    set_var_pb1_is_long_pressed(pb1st.isLongPressed);
+  }
+
+  if (get_var_pb2_is_pressed() != pb2st.isPressed) {
+    set_var_pb2_is_pressed(pb2st.isPressed);
+  }
+  if (get_var_pb2_was_clicked() != pb2st.wasClicked) {
+    set_var_pb2_was_clicked(pb2st.wasClicked);
+  }
+  if (get_var_pb2_was_short_pressed() != pb2st.wasShortPressed) {
+    set_var_pb2_was_short_pressed(pb2st.wasShortPressed);
+  }
+  if (get_var_pb2_is_long_pressed() != pb2st.isLongPressed) {
+    set_var_pb2_is_long_pressed(pb2st.isLongPressed);
+  }
+
+  if (get_var_encoder1_count() != encoderCount1) {
+    set_var_encoder1_count(encoderCount1);
+  }
+
+  if (get_var_encoder2_count() != encoderCount2) {
+    set_var_encoder2_count(encoderCount2);
+  }
+
+  if (encoderCount1) {
+    encoderCount1 = 0;
+  }
+
+  if (encoderCount2) {
+    encoderCount2 = 0;
+  }
 
   ui_tick();
   lv_timer_handler();

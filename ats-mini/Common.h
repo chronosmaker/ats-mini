@@ -243,6 +243,7 @@ bool ntpSyncTime();
 void netRequestConnect();
 void netTickTime();
 
+#define DISABLE_REMOTE
 #ifndef DISABLE_REMOTE
 // Remote.c
 #define REMOTE_CHANGED 1

@@ -1,6 +1,6 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/1",
+    "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/0",
     "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/11",
     "selectedFontObject": "[ats-ui.eez-project]:/fonts/0",
@@ -128,7 +128,7 @@
             {
               "type": "row",
               "id": "#042e346d-d7af-407a-83b2-5c42abc3ac7d",
-              "weight": 11.80571968756083,
+              "weight": 12.871216965889232,
               "children": [
                 {
                   "type": "tabset",
@@ -165,7 +165,7 @@
                 {
                   "type": "tabset",
                   "id": "#b083a100-d8ee-4a16-b105-135f005bfef8",
-                  "weight": 0.9470000435499747,
+                  "weight": 0.5357151892996712,
                   "enableClose": false,
                   "children": [
                     {
@@ -181,7 +181,7 @@
                 {
                   "type": "tabset",
                   "id": "#e1bbee84-2746-4759-98a9-516f7341ba20",
-                  "weight": 1.275353935286726,
+                  "weight": 1.6866387895370294,
                   "enableClose": false,
                   "children": [
                     {
@@ -199,45 +199,10 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 49.69483025210197,
-              "selected": 4,
+              "weight": 48.62933297377356,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
-                {
-                  "type": "tab",
-                  "id": "#1a00fdb0-1607-4bf3-9148-afec4bb6d856",
-                  "name": "Settings",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[ats-ui.eez-project]:/settings",
-                    "subObjectPath": "[ats-ui.eez-project]:/settings",
-                    "permanent": false
-                  },
-                  "icon": "material:settings"
-                },
-                {
-                  "type": "tab",
-                  "id": "#f7b71c08-d3e8-489a-bb81-270fa9e610f5",
-                  "name": "CN_20",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[ats-ui.eez-project]:/fonts/0",
-                    "permanent": false
-                  },
-                  "icon": "material:font_download"
-                },
-                {
-                  "type": "tab",
-                  "id": "#c2c73921-ce09-4076-a2a8-22f38d62a112",
-                  "name": "test",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[ats-ui.eez-project]:/userWidgets/0",
-                    "permanent": false
-                  },
-                  "icon": "svg:user_widget"
-                },
                 {
                   "type": "tab",
                   "id": "#5862956f-72e8-44c4-a423-a1583398fa64",
@@ -252,10 +217,10 @@
                 {
                   "type": "tab",
                   "id": "#79856ac1-6049-4306-91a5-2b088948c823",
-                  "name": "Main",
+                  "name": "LocalRadio",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[ats-ui.eez-project]:/userPages/1",
+                    "objectPath": "[ats-ui.eez-project]:/userPages/2",
                     "permanent": false
                   },
                   "icon": "svg:page"
@@ -1146,8 +1111,8 @@
       "selection": {},
       "transform": {
         "translate": {
-          "x": -482.74435452607077,
-          "y": 87.89861407249467
+          "x": -71.74435452607077,
+          "y": -164.10138592750533
         },
         "scale": 0.33
       },
@@ -1194,10 +1159,10 @@
       },
       "transform": {
         "translate": {
-          "x": 105.05309054099823,
-          "y": 646.3005076969273
+          "x": -251,
+          "y": 107
         },
-        "scale": 0.33
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1214,10 +1179,10 @@
       },
       "transform": {
         "translate": {
-          "x": 26.773484848484827,
-          "y": -60.86969696969669
+          "x": 111.77348484848483,
+          "y": -299.8696969696967
         },
-        "scale": 0.33
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1330,10 +1295,10 @@
       },
       "transform": {
         "translate": {
-          "x": -164.665,
-          "y": 253.23000000000002
+          "x": -356.66499999999996,
+          "y": 724.23
         },
-        "scale": 0.33
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1531,6 +1496,6 @@
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
-  "flowZoom": 0.33,
+  "flowZoom": 1,
   "implementationLanguage": "C++"
 }
