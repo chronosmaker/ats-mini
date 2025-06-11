@@ -4,9 +4,10 @@
 #include <stdint.h>
 #include <TFT_eSPI.h>
 #include <ui.h>
+#include <screens.h>
 #include <vars.h>
-#include <actions.h>
-#include <SI4735-fixed.h>
+#include "SI4735-fixed.h"
+#include "Button.h"
 #include "ExtensionIOXL9555.hpp"
 
 #define RECEIVER_NAME  "ESP32-SI4732 Receiver"
@@ -158,6 +159,12 @@ typedef struct
 //
 extern ExtensionIOXL9555 io;
 extern IOStatus ioStatus;
+
+extern ButtonTracker::State pb1st;
+extern ButtonTracker::State pb2st;
+
+extern volatile int encoderCount1;
+extern volatile int encoderCount2;
 
 extern SI4735_fixed rx;
 extern TFT_eSprite spr;

@@ -6,13 +6,24 @@
 #include <Wire.h>
 #include "EEPROM.h"
 #include "Rotary.h"
-#include "Button.h"
 #include "Menu.h"
 // #include "Draw.h"
 #include "Storage.h"
 #include "Themes.h"
 #include "Utils.h"
 #include "EIBI.h"
+#include "PageMain.h"
+#include "PageLocalRadio.h"
+#include "PageNetRadio.h"
+#include "PageAlarm.h"
+#include "PageSetting.h"
+#include "PageSettingWiFi.h"
+#include "PageSettingBluetooth.h"
+#include "PageSettingTime.h"
+#include "PageSettingScreen.h"
+#include "PageSettingSleep.h"
+#include "PageSettingOperation.h"
+#include "PageSettingAbout.h"
 
 // SI473/5 and UI
 #define MIN_ELAPSED_TIME 5            // 300
@@ -105,6 +116,9 @@ Rotary encoder2 = Rotary(ENCODER2_PIN_B, ENCODER2_PIN_A);
 
 ButtonTracker pb1 = ButtonTracker();
 ButtonTracker pb2 = ButtonTracker();
+
+ButtonTracker::State pb1st;
+ButtonTracker::State pb2st;
 
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf[TFT_WIDTH * TFT_HEIGHT];
@@ -961,48 +975,88 @@ void main_loop() {
 // Main event loop
 //
 void loop() {
-  // 处理 IO 中断事件
   if (ioInterrupt) {
     ioInterrupt = false;
     updateIOStatus();
   }
 
-  ButtonTracker::State pb1st = pb1.update(ioStatus.pb1 == LOW);
-  ButtonTracker::State pb2st = pb2.update(ioStatus.pb2 == LOW);
+  pb1st = pb1.update(ioStatus.pb1 == LOW);
+  pb2st = pb2.update(ioStatus.pb2 == LOW);
 
-  if (get_var_pb1_is_pressed() != pb1st.isPressed) {
-    set_var_pb1_is_pressed(pb1st.isPressed);
-  }
-  if (get_var_pb1_was_clicked() != pb1st.wasClicked) {
-    set_var_pb1_was_clicked(pb1st.wasClicked);
-  }
-  if (get_var_pb1_was_short_pressed() != pb1st.wasShortPressed) {
-    set_var_pb1_was_short_pressed(pb1st.wasShortPressed);
-  }
-  if (get_var_pb1_is_long_pressed() != pb1st.isLongPressed) {
-    set_var_pb1_is_long_pressed(pb1st.isLongPressed);
+  switch (get_var_page_name()) {
+    case PageName_Main:
+      updatePageMain();
+      break;
+    case PageName_LocalRadio:
+      updatePageLocalRadio();
+      break;
+    case PageName_NetRadio:
+      updatePageNetRadio();
+      break;
+    case PageName_Alarm:
+      updatePageAlarm();
+      break;
+    case PageName_Setting:
+      updatePageSetting();
+      break;
+    case PageName_SettingWiFi:
+      updatePageSettingWiFi();
+      break;
+    case PageName_SettingBluetooth:
+      updatePageSettingBluetooth();
+      break;
+    case PageName_SettingTime:
+      updatePageSettingTime();
+      break;
+    case PageName_SettingScreen:
+      updatePageSettingScreen();
+      break;
+    case PageName_SettingSleep:
+      updatePageSettingSleep();
+      break;
+    case PageName_SettingOperation:
+      updatePageSettingOperation();
+      break;
+    case PageName_SettingAbout:
+      updatePageSettingAbout();
+      break;
+    default:
+      break;
   }
 
-  if (get_var_pb2_is_pressed() != pb2st.isPressed) {
-    set_var_pb2_is_pressed(pb2st.isPressed);
-  }
-  if (get_var_pb2_was_clicked() != pb2st.wasClicked) {
-    set_var_pb2_was_clicked(pb2st.wasClicked);
-  }
-  if (get_var_pb2_was_short_pressed() != pb2st.wasShortPressed) {
-    set_var_pb2_was_short_pressed(pb2st.wasShortPressed);
-  }
-  if (get_var_pb2_is_long_pressed() != pb2st.isLongPressed) {
-    set_var_pb2_is_long_pressed(pb2st.isLongPressed);
-  }
+  // if (get_var_pb1_is_pressed() != pb1st.isPressed) {
+  //   set_var_pb1_is_pressed(pb1st.isPressed);
+  // }
+  // if (get_var_pb1_was_clicked() != pb1st.wasClicked) {
+  //   set_var_pb1_was_clicked(pb1st.wasClicked);
+  // }
+  // if (get_var_pb1_was_short_pressed() != pb1st.wasShortPressed) {
+  //   set_var_pb1_was_short_pressed(pb1st.wasShortPressed);
+  // }
+  // if (get_var_pb1_is_long_pressed() != pb1st.isLongPressed) {
+  //   set_var_pb1_is_long_pressed(pb1st.isLongPressed);
+  // }
 
-  if (get_var_encoder1_count() != encoderCount1) {
-    set_var_encoder1_count(encoderCount1);
-  }
+  // if (get_var_pb2_is_pressed() != pb2st.isPressed) {
+  //   set_var_pb2_is_pressed(pb2st.isPressed);
+  // }
+  // if (get_var_pb2_was_clicked() != pb2st.wasClicked) {
+  //   set_var_pb2_was_clicked(pb2st.wasClicked);
+  // }
+  // if (get_var_pb2_was_short_pressed() != pb2st.wasShortPressed) {
+  //   set_var_pb2_was_short_pressed(pb2st.wasShortPressed);
+  // }
+  // if (get_var_pb2_is_long_pressed() != pb2st.isLongPressed) {
+  //   set_var_pb2_is_long_pressed(pb2st.isLongPressed);
+  // }
 
-  if (get_var_encoder2_count() != encoderCount2) {
-    set_var_encoder2_count(encoderCount2);
-  }
+  // if (get_var_encoder1_count() != encoderCount1) {
+  //   set_var_encoder1_count(encoderCount1);
+  // }
+
+  // if (get_var_encoder2_count() != encoderCount2) {
+  //   set_var_encoder2_count(encoderCount2);
+  // }
 
   if (encoderCount1) {
     encoderCount1 = 0;

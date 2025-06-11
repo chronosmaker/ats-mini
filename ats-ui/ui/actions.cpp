@@ -3,9 +3,6 @@
 #include "actions.h"
 #include "screens.h"
 
-using namespace eez;
-using namespace eez::flow;
-
 // extern "C" void action_scroll_to_view(lv_event_t *e)
 // {
 //     lv_obj_scroll_to_view(e->current_target, LV_ANIM_ON);

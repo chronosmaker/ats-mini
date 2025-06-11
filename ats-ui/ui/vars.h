@@ -10,42 +10,54 @@ extern "C" {
 
 // enum declarations
 
-
+typedef enum {
+    PageName_Welcome = 0,
+    PageName_Main = 1,
+    PageName_LocalRadio = 2,
+    PageName_NetRadio = 3,
+    PageName_Alarm = 4,
+    PageName_Setting = 5,
+    PageName_SettingWiFi = 6,
+    PageName_SettingBluetooth = 7,
+    PageName_SettingTime = 8,
+    PageName_SettingScreen = 9,
+    PageName_SettingSleep = 10,
+    PageName_SettingOperation = 11,
+    PageName_SettingAbout = 12
+} PageName;
 
 // Flow global variables
 
 enum FlowGlobalVariables {
-    FLOW_GLOBAL_VARIABLE_PAGE_NAME = 0
+    FLOW_GLOBAL_VARIABLE_NONE
 };
 
 // Native global variables
 
-extern int32_t get_var_encoder1_count();
-extern void set_var_encoder1_count(int32_t value);
-extern int32_t get_var_encoder2_count();
-extern void set_var_encoder2_count(int32_t value);
-extern bool get_var_pb1_is_pressed();
-extern void set_var_pb1_is_pressed(bool value);
-extern bool get_var_pb1_was_clicked();
-extern void set_var_pb1_was_clicked(bool value);
-extern bool get_var_pb1_was_short_pressed();
-extern void set_var_pb1_was_short_pressed(bool value);
-extern bool get_var_pb1_is_long_pressed();
-extern void set_var_pb1_is_long_pressed(bool value);
-extern bool get_var_pb2_is_pressed();
-extern void set_var_pb2_is_pressed(bool value);
-extern bool get_var_pb2_was_clicked();
-extern void set_var_pb2_was_clicked(bool value);
-extern bool get_var_pb2_was_short_pressed();
-extern void set_var_pb2_was_short_pressed(bool value);
-extern bool get_var_pb2_is_long_pressed();
-extern void set_var_pb2_is_long_pressed(bool value);
+extern PageName get_var_page_name();
+extern void set_var_page_name(PageName value);
+extern int32_t get_var_page_index();
+extern void set_var_page_index(int32_t value);
+extern int32_t get_var_page_index_dir();
+extern void set_var_page_index_dir(int32_t value);
+extern int32_t get_var_setting_index();
+extern void set_var_setting_index(int32_t value);
+extern int32_t get_var_setting_detail_index();
+extern void set_var_setting_detail_index(int32_t value);
 extern const char *get_var_system_time();
 extern void set_var_system_time(const char *value);
 extern int32_t get_var_screen_brightness();
 extern void set_var_screen_brightness(int32_t value);
+extern int32_t get_var_screen_brightness_min();
+extern void set_var_screen_brightness_min(int32_t value);
+extern int32_t get_var_screen_brightness_max();
+extern void set_var_screen_brightness_max(int32_t value);
 extern int32_t get_var_screen_off_time();
 extern void set_var_screen_off_time(int32_t value);
+extern int32_t get_var_screen_off_time_min();
+extern void set_var_screen_off_time_min(int32_t value);
+extern int32_t get_var_screen_off_time_max();
+extern void set_var_screen_off_time_max(int32_t value);
 
 
 #ifdef __cplusplus
