@@ -23,144 +23,144 @@ int bandIdx = 0;
 
 // Band limits are expanded to align with the nearest tuning scale mark
 Band bands[] =
-{
-  {"VHF",  FM_BAND_TYPE, FM,   6400, 10800, 10390, 2, 0, 0},
-  // All band. LW, MW and SW (from 150kHz to 30MHz)
-  {"ALL",  SW_BAND_TYPE, AM,    150, 30000, 15000, 1, 4, 0},
-  {"11M",  SW_BAND_TYPE, AM,  25600, 26100, 25850, 1, 4, 0},
-  {"13M",  SW_BAND_TYPE, AM,  21500, 21900, 21650, 1, 4, 0},
-  {"15M",  SW_BAND_TYPE, AM,  18900, 19100, 18950, 1, 4, 0},
-  {"16M",  SW_BAND_TYPE, AM,  17500, 18100, 17650, 1, 4, 0},
-  {"19M",  SW_BAND_TYPE, AM,  15100, 15900, 15450, 1, 4, 0},
-  {"22M",  SW_BAND_TYPE, AM,  13500, 13900, 13650, 1, 4, 0},
-  {"25M",  SW_BAND_TYPE, AM,  11000, 13000, 11850, 1, 4, 0},
-  {"31M",  SW_BAND_TYPE, AM,   9000, 11000,  9650, 1, 4, 0},
-  {"41M",  SW_BAND_TYPE, AM,   7000,  9000,  7300, 1, 4, 0},
-  {"49M",  SW_BAND_TYPE, AM,   5000,  7000,  6000, 1, 4, 0},
-  {"60M",  SW_BAND_TYPE, AM,   4000,  5100,  4950, 1, 4, 0},
-  {"75M",  SW_BAND_TYPE, AM,   3500,  4000,  3950, 1, 4, 0},
-  {"90M",  SW_BAND_TYPE, AM,   3000,  3500,  3300, 1, 4, 0},
-//  {"25M",  SW_BAND_TYPE, AM,  11600, 12100, 11850, 1, 4, 0},
-//  {"31M",  SW_BAND_TYPE, AM,   9400,  9900,  9650, 1, 4, 0},
-//  {"41M",  SW_BAND_TYPE, AM,   7200,  7500,  7300, 1, 4, 0},
-//  {"49M",  SW_BAND_TYPE, AM,   5900,  6200,  6000, 1, 4, 0},
-//  {"60M",  SW_BAND_TYPE, AM,   4700,  5100,  4950, 1, 4, 0},
-//  {"75M",  SW_BAND_TYPE, AM,   3900,  4000,  3950, 1, 4, 0},
-//  {"90M",  SW_BAND_TYPE, AM,   3200,  3400,  3300, 1, 4, 0},
-  {"MW3",  MW_BAND_TYPE, AM,   1700,  3500,  2500, 1, 4, 0},
-  {"MW2",  MW_BAND_TYPE, AM,    495,  1701,   783, 2, 4, 0},
-  {"MW1",  MW_BAND_TYPE, AM,    150,  1800,   810, 3, 4, 0},
-  {"160M", MW_BAND_TYPE, LSB,  1800,  2000,  1900, 5, 4, 0},
-  {"80M",  SW_BAND_TYPE, LSB,  3500,  4000,  3800, 5, 4, 0},
-  {"40M",  SW_BAND_TYPE, LSB,  7000,  7300,  7150, 5, 4, 0},
-  {"30M",  SW_BAND_TYPE, LSB, 10000, 10200, 10125, 5, 4, 0},
-  {"20M",  SW_BAND_TYPE, USB, 14000, 14400, 14100, 5, 4, 0},
-  {"17M",  SW_BAND_TYPE, USB, 18000, 18200, 18115, 5, 4, 0},
-  {"15M",  SW_BAND_TYPE, USB, 21000, 21500, 21225, 5, 4, 0},
-  {"12M",  SW_BAND_TYPE, USB, 24800, 25000, 24940, 5, 4, 0},
-  {"10M",  SW_BAND_TYPE, USB, 28000, 29700, 28500, 5, 4, 0},
-  // https://www.hfunderground.com/wiki/CB
-  {"CB",   SW_BAND_TYPE, AM,  25000, 30000, 27135, 0, 4, 0},
+    {
+        {"VHF", FM_BAND_TYPE, FM, 6400, 10800, 10390, 2, 0, 0},
+        // All band. LW, MW and SW (from 150kHz to 30MHz)
+        {"ALL", SW_BAND_TYPE, AM, 150, 30000, 15000, 1, 4, 0},
+        {"11M", SW_BAND_TYPE, AM, 25600, 26100, 25850, 1, 4, 0},
+        {"13M", SW_BAND_TYPE, AM, 21500, 21900, 21650, 1, 4, 0},
+        {"15M", SW_BAND_TYPE, AM, 18900, 19100, 18950, 1, 4, 0},
+        {"16M", SW_BAND_TYPE, AM, 17500, 18100, 17650, 1, 4, 0},
+        {"19M", SW_BAND_TYPE, AM, 15100, 15900, 15450, 1, 4, 0},
+        {"22M", SW_BAND_TYPE, AM, 13500, 13900, 13650, 1, 4, 0},
+        {"25M", SW_BAND_TYPE, AM, 11000, 13000, 11850, 1, 4, 0},
+        {"31M", SW_BAND_TYPE, AM, 9000, 11000, 9650, 1, 4, 0},
+        {"41M", SW_BAND_TYPE, AM, 7000, 9000, 7300, 1, 4, 0},
+        {"49M", SW_BAND_TYPE, AM, 5000, 7000, 6000, 1, 4, 0},
+        {"60M", SW_BAND_TYPE, AM, 4000, 5100, 4950, 1, 4, 0},
+        {"75M", SW_BAND_TYPE, AM, 3500, 4000, 3950, 1, 4, 0},
+        {"90M", SW_BAND_TYPE, AM, 3000, 3500, 3300, 1, 4, 0},
+        //  {"25M",  SW_BAND_TYPE, AM,  11600, 12100, 11850, 1, 4, 0},
+        //  {"31M",  SW_BAND_TYPE, AM,   9400,  9900,  9650, 1, 4, 0},
+        //  {"41M",  SW_BAND_TYPE, AM,   7200,  7500,  7300, 1, 4, 0},
+        //  {"49M",  SW_BAND_TYPE, AM,   5900,  6200,  6000, 1, 4, 0},
+        //  {"60M",  SW_BAND_TYPE, AM,   4700,  5100,  4950, 1, 4, 0},
+        //  {"75M",  SW_BAND_TYPE, AM,   3900,  4000,  3950, 1, 4, 0},
+        //  {"90M",  SW_BAND_TYPE, AM,   3200,  3400,  3300, 1, 4, 0},
+        {"MW3", MW_BAND_TYPE, AM, 1700, 3500, 2500, 1, 4, 0},
+        {"MW2", MW_BAND_TYPE, AM, 495, 1701, 783, 2, 4, 0},
+        {"MW1", MW_BAND_TYPE, AM, 150, 1800, 810, 3, 4, 0},
+        {"160M", MW_BAND_TYPE, LSB, 1800, 2000, 1900, 5, 4, 0},
+        {"80M", SW_BAND_TYPE, LSB, 3500, 4000, 3800, 5, 4, 0},
+        {"40M", SW_BAND_TYPE, LSB, 7000, 7300, 7150, 5, 4, 0},
+        {"30M", SW_BAND_TYPE, LSB, 10000, 10200, 10125, 5, 4, 0},
+        {"20M", SW_BAND_TYPE, USB, 14000, 14400, 14100, 5, 4, 0},
+        {"17M", SW_BAND_TYPE, USB, 18000, 18200, 18115, 5, 4, 0},
+        {"15M", SW_BAND_TYPE, USB, 21000, 21500, 21225, 5, 4, 0},
+        {"12M", SW_BAND_TYPE, USB, 24800, 25000, 24940, 5, 4, 0},
+        {"10M", SW_BAND_TYPE, USB, 28000, 29700, 28500, 5, 4, 0},
+        // https://www.hfunderground.com/wiki/CB
+        {"CB", SW_BAND_TYPE, AM, 25000, 30000, 27135, 0, 4, 0},
 };
 
-int getTotalBands() { return(ITEM_COUNT(bands)); }
-Band *getCurrentBand() { return(&bands[bandIdx]); }
+int getTotalBands() { return (ITEM_COUNT(bands)); }
+Band *getCurrentBand() { return (&bands[bandIdx]); }
 
 //
 // Main Menu
 //
 
-#define MENU_MODE         0
-#define MENU_BAND         1
-#define MENU_VOLUME       2
-#define MENU_STEP         3
-#define MENU_SEEK         4
-#define MENU_MEMORY       5
-#define MENU_SQUELCH      6
-#define MENU_BW           7
-#define MENU_AGC_ATT      8
-#define MENU_AVC          9
-#define MENU_SOFTMUTE    10
-#define MENU_SETTINGS    11
-#define MENU_SCAN   	 12
+#define MENU_MODE 0
+#define MENU_BAND 1
+#define MENU_VOLUME 2
+#define MENU_STEP 3
+#define MENU_SEEK 4
+#define MENU_MEMORY 5
+#define MENU_SQUELCH 6
+#define MENU_BW 7
+#define MENU_AGC_ATT 8
+#define MENU_AVC 9
+#define MENU_SOFTMUTE 10
+#define MENU_SETTINGS 11
+#define MENU_SCAN 12
 
 int8_t menuIdx = MENU_VOLUME;
 
 static const char *menu[] =
-{
-  "Mode",
-  "Band",
-  "Volume",
-  "Step",
-  "Seek",
-  "Memory",
-  "Squelch",
-  "Bandwidth",
-  "AGC/ATTN",
-  "AVC",
-  "SoftMute",
-  "Settings",
-  "Scan",
+    {
+        "Mode",
+        "Band",
+        "Volume",
+        "Step",
+        "Seek",
+        "Memory",
+        "Squelch",
+        "Bandwidth",
+        "AGC/ATTN",
+        "AVC",
+        "SoftMute",
+        "Settings",
+        "Scan",
 };
 
 //
 // Settings Menu
 //
 
-#define MENU_BRIGHTNESS   0
-#define MENU_CALIBRATION  1
-#define MENU_RDS          2
-#define MENU_UTCOFFSET    3
-#define MENU_FM_REGION    4
-#define MENU_THEME        5
-#define MENU_UI           6
-#define MENU_ZOOM         7
-#define MENU_SCROLL       8
-#define MENU_SLEEP        9
-#define MENU_SLEEPMODE    10
-#define MENU_LOADEIBI     11
-#define MENU_WIFIMODE     12
-#define MENU_ABOUT        13
+#define MENU_BRIGHTNESS 0
+#define MENU_CALIBRATION 1
+#define MENU_RDS 2
+#define MENU_UTCOFFSET 3
+#define MENU_FM_REGION 4
+#define MENU_THEME 5
+#define MENU_UI 6
+#define MENU_ZOOM 7
+#define MENU_SCROLL 8
+#define MENU_SLEEP 9
+#define MENU_SLEEPMODE 10
+#define MENU_LOADEIBI 11
+#define MENU_WIFIMODE 12
+#define MENU_ABOUT 13
 
 int8_t settingsIdx = MENU_BRIGHTNESS;
 
 static const char *settings[] =
-{
-  "Brightness",
-  "Calibration",
-  "RDS",
-  "UTC Offset",
-  "FM Region",
-  "Theme",
-  "UI Layout",
-  "Zoom Menu",
-  "Scroll Dir.",
-  "Sleep",
-  "Sleep Mode",
-  "Load EiBi",
-  "Wi-Fi",
-  "About",
+    {
+        "Brightness",
+        "Calibration",
+        "RDS",
+        "UTC Offset",
+        "FM Region",
+        "Theme",
+        "UI Layout",
+        "Zoom Menu",
+        "Scroll Dir.",
+        "Sleep",
+        "Sleep Mode",
+        "Load EiBi",
+        "Wi-Fi",
+        "About",
 };
 
 //
 // FM Region Menu
 //
 const FMRegion fmRegions[] = {
-  // 50uS de-emphasis
-  { 0x1, "EU/JP/AU" },
-  // 75uS de-emphasis
-  { 0x2, "US" },
+    // 50uS de-emphasis
+    {0x1, "EU/JP/AU"},
+    // 75uS de-emphasis
+    {0x2, "US"},
 };
 
-int getTotalFmRegions() { return(ITEM_COUNT(fmRegions)); }
+int getTotalFmRegions() { return (ITEM_COUNT(fmRegions)); }
 
 //
 // Mode Menu
 //
 
-const char *bandModeDesc[] = { "FM", "LSB", "USB", "AM" };
+const char *bandModeDesc[] = {"FM", "LSB", "USB", "AM"};
 
-int getTotalModes() { return(ITEM_COUNT(bandModeDesc)); }
+int getTotalModes() { return (ITEM_COUNT(bandModeDesc)); }
 
 //
 // Memory Menu
@@ -170,7 +170,7 @@ uint8_t memoryIdx = 0;
 Memory memories[MEMORY_COUNT];
 Memory newMemory;
 
-int getTotalMemories() { return(ITEM_COUNT(memories)); }
+int getTotalMemories() { return (ITEM_COUNT(memories)); }
 
 //
 // RDS Menu
@@ -178,18 +178,18 @@ int getTotalMemories() { return(ITEM_COUNT(memories)); }
 
 uint8_t rdsModeIdx = 0;
 static const RDSMode rdsMode[] =
-{
-  { RDS_PS, "PS"},
-  { RDS_PS | RDS_CT, "PS+CT" },
-  { RDS_PS | RDS_PI, "PS+PI" },
-  { RDS_PS | RDS_PI | RDS_CT, "PS+PI+CT" },
-  { RDS_PS | RDS_PI | RDS_RT | RDS_PT, "ALL-CT (EU)" },
-  { RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_RBDS, "ALL-CT (US)" },
-  { RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT, "ALL (EU)" },
-  { RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT | RDS_RBDS, "ALL (US)" },
+    {
+        {RDS_PS, "PS"},
+        {RDS_PS | RDS_CT, "PS+CT"},
+        {RDS_PS | RDS_PI, "PS+PI"},
+        {RDS_PS | RDS_PI | RDS_CT, "PS+PI+CT"},
+        {RDS_PS | RDS_PI | RDS_RT | RDS_PT, "ALL-CT (EU)"},
+        {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_RBDS, "ALL-CT (US)"},
+        {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT, "ALL (EU)"},
+        {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT | RDS_RBDS, "ALL (US)"},
 };
 
-uint8_t getRDSMode() { return(rdsMode[rdsModeIdx].mode); }
+uint8_t getRDSMode() { return (rdsMode[rdsModeIdx].mode); }
 
 //
 // Sleep Mode Menu
@@ -197,44 +197,44 @@ uint8_t getRDSMode() { return(rdsMode[rdsModeIdx].mode); }
 
 uint8_t sleepModeIdx = SLEEP_LOCKED;
 static const char *sleepModeDesc[] =
-{ "Locked", "Unlocked", "CPU Sleep" };
+    {"Locked", "Unlocked", "CPU Sleep"};
 
 //
 // UTC Offset Menu
 //
 uint8_t utcOffsetIdx = 8;
 const UTCOffset utcOffsets[] =
-{
-  { -8 * 2, "UTC-8", "Fairbanks" },
-  { -7 * 2, "UTC-7", "San Francisco" },
-  { -6 * 2, "UTC-6", "Denver" },
-  { -5 * 2, "UTC-5", "Houston" },
-  { -4 * 2, "UTC-4", "New York" },
-  { -3 * 2, "UTC-3", "Rio de Janeiro" },
-  { -2 * 2, "UTC-2", "Sandwich Islands" },
-  { -1 * 2, "UTC-1", "Nuuk" },
-  {  0 * 2, "UTC+0", "Reykjavik" },
-  {  1 * 2, "UTC+1", "London" },
-  {  2 * 2, "UTC+2", "Berlin" },
-  {  3 * 2, "UTC+3", "Moscow" },
-  {  4 * 2, "UTC+4", "Yerevan" },
-  {  5 * 2, "UTC+5", "Astana" },
-  {  6 * 2, "UTC+6", "Omsk" },
-  {  7 * 2, "UTC+7", "Novosibirsk" },
-  {  8 * 2, "UTC+8", "Beijing" },
-  {  9 * 2, "UTC+9", "Yakutsk" },
-  { 10 * 2, "UTC+10", "Vladivostok" },
+    {
+        {-8 * 2, "UTC-8", "Fairbanks"},
+        {-7 * 2, "UTC-7", "San Francisco"},
+        {-6 * 2, "UTC-6", "Denver"},
+        {-5 * 2, "UTC-5", "Houston"},
+        {-4 * 2, "UTC-4", "New York"},
+        {-3 * 2, "UTC-3", "Rio de Janeiro"},
+        {-2 * 2, "UTC-2", "Sandwich Islands"},
+        {-1 * 2, "UTC-1", "Nuuk"},
+        {0 * 2, "UTC+0", "Reykjavik"},
+        {1 * 2, "UTC+1", "London"},
+        {2 * 2, "UTC+2", "Berlin"},
+        {3 * 2, "UTC+3", "Moscow"},
+        {4 * 2, "UTC+4", "Yerevan"},
+        {5 * 2, "UTC+5", "Astana"},
+        {6 * 2, "UTC+6", "Omsk"},
+        {7 * 2, "UTC+7", "Novosibirsk"},
+        {8 * 2, "UTC+8", "Beijing"},
+        {9 * 2, "UTC+9", "Yakutsk"},
+        {10 * 2, "UTC+10", "Vladivostok"},
 };
 
-int getCurrentUTCOffset() { return(utcOffsets[utcOffsetIdx].offset); }
-int getTotalUTCOffsets() { return(ITEM_COUNT(utcOffsets)); }
+int getCurrentUTCOffset() { return (utcOffsets[utcOffsetIdx].offset); }
+int getTotalUTCOffsets() { return (ITEM_COUNT(utcOffsets)); }
 
 //
 // UI Layout Menu
 //
 uint8_t uiLayoutIdx = 0;
 static const char *uiLayoutDesc[] =
-{ "Default", "S-Meter" };
+    {"Default", "S-Meter"};
 
 //
 // WiFi Mode Menu
@@ -242,7 +242,7 @@ static const char *uiLayoutDesc[] =
 
 uint8_t wifiModeIdx = NET_OFF;
 static const char *wifiModeDesc[] =
-{ "Off", "AP Only", "AP+Connect", "Connect", "Sync Only" };
+    {"Off", "AP Only", "AP+Connect", "Connect", "Sync Only"};
 
 //
 // Step Menu
@@ -250,73 +250,77 @@ static const char *wifiModeDesc[] =
 
 // FM (kHz * 10)
 static const Step fmSteps[] =
-{
-  {   1, "10k",   1 },
-  {   5, "50k",   5 },
-  {  10, "100k", 10 },
-  {  20, "200k", 20 },
-  { 100, "1M",   10 },
+    {
+        {1, "10k", 1},
+        {5, "50k", 5},
+        {10, "100k", 10},
+        {20, "200k", 20},
+        {100, "1M", 10},
 };
 
 // SSB (Hz)
 static const Step ssbSteps[] =
-{
-  {    10, "10",  1  },
-  {    25, "25",  1  },
-  {    50, "50",  1  },
-  {   100, "100", 1  },
-  {   500, "500", 1  },
-  {  1000, "1k",  1  },
-  {  5000, "5k",  5  },
-  {  9000, "9k",  9  },
-  { 10000, "10k", 10 },
+    {
+        {10, "10", 1},
+        {25, "25", 1},
+        {50, "50", 1},
+        {100, "100", 1},
+        {500, "500", 1},
+        {1000, "1k", 1},
+        {5000, "5k", 5},
+        {9000, "9k", 9},
+        {10000, "10k", 10},
 };
 
 static const uint8_t ssbFastSteps[] =
-{
-  3, //  10Hz -> 100Hz
-  3, //  25Hz -> 100Hz
-  4, //  50Hz -> 500Hz
-  5, // 100Hz -> 1kHz
-  6, // 500Hz -> 5kHz
-  6, //  1kHz -> 5kHz
-  8, //  5kHz -> 10kHz
-  7, //  9kHz -> 9kHz
-  8, // 10kHz -> 10kHz
+    {
+        3, //  10Hz -> 100Hz
+        3, //  25Hz -> 100Hz
+        4, //  50Hz -> 500Hz
+        5, // 100Hz -> 1kHz
+        6, // 500Hz -> 5kHz
+        6, //  1kHz -> 5kHz
+        8, //  5kHz -> 10kHz
+        7, //  9kHz -> 9kHz
+        8, // 10kHz -> 10kHz
 };
 
 // AM (kHz)
 static const Step amSteps[] =
-{
-  {    1, "1k",    1 },
-  {    5, "5k",    5 },
-  {    9, "9k",    9 },
-  {   10, "10k",  10 },
-  {   50, "50k",  10 },
-  {  100, "100k", 10 },
-  { 1000, "1M",   10 },
+    {
+        {1, "1k", 1},
+        {5, "5k", 5},
+        {9, "9k", 9},
+        {10, "10k", 10},
+        {50, "50k", 10},
+        {100, "100k", 10},
+        {1000, "1M", 10},
 };
 
-static const Step *steps[4] = { fmSteps, ssbSteps, ssbSteps, amSteps };
-static uint8_t stepIdx[4] = { 2, 5, 5, 1 };
+static const Step *steps[4] = {fmSteps, ssbSteps, ssbSteps, amSteps};
+static uint8_t stepIdx[4] = {2, 5, 5, 1};
 
 const Step *getCurrentStep(bool fast)
 {
   uint8_t idx = stepIdx[currentMode];
-  return(&steps[currentMode][fast && isSSB()? ssbFastSteps[idx]:idx]);
+  return (&steps[currentMode][fast && isSSB() ? ssbFastSteps[idx] : idx]);
 }
 
 static int getLastStep(int mode)
 {
-  switch(mode)
+  switch (mode)
   {
-    case FM:  return(LAST_ITEM(fmSteps));
-    case LSB: return(LAST_ITEM(ssbSteps));
-    case USB: return(LAST_ITEM(ssbSteps));
-    case AM:  return(LAST_ITEM(amSteps));
+  case FM:
+    return (LAST_ITEM(fmSteps));
+  case LSB:
+    return (LAST_ITEM(ssbSteps));
+  case USB:
+    return (LAST_ITEM(ssbSteps));
+  case AM:
+    return (LAST_ITEM(amSteps));
   }
 
-  return(0);
+  return (0);
 }
 
 static uint8_t freqInputPos = 0;
@@ -338,9 +342,7 @@ uint8_t getFreqInputPos()
 
 int getFreqInputStep()
 {
-  return freqInputPos % 2 ?
-    5 * pow(10, (freqInputPos - (currentMode == AM ? 6 : 0) - 1) / 2) :
-            pow(10, (freqInputPos - (currentMode == AM ? 6 : 0)) / 2);
+  return freqInputPos % 2 ? 5 * pow(10, (freqInputPos - (currentMode == AM ? 6 : 0) - 1) / 2) : pow(10, (freqInputPos - (currentMode == AM ? 6 : 0)) / 2);
 }
 
 static uint8_t getMinFreqInputPos()
@@ -358,80 +360,80 @@ static uint8_t getMaxFreqInputPos()
 //
 
 static const Bandwidth fmBandwidths[] =
-{
-  { 0, "Auto" }, // Automatic - default
-  { 1, "110k" }, // Force wide (110 kHz) channel filter.
-  { 2, "84k"  },
-  { 3, "60k"  },
-  { 4, "40k"  }
-};
+    {
+        {0, "Auto"}, // Automatic - default
+        {1, "110k"}, // Force wide (110 kHz) channel filter.
+        {2, "84k"},
+        {3, "60k"},
+        {4, "40k"}};
 
 static const Bandwidth ssbBandwidths[] =
-{
-  { 4, "0.5k" },
-  { 5, "1.0k" },
-  { 0, "1.2k" },
-  { 1, "2.2k" },
-  { 2, "3.0k" },
-  { 3, "4.0k" }
-};
+    {
+        {4, "0.5k"},
+        {5, "1.0k"},
+        {0, "1.2k"},
+        {1, "2.2k"},
+        {2, "3.0k"},
+        {3, "4.0k"}};
 
 static const Bandwidth amBandwidths[] =
-{
-  { 4, "1.0k" },
-  { 5, "1.8k" },
-  { 3, "2.0k" },
-  { 6, "2.5k" },
-  { 2, "3.0k" },
-  { 1, "4.0k" },
-  { 0, "6.0k" }
-};
+    {
+        {4, "1.0k"},
+        {5, "1.8k"},
+        {3, "2.0k"},
+        {6, "2.5k"},
+        {2, "3.0k"},
+        {1, "4.0k"},
+        {0, "6.0k"}};
 
 static const Bandwidth *bandwidths[4] =
-{
-  fmBandwidths, ssbBandwidths, ssbBandwidths, amBandwidths
-};
+    {
+        fmBandwidths, ssbBandwidths, ssbBandwidths, amBandwidths};
 
-static uint8_t bwIdx[4] = { 0, 4, 4, 4 };
+static uint8_t bwIdx[4] = {0, 4, 4, 4};
 
 const Bandwidth *getCurrentBandwidth()
 {
-  return(&bandwidths[currentMode][bwIdx[currentMode]]);
+  return (&bandwidths[currentMode][bwIdx[currentMode]]);
 }
 
 static int getLastBandwidth(int mode)
 {
-  switch(mode)
+  switch (mode)
   {
-    case FM:  return(LAST_ITEM(fmBandwidths));
-    case LSB: return(LAST_ITEM(ssbBandwidths));
-    case USB: return(LAST_ITEM(ssbBandwidths));
-    case AM:  return(LAST_ITEM(amBandwidths));
+  case FM:
+    return (LAST_ITEM(fmBandwidths));
+  case LSB:
+    return (LAST_ITEM(ssbBandwidths));
+  case USB:
+    return (LAST_ITEM(ssbBandwidths));
+  case AM:
+    return (LAST_ITEM(amBandwidths));
   }
 
-  return(0);
+  return (0);
 }
 
 static void setBandwidth()
 {
   uint8_t idx = getCurrentBandwidth()->idx;
 
-  switch(currentMode)
+  switch (currentMode)
   {
-    case FM:
-      rx.setFmBandwidth(idx);
-      break;
-    case AM:
-      rx.setBandwidth(idx, 1);
-      break;
-    case LSB:
-    case USB:
-      // Set Audio
-      rx.setSSBAudioBandwidth(idx);
-      // If audio bandwidth selected is about 2 kHz or below, it is
-      // recommended to set Sideband Cutoff Filter to 0.
-      rx.setSSBSidebandCutoffFilter(idx==0 || idx==4 || idx==5? 0 : 1);
-      break;
+  case FM:
+    rx.setFmBandwidth(idx);
+    break;
+  case AM:
+    rx.setBandwidth(idx, 1);
+    break;
+  case LSB:
+  case USB:
+    // Set Audio
+    rx.setSSBAudioBandwidth(idx);
+    // If audio bandwidth selected is about 2 kHz or below, it is
+    // recommended to set Sideband Cutoff Filter to 0.
+    rx.setSSBSidebandCutoffFilter(idx == 0 || idx == 4 || idx == 5 ? 0 : 1);
+    break;
   }
 }
 
@@ -443,30 +445,32 @@ uint8_t seekMode(bool toggle)
   mode = toggle ? (mode == SEEK_DEFAULT ? SEEK_SCHEDULE : SEEK_DEFAULT) : mode;
 
   // Use normal seek on FM or if there is no schedule loaded
-  if(currentMode == FM || !eibiAvailable() || !clockAvailable())
-    return(SEEK_DEFAULT);
+  if (currentMode == FM || !eibiAvailable() || !clockAvailable())
+    return (SEEK_DEFAULT);
 
-  return(mode);
+  return (mode);
 }
 
 //
 // Utility functions to change menu values
 //
 
-static inline int min(int x, int y) { return(x<y? x:y); }
+static inline int min(int x, int y) { return (x < y ? x : y); }
 
 static inline int wrap_range(int v, int dir, int vMin, int vMax)
 {
   v += dir;
-  v  = v>vMax? vMin + (v - vMax - 1) : v<vMin? vMax - (vMin - v - 1) : v;
-  return(v);
+  v = v > vMax ? vMin + (v - vMax - 1) : v < vMin ? vMax - (vMin - v - 1)
+                                                  : v;
+  return (v);
 }
 
 static inline int clamp_range(int v, int dir, int vMin, int vMax)
 {
   v += dir;
-  v  = v>vMax? vMax : v<vMin? vMin : v;
-  return(v);
+  v = v > vMax ? vMax : v < vMin ? vMin
+                                 : v;
+  return (v);
 }
 
 //
@@ -480,23 +484,34 @@ void doSelectDigit(int dir)
 
 void doVolume(int dir)
 {
-  volume = clamp_range(volume, dir, 0, 63);
-  if(!muteOn()) rx.setVolume(volume);
+  int32_t volume = clamp_range(get_var_speaker_volume(), dir, 0, 30);
+  set_var_speaker_volume(volume);
+  if (!muteOn())
+    rx.setVolume(volume * 2);
 }
 
 static void clickVolume(bool shortPress)
 {
-  if(shortPress) muteOn(!muteOn()); else currentCmd = CMD_NONE;
+  if (shortPress)
+    muteOn(!muteOn());
+  else
+    currentCmd = CMD_NONE;
 }
 
 static void clickSquelch(bool shortPress)
 {
-  if(shortPress) currentSquelch = 0; else currentCmd = CMD_NONE;
+  if (shortPress)
+    currentSquelch = 0;
+  else
+    currentCmd = CMD_NONE;
 }
 
 static void clickSeek(bool shortPress)
 {
-  if(shortPress) seekMode(true); else currentCmd = CMD_NONE;
+  if (shortPress)
+    seekMode(true);
+  else
+    currentCmd = CMD_NONE;
 }
 
 static void doTheme(int dir)
@@ -512,16 +527,17 @@ static void doUILayout(int dir)
 void doAvc(int dir)
 {
   // Only allow for AM and SSB modes
-  if(currentMode==FM) return;
+  if (currentMode == FM)
+    return;
 
-  if(isSSB())
+  if (isSSB())
   {
-    SsbAvcIdx = wrap_range(SsbAvcIdx, 2*dir, 12, 90);
+    SsbAvcIdx = wrap_range(SsbAvcIdx, 2 * dir, 12, 90);
     rx.setAvcAmMaxGain(SsbAvcIdx);
   }
   else
   {
-    AmAvcIdx = wrap_range(AmAvcIdx, 2*dir, 12, 90);
+    AmAvcIdx = wrap_range(AmAvcIdx, 2 * dir, 12, 90);
     rx.setAvcAmMaxGain(AmAvcIdx);
   }
 }
@@ -529,7 +545,8 @@ void doAvc(int dir)
 void doFmRegion(int dir)
 {
   // Only allow for FM mode
-  if(currentMode!=FM) return;
+  if (currentMode != FM)
+    return;
 
   FmRegionIdx = wrap_range(FmRegionIdx, dir, 0, LAST_ITEM(fmRegions));
   rx.setFMDeEmphasis(fmRegions[FmRegionIdx].value);
@@ -537,22 +554,25 @@ void doFmRegion(int dir)
 
 void doCal(int dir)
 {
-  bands[bandIdx].bandCal = clamp_range(bands[bandIdx].bandCal, 10*dir, -MAX_CAL, MAX_CAL);
+  bands[bandIdx].bandCal = clamp_range(bands[bandIdx].bandCal, 10 * dir, -MAX_CAL, MAX_CAL);
 
   // If in SSB mode set the SI4732/5 BFO value
   // This adjusts the BFO while in the calibration menu
-  if(isSSB()) updateBFO(currentBFO, true);
+  if (isSSB())
+    updateBFO(currentBFO, true);
 }
 
 void doBrt(int dir)
 {
-  currentBrt = clamp_range(currentBrt, 5*dir, 10, 255);
-  if(!sleepOn()) ledcWrite(PIN_LCD_BL, currentBrt);
+  int32_t currentBrt = clamp_range(get_var_screen_brightness(), dir, get_var_screen_brightness_min(), get_var_screen_brightness_max());
+  set_var_screen_brightness(currentBrt);
+  if (!sleepOn())
+    ledcWrite(PIN_LCD_BL, currentBrt * 10);
 }
 
 static void doSleep(int dir)
 {
-  currentSleep = clamp_range(currentSleep, 5*dir, 0, 255);
+  currentSleep = clamp_range(currentSleep, 5 * dir, 0, 255);
 }
 
 static void doSleepMode(int dir)
@@ -574,7 +594,8 @@ static void clickWiFiMode(uint8_t mode, bool shortPress)
 static void doRDSMode(int dir)
 {
   rdsModeIdx = wrap_range(rdsModeIdx, dir, 0, LAST_ITEM(rdsMode));
-  if(!(getRDSMode() & RDS_CT)) clockReset();
+  if (!(getRDSMode() & RDS_CT))
+    clockReset();
 }
 
 static void doUTCOffset(int dir)
@@ -603,50 +624,59 @@ uint8_t doAbout(int dir)
 bool tuneToMemory(const Memory *memory)
 {
   // Must have frequency
-  if(!memory->freq) return(false);
+  if (!memory->freq)
+    return (false);
   // Must have valid band index
-  if(memory->band>=getTotalBands()) return(false);
+  if (memory->band >= getTotalBands())
+    return (false);
   // Band must contain frequency and modulation
-  if(!isMemoryInBand(&bands[memory->band], memory)) return(false);
+  if (!isMemoryInBand(&bands[memory->band], memory))
+    return (false);
   // Must differ from the current band, frequency and modulation
-  if(memory->band==bandIdx &&
-     memory->freq==bands[bandIdx].currentFreq &&
-     memory->mode==bands[bandIdx].bandMode)
-    return(true);
+  if (memory->band == bandIdx &&
+      memory->freq == bands[bandIdx].currentFreq &&
+      memory->mode == bands[bandIdx].bandMode)
+    return (true);
   // Save current band settings
-  bands[bandIdx].currentFreq    = currentFrequency + currentBFO / 1000;
+  bands[bandIdx].currentFreq = get_var_local_frequency() + currentBFO / 1000;
   bands[bandIdx].currentStepIdx = stepIdx[currentMode];
 
   // Load frequency and modulation from memory slot
   bands[memory->band].currentFreq = memory->freq;
-  bands[memory->band].bandMode    = memory->mode;
+  bands[memory->band].bandMode = memory->mode;
 
   // Enable the new band
   selectBand(memory->band);
 
   // Update BFO if present in memory slot
-  if(memory->hz100) updateBFO(memory->hz100 * 100);
+  if (memory->hz100)
+    updateBFO(memory->hz100 * 100);
 
-  return(true);
+  return (true);
 }
 
 static void doMemory(int dir)
 {
   memoryIdx = wrap_range(memoryIdx, dir, 0, LAST_ITEM(memories));
-  if(!tuneToMemory(&memories[memoryIdx])) tuneToMemory(&newMemory);
+  if (!tuneToMemory(&memories[memoryIdx]))
+    tuneToMemory(&newMemory);
 }
 
 static void clickMemory(uint8_t idx, bool shortPress)
 {
   // Must have a valid index
-  if(idx>LAST_ITEM(memories)) return;
+  if (idx > LAST_ITEM(memories))
+    return;
 
   // If clicking on an empty memory slot, save to it
-  if(!memories[idx].freq) memories[idx] = newMemory;
+  if (!memories[idx].freq)
+    memories[idx] = newMemory;
   // On a press, delete memory slot contents
-  else if(shortPress) memories[idx].freq = 0;
+  else if (shortPress)
+    memories[idx].freq = 0;
   // On a click, do nothing, slot already activated in doMemory()
-  else currentCmd = CMD_NONE;
+  else
+    currentCmd = CMD_NONE;
 }
 
 void doStep(int dir)
@@ -659,7 +689,7 @@ void doStep(int dir)
   rx.setFrequencyStep(steps[currentMode][idx].step);
 
   // Set seek spacing
-  if(currentMode==FM)
+  if (currentMode == FM)
     rx.setSeekFmSpacing(steps[currentMode][idx].spacing);
   else
     rx.setSeekAmSpacing(steps[currentMode][idx].spacing);
@@ -667,9 +697,9 @@ void doStep(int dir)
 
 void doAgc(int dir)
 {
-  if(currentMode==FM)
+  if (currentMode == FM)
     agcIdx = FmAgcIdx = wrap_range(FmAgcIdx, dir, 0, 27);
-  else if(isSSB())
+  else if (isSSB())
     agcIdx = SsbAgcIdx = wrap_range(SsbAgcIdx, dir, 0, 1);
   else
     agcIdx = AmAgcIdx = wrap_range(AmAgcIdx, dir, 0, 37);
@@ -680,8 +710,8 @@ void doAgc(int dir)
   // disableAgc 0 1 1 1 1 1 1  ..... 1
 
   // if true, disable AGC; else, AGC is enabled
-  disableAgc = agcIdx>0? 1 : 0;
-  agcNdx     = agcIdx>1? agcIdx - 1 : 0;
+  disableAgc = agcIdx > 0 ? 1 : 0;
+  agcNdx = agcIdx > 1 ? agcIdx - 1 : 0;
 
   // Configure SI4732/5 (if agcNdx = 0, no attenuation)
   rx.setAutomaticGainControl(disableAgc, agcNdx);
@@ -693,15 +723,16 @@ void doMode(int dir)
   currentMode = bands[bandIdx].bandMode;
 
   // Cannot change away from FM mode
-  if(currentMode==FM) return;
+  if (currentMode == FM)
+    return;
 
   // Change AM/LSB/USB modes, do not allow FM mode
   do
     currentMode = wrap_range(currentMode, dir, 0, LAST_ITEM(bandModeDesc));
-  while(currentMode==FM);
+  while (currentMode == FM);
 
   // Save current band settings
-  bands[bandIdx].currentFreq = currentFrequency + currentBFO / 1000;
+  bands[bandIdx].currentFreq = get_var_local_frequency() + currentBFO / 1000;
   bands[bandIdx].currentStepIdx = stepIdx[currentMode];
   bands[bandIdx].bandMode = currentMode;
 
@@ -717,9 +748,10 @@ void doSquelch(int dir)
 void doSoftMute(int dir)
 {
   // Nothing to do if FM mode
-  if(currentMode==FM) return;
+  if (currentMode == FM)
+    return;
 
-  if(isSSB())
+  if (isSSB())
     softMuteMaxAttIdx = SsbSoftMuteIdx = wrap_range(SsbSoftMuteIdx, dir, 0, 32);
   else
     softMuteMaxAttIdx = AmSoftMuteIdx = wrap_range(AmSoftMuteIdx, dir, 0, 32);
@@ -730,7 +762,7 @@ void doSoftMute(int dir)
 void doBand(int dir)
 {
   // Save current band settings
-  bands[bandIdx].currentFreq = currentFrequency + currentBFO / 1000;
+  bands[bandIdx].currentFreq = get_var_local_frequency() + currentBFO / 1000;
   bands[bandIdx].currentStepIdx = stepIdx[currentMode];
   bands[bandIdx].bandMode = currentMode;
 
@@ -764,43 +796,63 @@ static void clickMenu(int cmd, bool shortPress)
   // No command yet
   currentCmd = CMD_NONE;
 
-  switch(cmd)
+  switch (cmd)
   {
-    case MENU_STEP:     currentCmd = CMD_STEP;      break;
-    case MENU_SEEK:     currentCmd = CMD_SEEK;      break;
-    case MENU_MODE:     currentCmd = CMD_MODE;      break;
-    case MENU_BW:       currentCmd = CMD_BANDWIDTH; break;
-    case MENU_AGC_ATT:  currentCmd = CMD_AGC;       break;
-    case MENU_BAND:     currentCmd = CMD_BAND;      break;
-    case MENU_SETTINGS: currentCmd = CMD_SETTINGS;  break;
-    case MENU_SQUELCH:  currentCmd = CMD_SQUELCH;   break;
-    case MENU_VOLUME:   currentCmd = CMD_VOLUME;    break;
+  case MENU_STEP:
+    currentCmd = CMD_STEP;
+    break;
+  case MENU_SEEK:
+    currentCmd = CMD_SEEK;
+    break;
+  case MENU_MODE:
+    currentCmd = CMD_MODE;
+    break;
+  case MENU_BW:
+    currentCmd = CMD_BANDWIDTH;
+    break;
+  case MENU_AGC_ATT:
+    currentCmd = CMD_AGC;
+    break;
+  case MENU_BAND:
+    currentCmd = CMD_BAND;
+    break;
+  case MENU_SETTINGS:
+    currentCmd = CMD_SETTINGS;
+    break;
+  case MENU_SQUELCH:
+    currentCmd = CMD_SQUELCH;
+    break;
+  case MENU_VOLUME:
+    currentCmd = CMD_VOLUME;
+    break;
 
-    case MENU_MEMORY:
-      currentCmd = CMD_MEMORY;
-      newMemory.freq  = currentFrequency + currentBFO / 1000;
-      newMemory.hz100 = (currentBFO % 1000) / 100;
-      newMemory.mode  = currentMode;
-      newMemory.band  = bandIdx;
-      doMemory(0);
-      break;
+  case MENU_MEMORY:
+    currentCmd = CMD_MEMORY;
+    newMemory.freq = get_var_local_frequency() + currentBFO / 1000;
+    newMemory.hz100 = (currentBFO % 1000) / 100;
+    newMemory.mode = currentMode;
+    newMemory.band = bandIdx;
+    doMemory(0);
+    break;
 
-    case MENU_SOFTMUTE:
-      // No soft mute in FM mode
-      if(currentMode!=FM) currentCmd = CMD_SOFTMUTE;
-      break;
+  case MENU_SOFTMUTE:
+    // No soft mute in FM mode
+    if (currentMode != FM)
+      currentCmd = CMD_SOFTMUTE;
+    break;
 
-    case MENU_AVC:
-      // No AVC in FM mode
-      if(currentMode!=FM) currentCmd = CMD_AVC;
-      break;
+  case MENU_AVC:
+    // No AVC in FM mode
+    if (currentMode != FM)
+      currentCmd = CMD_AVC;
+    break;
 
-    case MENU_SCAN:
-      // Run a band scan around current frequency with the same
-      // step as scale resolution (10kHz for AM, 100kHz for FM)
-      drawMessage("Scanning...");
-      scanRun(currentFrequency, 10);
-      break;
+  case MENU_SCAN:
+    // Run a band scan around current frequency with the same
+    // step as scale resolution (10kHz for AM, 100kHz for FM)
+    drawMessage("Scanning...");
+    scanRun(get_var_local_frequency(), 10);
+    break;
   }
 }
 
@@ -814,90 +866,182 @@ static void clickSettings(int cmd, bool shortPress)
   // No command yet
   currentCmd = CMD_NONE;
 
-  switch(cmd)
+  switch (cmd)
   {
-    case MENU_BRIGHTNESS: currentCmd = CMD_BRT; break;
-    case MENU_CALIBRATION:
-      if(isSSB()) currentCmd = CMD_CAL;
-      break;
-    case MENU_THEME:      currentCmd = CMD_THEME;     break;
-    case MENU_UI:         currentCmd = CMD_UI;        break;
-    case MENU_RDS:        currentCmd = CMD_RDS;       break;
-    case MENU_ZOOM:       currentCmd = CMD_ZOOM;      break;
-    case MENU_SCROLL:     currentCmd = CMD_SCROLL;    break;
-    case MENU_SLEEP:      currentCmd = CMD_SLEEP;     break;
-    case MENU_SLEEPMODE:  currentCmd = CMD_SLEEPMODE; break;
-    case MENU_UTCOFFSET:  currentCmd = CMD_UTCOFFSET; break;
-    case MENU_WIFIMODE:   currentCmd = CMD_WIFIMODE;  break;
-    case MENU_FM_REGION:
-      // Only in FM mode
-      if(currentMode==FM) currentCmd = CMD_FM_REGION;
-      break;
-    case MENU_ABOUT:      currentCmd = CMD_ABOUT;     break;
+  case MENU_BRIGHTNESS:
+    currentCmd = CMD_BRT;
+    break;
+  case MENU_CALIBRATION:
+    if (isSSB())
+      currentCmd = CMD_CAL;
+    break;
+  case MENU_THEME:
+    currentCmd = CMD_THEME;
+    break;
+  case MENU_UI:
+    currentCmd = CMD_UI;
+    break;
+  case MENU_RDS:
+    currentCmd = CMD_RDS;
+    break;
+  case MENU_ZOOM:
+    currentCmd = CMD_ZOOM;
+    break;
+  case MENU_SCROLL:
+    currentCmd = CMD_SCROLL;
+    break;
+  case MENU_SLEEP:
+    currentCmd = CMD_SLEEP;
+    break;
+  case MENU_SLEEPMODE:
+    currentCmd = CMD_SLEEPMODE;
+    break;
+  case MENU_UTCOFFSET:
+    currentCmd = CMD_UTCOFFSET;
+    break;
+  case MENU_WIFIMODE:
+    currentCmd = CMD_WIFIMODE;
+    break;
+  case MENU_FM_REGION:
+    // Only in FM mode
+    if (currentMode == FM)
+      currentCmd = CMD_FM_REGION;
+    break;
+  case MENU_ABOUT:
+    currentCmd = CMD_ABOUT;
+    break;
 
-    case MENU_LOADEIBI:
-      eibiLoadSchedule();
-      break;
+  case MENU_LOADEIBI:
+    eibiLoadSchedule();
+    break;
   }
 }
 
 bool doSideBar(uint16_t cmd, int dir)
 {
   // Ignore idle encoder
-  if(!dir) return(false);
+  if (!dir)
+    return (false);
 
-  switch(cmd)
+  switch (cmd)
   {
-    // Menus and list-based options must take scrollDirection into account
-    case CMD_MENU:      doMenu(scrollDirection * dir);break;
-    case CMD_MODE:      doMode(scrollDirection * dir);break;
-    case CMD_STEP:      doStep(scrollDirection * dir);break;
-    case CMD_AGC:       doAgc(dir);break;
-    case CMD_BANDWIDTH: doBandwidth(scrollDirection * dir);break;
-    case CMD_VOLUME:    doVolume(dir);break;
-    case CMD_SOFTMUTE:  doSoftMute(dir);break;
-    case CMD_BAND:      doBand(scrollDirection * dir);break;
-    case CMD_AVC:       doAvc(dir);break;
-    case CMD_FM_REGION: doFmRegion(scrollDirection * dir);break;
-    case CMD_SETTINGS:  doSettings(scrollDirection * dir);break;
-    case CMD_BRT:       doBrt(dir);break;
-    case CMD_CAL:       doCal(dir);break;
-    case CMD_THEME:     doTheme(scrollDirection * dir);break;
-    case CMD_UI:        doUILayout(scrollDirection * dir);break;
-    case CMD_RDS:       doRDSMode(scrollDirection * dir);break;
-    case CMD_MEMORY:    doMemory(scrollDirection * dir);break;
-    case CMD_SLEEP:     doSleep(dir);break;
-    case CMD_SLEEPMODE: doSleepMode(scrollDirection * dir);break;
-    case CMD_WIFIMODE:  doWiFiMode(scrollDirection * dir);break;
-    case CMD_ZOOM:      doZoom(dir);break;
-    case CMD_SCROLL:    doScrollDir(dir);break;
-    case CMD_UTCOFFSET: doUTCOffset(scrollDirection * dir);break;
-    case CMD_SQUELCH:   doSquelch(dir);break;
-    case CMD_ABOUT:     doAbout(dir);break;
-    default:            return(false);
+  // Menus and list-based options must take scrollDirection into account
+  case CMD_MENU:
+    doMenu(scrollDirection * dir);
+    break;
+  case CMD_MODE:
+    doMode(scrollDirection * dir);
+    break;
+  case CMD_STEP:
+    doStep(scrollDirection * dir);
+    break;
+  case CMD_AGC:
+    doAgc(dir);
+    break;
+  case CMD_BANDWIDTH:
+    doBandwidth(scrollDirection * dir);
+    break;
+  case CMD_VOLUME:
+    doVolume(dir);
+    break;
+  case CMD_SOFTMUTE:
+    doSoftMute(dir);
+    break;
+  case CMD_BAND:
+    doBand(scrollDirection * dir);
+    break;
+  case CMD_AVC:
+    doAvc(dir);
+    break;
+  case CMD_FM_REGION:
+    doFmRegion(scrollDirection * dir);
+    break;
+  case CMD_SETTINGS:
+    doSettings(scrollDirection * dir);
+    break;
+  case CMD_BRT:
+    doBrt(dir);
+    break;
+  case CMD_CAL:
+    doCal(dir);
+    break;
+  case CMD_THEME:
+    doTheme(scrollDirection * dir);
+    break;
+  case CMD_UI:
+    doUILayout(scrollDirection * dir);
+    break;
+  case CMD_RDS:
+    doRDSMode(scrollDirection * dir);
+    break;
+  case CMD_MEMORY:
+    doMemory(scrollDirection * dir);
+    break;
+  case CMD_SLEEP:
+    doSleep(dir);
+    break;
+  case CMD_SLEEPMODE:
+    doSleepMode(scrollDirection * dir);
+    break;
+  case CMD_WIFIMODE:
+    doWiFiMode(scrollDirection * dir);
+    break;
+  case CMD_ZOOM:
+    doZoom(dir);
+    break;
+  case CMD_SCROLL:
+    doScrollDir(dir);
+    break;
+  case CMD_UTCOFFSET:
+    doUTCOffset(scrollDirection * dir);
+    break;
+  case CMD_SQUELCH:
+    doSquelch(dir);
+    break;
+  case CMD_ABOUT:
+    doAbout(dir);
+    break;
+  default:
+    return (false);
   }
 
   // Encoder input handled
-  return(true);
+  return (true);
 }
 
 bool clickHandler(uint16_t cmd, bool shortPress)
 {
-  switch(cmd)
+  switch (cmd)
   {
-    case CMD_MENU:     clickMenu(menuIdx, shortPress);break;
-    case CMD_SETTINGS: clickSettings(settingsIdx, shortPress);break;
-    case CMD_MEMORY:   clickMemory(memoryIdx, shortPress);break;
-    case CMD_WIFIMODE: clickWiFiMode(wifiModeIdx, shortPress);break;
-    case CMD_VOLUME:   clickVolume(shortPress);break;
-    case CMD_SQUELCH:  clickSquelch(shortPress);break;
-    case CMD_SEEK:     clickSeek(shortPress);break;
-    case CMD_FREQ:     return(clickFreq(shortPress));
-    default:           return(false);
+  case CMD_MENU:
+    clickMenu(menuIdx, shortPress);
+    break;
+  case CMD_SETTINGS:
+    clickSettings(settingsIdx, shortPress);
+    break;
+  case CMD_MEMORY:
+    clickMemory(memoryIdx, shortPress);
+    break;
+  case CMD_WIFIMODE:
+    clickWiFiMode(wifiModeIdx, shortPress);
+    break;
+  case CMD_VOLUME:
+    clickVolume(shortPress);
+    break;
+  case CMD_SQUELCH:
+    clickSquelch(shortPress);
+    break;
+  case CMD_SEEK:
+    clickSeek(shortPress);
+    break;
+  case CMD_FREQ:
+    return (clickFreq(shortPress));
+  default:
+    return (false);
   }
 
   // Encoder input handled
-  return(true);
+  return (true);
 }
 
 //
@@ -914,7 +1058,7 @@ void selectBand(uint8_t idx, bool drawLoadingSSB)
   stepIdx[currentMode] = bands[bandIdx].currentStepIdx;
 
   // Load SSB patch as needed
-  if(isSSB())
+  if (isSSB())
     loadSSB(getCurrentBandwidth()->idx, drawLoadingSSB);
   else
     unloadSSB();
@@ -929,7 +1073,7 @@ void selectBand(uint8_t idx, bool drawLoadingSSB)
   clearStationInfo();
 
   // Check for named frequencies
-  identifyFrequency(currentFrequency + currentBFO / 1000);
+  identifyFrequency(get_var_local_frequency() + currentBFO / 1000);
 
   // Set default digit position based on the current step
   resetFreqInputPos();
@@ -1567,7 +1711,8 @@ static void drawInfo(int x, int y, int sx)
 //
 void drawSideBar(uint16_t cmd, int x, int y, int sx)
 {
-  if(sleepOn()) return;
+  if (sleepOn())
+    return;
   /*
   switch(cmd)
   {

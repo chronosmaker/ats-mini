@@ -546,8 +546,8 @@ static const String webThemeSelector() {
 static const String webRadioPage() {
   String ip = "";
   String ssid = "";
-  String freq = currentMode == FM ? String(currentFrequency / 100.0) + "MHz "
-                                  : String(currentFrequency + currentBFO / 1000.0) + "kHz ";
+  String freq = currentMode == FM ? String(get_var_local_frequency() / 100.0) + "MHz "
+                                  : String(get_var_local_frequency() + currentBFO / 1000.0) + "kHz ";
 
   if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP().toString();

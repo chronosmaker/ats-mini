@@ -12,10 +12,13 @@ static bool remoteLogOn = false;
 
 static uint8_t char2nibble(char key)
 {
-  if((key >= '0') && (key <= '9')) return(key - '0');
-  if((key >= 'A') && (key <= 'F')) return(key - 'A' + 10);
-  if((key >= 'a') && (key <= 'f')) return(key - 'a' + 10);
-  return(0);
+  if ((key >= '0') && (key <= '9'))
+    return (key - '0');
+  if ((key >= 'A') && (key <= 'F'))
+    return (key - 'A' + 10);
+  if ((key >= 'a') && (key <= 'f'))
+    return (key - 'a' + 10);
+  return (0);
 }
 
 //
@@ -66,7 +69,8 @@ char readSerialChar()
 {
   char key;
 
-  while (!Serial.available());
+  while (!Serial.available())
+    ;
   key = Serial.read();
   Serial.print(key);
   return key;
@@ -75,15 +79,21 @@ char readSerialChar()
 long int readSerialInteger()
 {
   long int result = 0;
-  while (true) {
+  while (true)
+  {
     char ch = Serial.peek();
-    if (ch == 0xFF) {
+    if (ch == 0xFF)
+    {
       continue;
-    } else if ((ch >= '0') && (ch <= '9')) {
+    }
+    else if ((ch >= '0') && (ch <= '9'))
+    {
       ch = readSerialChar();
       // Can overflow, but it's ok
       result = result * 10 + (ch - '0');
-    } else {
+    }
+    else
+    {
       return result;
     }
   }
@@ -92,17 +102,24 @@ long int readSerialInteger()
 void readSerialString(char *bufStr, uint8_t bufLen)
 {
   uint8_t length = 0;
-  while (true) {
+  while (true)
+  {
     char ch = Serial.peek();
-    if (ch == 0xFF) {
+    if (ch == 0xFF)
+    {
       continue;
-    } else if (ch == ',' || ch < ' ') {
+    }
+    else if (ch == ',' || ch < ' ')
+    {
       bufStr[length] = '\0';
       return;
-    } else {
+    }
+    else
+    {
       ch = readSerialChar();
       bufStr[length] = ch;
-      if (++length >= bufLen - 1) {
+      if (++length >= bufLen - 1)
+      {
         bufStr[length] = '\0';
         return;
       }
@@ -113,8 +130,10 @@ void readSerialString(char *bufStr, uint8_t bufLen)
 static bool expectNewline()
 {
   char ch;
-  while ((ch = Serial.peek()) == 0xFF);
-  if (ch == '\r') {
+  while ((ch = Serial.peek()) == 0xFF)
+    ;
+  if (ch == '\r')
+  {
     Serial.read();
     return true;
   }
@@ -124,23 +143,24 @@ static bool expectNewline()
 static bool showError(const char *message)
 {
   // Consume the remaining input
-  while (Serial.available()) readSerialChar();
+  while (Serial.available())
+    readSerialChar();
   Serial.printf("\r\nError: %s\r\n", message);
   return false;
 }
 
 static void remoteGetMemories()
 {
-  for (uint8_t i = 0; i < getTotalMemories(); i++) {
-    if (memories[i].freq) {
-      uint32_t freq = (memories[i].mode == LSB || memories[i].mode == USB) ?
-        memories[i].freq * 1000 + memories[i].hz100 * 100 :
-        (memories[i].mode == AM) ? memories[i].freq * 1000 : memories[i].freq * 10000;
+  for (uint8_t i = 0; i < getTotalMemories(); i++)
+  {
+    if (memories[i].freq)
+    {
+      uint32_t freq = (memories[i].mode == LSB || memories[i].mode == USB) ? memories[i].freq * 1000 + memories[i].hz100 * 100 : (memories[i].mode == AM) ? memories[i].freq * 1000
+                                                                                                                                                          : memories[i].freq * 10000;
       Serial.printf("#%02d,%s,%ld,%s\r\n", i + 1, bands[memories[i].band].bandName, freq, bandModeDesc[memories[i].mode]);
     }
   }
 }
-
 
 static bool remoteSetMemory()
 {
@@ -159,8 +179,10 @@ static bool remoteSetMemory()
   if (readSerialChar() != ',')
     return showError("Expected ','");
   mem.band = 0xFF;
-  for (int i = 0; i < getTotalBands(); i++) {
-    if (strcmp(bands[i].bandName, band) == 0) {
+  for (int i = 0; i < getTotalBands(); i++)
+  {
+    if (strcmp(bands[i].bandName, band) == 0)
+    {
       mem.band = i;
       break;
     }
@@ -178,8 +200,10 @@ static bool remoteSetMemory()
     return showError("Expected newline");
   Serial.println();
   mem.mode = 15;
-  for (int i = 0; i < getTotalModes(); i++) {
-    if (strcmp(bandModeDesc[i], mode) == 0) {
+  for (int i = 0; i < getTotalModes(); i++)
+  {
+    if (strcmp(bandModeDesc[i], mode) == 0)
+    {
       mem.mode = i;
       break;
     }
@@ -187,27 +211,38 @@ static bool remoteSetMemory()
   if (mem.mode == 15)
     return showError("No such mode");
 
-  if (mem.mode == LSB || mem.mode == USB) {
+  if (mem.mode == LSB || mem.mode == USB)
+  {
     mem.freq = freq / 1000;
     mem.hz100 = (freq % 1000) / 100;
-  } else if (mem.mode == AM) {
+  }
+  else if (mem.mode == AM)
+  {
     mem.freq = freq / 1000;
     mem.hz100 = 0;
-  } else {
+  }
+  else
+  {
     mem.freq = freq / 10000;
     mem.hz100 = 0;
   }
 
-  if (!isMemoryInBand(&bands[mem.band], &mem)) {
-    if (!freq) {
+  if (!isMemoryInBand(&bands[mem.band], &mem))
+  {
+    if (!freq)
+    {
       // Clear slot
-      memories[slot-1] = mem;
+      memories[slot - 1] = mem;
       return true;
-    } else {
+    }
+    else
+    {
       // Handle duplicate band names (15M)
       mem.band = 0xFF;
-      for (int i = getTotalBands()-1; i >= 0; i--) {
-        if (strcmp(bands[i].bandName, band) == 0) {
+      for (int i = getTotalBands() - 1; i >= 0; i--)
+      {
+        if (strcmp(bands[i].bandName, band) == 0)
+        {
           mem.band = i;
           break;
         }
@@ -219,7 +254,7 @@ static bool remoteSetMemory()
     }
   }
 
-  memories[slot-1] = mem;
+  memories[slot - 1] = mem;
   return true;
 }
 
@@ -232,24 +267,24 @@ static void remoteSetColorTheme()
 
   uint8_t *p = (uint8_t *)&(TH.bg);
 
-  for(int i=0 ; ; i+=sizeof(uint16_t))
+  for (int i = 0;; i += sizeof(uint16_t))
   {
-    if(i >= sizeof(ColorTheme)-offsetof(ColorTheme, bg))
+    if (i >= sizeof(ColorTheme) - offsetof(ColorTheme, bg))
     {
       Serial.println(" Ok");
       break;
     }
 
-    if(readSerialChar() != 'x')
+    if (readSerialChar() != 'x')
     {
       Serial.println(" Err");
       break;
     }
 
-    p[i + 1]  = char2nibble(readSerialChar()) * 16;
+    p[i + 1] = char2nibble(readSerialChar()) * 16;
     p[i + 1] |= char2nibble(readSerialChar());
-    p[i]      = char2nibble(readSerialChar()) * 16;
-    p[i]     |= char2nibble(readSerialChar());
+    p[i] = char2nibble(readSerialChar()) * 16;
+    p[i] |= char2nibble(readSerialChar());
   }
 
   // Redraw screen
@@ -264,9 +299,9 @@ static void remoteGetColorTheme()
   Serial.printf("Color theme %s: ", TH.name);
   const uint8_t *p = (uint8_t *)&(TH.bg);
 
-  for(int i=0 ; i<sizeof(ColorTheme)-offsetof(ColorTheme, bg) ; i+=sizeof(uint16_t))
+  for (int i = 0; i < sizeof(ColorTheme) - offsetof(ColorTheme, bg); i += sizeof(uint16_t))
   {
-    Serial.printf("x%02X%02X", p[i+1], p[i]);
+    Serial.printf("x%02X%02X", p[i + 1], p[i]);
   }
 
   Serial.println();
@@ -292,7 +327,7 @@ void remotePrintStatus()
   // Remote serial
   Serial.printf("%u,%u,%d,%d,%s,%s,%s,%s,%hu,%hu,%hu,%hu,%hu,%.2f,%hu\r\n",
                 APP_VERSION,
-                currentFrequency,
+                0,
                 currentBFO,
                 getCurrentBand()->bandCal,
                 getCurrentBand()->bandName,
@@ -300,13 +335,12 @@ void remotePrintStatus()
                 getCurrentStep()->desc,
                 getCurrentBandwidth()->desc,
                 agcIdx,
-                volume,
+                0,
                 remoteRssi,
                 remoteSnr,
                 tuningCapacitor,
                 remoteVoltage,
-                remoteSeqnum
-                );
+                remoteSeqnum);
 }
 
 //
@@ -314,7 +348,7 @@ void remotePrintStatus()
 //
 void remoteTickTime()
 {
-  if(remoteLogOn && (millis() - remoteTimer >= 500))
+  if (remoteLogOn && (millis() - remoteTimer >= 500))
   {
     // Mark time and increment diagnostic sequence number
     remoteTimer = millis();
@@ -331,122 +365,124 @@ int remoteDoCommand(char key)
 {
   int event = 0;
 
-  switch(key)
+  switch (key)
   {
-    case 'R': // Rotate Encoder Clockwise
-      event |= 1 << REMOTE_DIRECTION;
-      event |= REMOTE_EEPROM;
-      break;
-    case 'r': // Rotate Encoder Counterclockwise
-      event |= -1 << REMOTE_DIRECTION;
-      event |= REMOTE_EEPROM;
-      break;
-    case 'e': // Encoder Push Button
-      event |= REMOTE_CLICK;
-      break;
-    case 'B': // Band Up
-      doBand(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'b': // Band Down
-      doBand(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'M': // Mode Up
-      doMode(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'm': // Mode Down
-      doMode(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'S': // Step Up
-      doStep(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 's': // Step Down
-      doStep(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'W': // Bandwidth Up
-      doBandwidth(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'w': // Bandwidth Down
-      doBandwidth(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'A': // AGC/ATTN Up
-      doAgc(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'a': // AGC/ATTN Down
-      doAgc(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'V': // Volume Up
-      doVolume(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'v': // Volume Down
-      doVolume(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'L': // Backlight Up
-      doBrt(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'l': // Backlight Down
-      doBrt(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'O':
-      sleepOn(true);
-      break;
-    case 'o':
-      sleepOn(false);
-      break;
-    case 'I':
-      doCal(1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'i':
-      doCal(-1);
-      event |= REMOTE_EEPROM;
-      break;
-    case 'C':
-      remoteLogOn = false;
-      remoteCaptureScreen();
-      break;
-    case 't':
-      remoteLogOn = !remoteLogOn;
-      break;
+  case 'R': // Rotate Encoder Clockwise
+    event |= 1 << REMOTE_DIRECTION;
+    event |= REMOTE_EEPROM;
+    break;
+  case 'r': // Rotate Encoder Counterclockwise
+    event |= -1 << REMOTE_DIRECTION;
+    event |= REMOTE_EEPROM;
+    break;
+  case 'e': // Encoder Push Button
+    event |= REMOTE_CLICK;
+    break;
+  case 'B': // Band Up
+    doBand(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'b': // Band Down
+    doBand(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'M': // Mode Up
+    doMode(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'm': // Mode Down
+    doMode(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'S': // Step Up
+    doStep(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 's': // Step Down
+    doStep(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'W': // Bandwidth Up
+    doBandwidth(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'w': // Bandwidth Down
+    doBandwidth(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'A': // AGC/ATTN Up
+    doAgc(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'a': // AGC/ATTN Down
+    doAgc(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'V': // Volume Up
+    doVolume(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'v': // Volume Down
+    doVolume(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'L': // Backlight Up
+    doBrt(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'l': // Backlight Down
+    doBrt(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'O':
+    sleepOn(true);
+    break;
+  case 'o':
+    sleepOn(false);
+    break;
+  case 'I':
+    doCal(1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'i':
+    doCal(-1);
+    event |= REMOTE_EEPROM;
+    break;
+  case 'C':
+    remoteLogOn = false;
+    remoteCaptureScreen();
+    break;
+  case 't':
+    remoteLogOn = !remoteLogOn;
+    break;
 
-    case '$':
-      remoteGetMemories();
-      break;
-    case '#':
-      if (remoteSetMemory())
-        event |= REMOTE_EEPROM;
-      break;
+  case '$':
+    remoteGetMemories();
+    break;
+  case '#':
+    if (remoteSetMemory())
+      event |= REMOTE_EEPROM;
+    break;
 
-    case 'T':
-      Serial.println(switchThemeEditor(!switchThemeEditor()) ? "Theme editor enabled" : "Theme editor disabled");
-      break;
-    case '!':
-      if(switchThemeEditor()) remoteSetColorTheme();
-      break;
-    case '@':
-      if(switchThemeEditor()) remoteGetColorTheme();
-      break;
+  case 'T':
+    Serial.println(switchThemeEditor(!switchThemeEditor()) ? "Theme editor enabled" : "Theme editor disabled");
+    break;
+  case '!':
+    if (switchThemeEditor())
+      remoteSetColorTheme();
+    break;
+  case '@':
+    if (switchThemeEditor())
+      remoteGetColorTheme();
+    break;
 
-    default:
-      // Command not recognized
-      return(event);
+  default:
+    // Command not recognized
+    return (event);
   }
 
   // Command recognized
-  return(event | REMOTE_CHANGED);
+  return (event | REMOTE_CHANGED);
 }
 
 #endif // !DISABLE_REMOTE

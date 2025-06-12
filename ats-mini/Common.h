@@ -6,6 +6,7 @@
 #include <ui.h>
 #include <screens.h>
 #include <vars.h>
+#include "Storage.h"
 #include "SI4735-fixed.h"
 #include "Button.h"
 #include "ExtensionIOXL9555.hpp"
@@ -160,6 +161,9 @@ typedef struct
 extern ExtensionIOXL9555 io;
 extern IOStatus ioStatus;
 
+extern ButtonTracker pb1;
+extern ButtonTracker pb2;
+
 extern ButtonTracker::State pb1st;
 extern ButtonTracker::State pb2st;
 
@@ -175,14 +179,11 @@ extern bool pushAndRotate;
 extern uint8_t rssi;
 extern uint8_t snr;
 
-extern uint8_t volume;
 extern uint8_t currentSquelch;
 extern bool squelchCutoff;
-extern uint16_t currentFrequency;
 extern int16_t currentBFO;
 extern uint8_t currentMode;
 extern uint16_t currentCmd;
-extern uint16_t currentBrt;
 extern uint16_t currentSleep;
 extern uint8_t sleepModeIdx;
 extern bool zoomMenu;
