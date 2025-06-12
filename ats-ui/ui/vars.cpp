@@ -65,18 +65,6 @@ extern "C" void set_var_setting_detail_index(int32_t value)
     setting_detail_index = value;
 }
 
-std::string system_time = "00:00";
-
-extern "C" const char *get_var_system_time()
-{
-    return system_time.c_str();
-}
-
-extern "C" void set_var_system_time(const char *value)
-{
-    system_time = value;
-}
-
 int32_t screen_brightness = 10;
 
 extern "C" int32_t get_var_screen_brightness()
@@ -147,4 +135,76 @@ extern "C" int32_t get_var_screen_off_time_max()
 extern "C" void set_var_screen_off_time_max(int32_t value)
 {
     screen_off_time_max = value;
+}
+
+std::string system_time = "00:00";
+
+extern "C" const char *get_var_system_time()
+{
+    return system_time.c_str();
+}
+
+extern "C" void set_var_system_time(const char *value)
+{
+    system_time = value;
+}
+
+int32_t system_mode = 0;
+
+extern "C" int32_t get_var_system_mode()
+{
+    return system_mode;
+}
+
+extern "C" void set_var_system_mode(int32_t value)
+{
+    system_mode = value;
+}
+
+int32_t sound_mode = 0;
+
+extern "C" int32_t get_var_sound_mode()
+{
+    return sound_mode;
+}
+
+extern "C" void set_var_sound_mode(int32_t value)
+{
+    sound_mode = value;
+}
+
+int32_t speaker_volume = 15;
+
+extern "C" int32_t get_var_speaker_volume()
+{
+    return speaker_volume;
+}
+
+extern "C" void set_var_speaker_volume(int32_t value)
+{
+    speaker_volume = value;
+}
+
+int32_t earphone_volume = 15;
+
+extern "C" int32_t get_var_earphone_volume()
+{
+    return earphone_volume;
+}
+
+extern "C" void set_var_earphone_volume(int32_t value)
+{
+    earphone_volume = value;
+}
+
+int32_t local_frequency = 0;
+
+extern "C" int32_t get_var_local_frequency()
+{
+    return local_frequency;
+}
+
+extern "C" void set_var_local_frequency(int32_t value)
+{
+    local_frequency = value;
 }

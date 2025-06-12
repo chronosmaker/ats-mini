@@ -44,8 +44,6 @@ extern int32_t get_var_setting_index();
 extern void set_var_setting_index(int32_t value);
 extern int32_t get_var_setting_detail_index();
 extern void set_var_setting_detail_index(int32_t value);
-extern const char *get_var_system_time();
-extern void set_var_system_time(const char *value);
 extern int32_t get_var_screen_brightness();
 extern void set_var_screen_brightness(int32_t value);
 extern int32_t get_var_screen_brightness_min();
@@ -58,6 +56,18 @@ extern int32_t get_var_screen_off_time_min();
 extern void set_var_screen_off_time_min(int32_t value);
 extern int32_t get_var_screen_off_time_max();
 extern void set_var_screen_off_time_max(int32_t value);
+extern const char *get_var_system_time();
+extern void set_var_system_time(const char *value);
+extern int32_t get_var_system_mode();
+extern void set_var_system_mode(int32_t value);
+extern int32_t get_var_sound_mode();
+extern void set_var_sound_mode(int32_t value);
+extern int32_t get_var_speaker_volume();
+extern void set_var_speaker_volume(int32_t value);
+extern int32_t get_var_earphone_volume();
+extern void set_var_earphone_volume(int32_t value);
+extern int32_t get_var_local_frequency();
+extern void set_var_local_frequency(int32_t value);
 
 
 #ifdef __cplusplus
