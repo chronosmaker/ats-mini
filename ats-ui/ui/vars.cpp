@@ -149,7 +149,7 @@ extern "C" void set_var_system_time(const char *value)
     system_time = value;
 }
 
-int32_t system_mode = 0;
+int32_t system_mode = -1;
 
 extern "C" int32_t get_var_system_mode()
 {
@@ -197,6 +197,30 @@ extern "C" void set_var_earphone_volume(int32_t value)
     earphone_volume = value;
 }
 
+int32_t local_index = -1;
+
+extern "C" int32_t get_var_local_index()
+{
+    return local_index;
+}
+
+extern "C" void set_var_local_index(int32_t value)
+{
+    local_index = value;
+}
+
+LocalMode local_mode = LocalMode_FM;
+
+extern "C" LocalMode get_var_local_mode()
+{
+    return local_mode;
+}
+
+extern "C" void set_var_local_mode(LocalMode value)
+{
+    local_mode = value;
+}
+
 int32_t local_frequency = 0;
 
 extern "C" int32_t get_var_local_frequency()
@@ -207,4 +231,52 @@ extern "C" int32_t get_var_local_frequency()
 extern "C" void set_var_local_frequency(int32_t value)
 {
     local_frequency = value;
+}
+
+int32_t local_snr = 0;
+
+extern "C" int32_t get_var_local_snr()
+{
+    return local_snr;
+}
+
+extern "C" void set_var_local_snr(int32_t value)
+{
+    local_snr = value;
+}
+
+int32_t local_rssi = 0;
+
+extern "C" int32_t get_var_local_rssi()
+{
+    return local_rssi;
+}
+
+extern "C" void set_var_local_rssi(int32_t value)
+{
+    local_rssi = value;
+}
+
+int32_t local_squelch = 0;
+
+extern "C" int32_t get_var_local_squelch()
+{
+    return local_squelch;
+}
+
+extern "C" void set_var_local_squelch(int32_t value)
+{
+    local_squelch = value;
+}
+
+bool local_squelch_cutoff = false;
+
+extern "C" bool get_var_local_squelch_cutoff()
+{
+    return local_squelch_cutoff;
+}
+
+extern "C" void set_var_local_squelch_cutoff(bool value)
+{
+    local_squelch_cutoff = value;
 }

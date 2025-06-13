@@ -26,6 +26,13 @@ typedef enum {
     PageName_SettingAbout = 12
 } PageName;
 
+typedef enum {
+    LocalMode_FM = 0,
+    LocalMode_LSB = 1,
+    LocalMode_USB = 2,
+    LocalMode_AM = 3
+} LocalMode;
+
 // Flow global variables
 
 enum FlowGlobalVariables {
@@ -66,8 +73,20 @@ extern int32_t get_var_speaker_volume();
 extern void set_var_speaker_volume(int32_t value);
 extern int32_t get_var_earphone_volume();
 extern void set_var_earphone_volume(int32_t value);
+extern int32_t get_var_local_index();
+extern void set_var_local_index(int32_t value);
+extern LocalMode get_var_local_mode();
+extern void set_var_local_mode(LocalMode value);
 extern int32_t get_var_local_frequency();
 extern void set_var_local_frequency(int32_t value);
+extern int32_t get_var_local_snr();
+extern void set_var_local_snr(int32_t value);
+extern int32_t get_var_local_rssi();
+extern void set_var_local_rssi(int32_t value);
+extern int32_t get_var_local_squelch();
+extern void set_var_local_squelch(int32_t value);
+extern bool get_var_local_squelch_cutoff();
+extern void set_var_local_squelch_cutoff(bool value);
 
 
 #ifdef __cplusplus

@@ -501,7 +501,7 @@ static void clickVolume(bool shortPress)
 static void clickSquelch(bool shortPress)
 {
   if (shortPress)
-    currentSquelch = 0;
+    set_var_local_squelch(0);
   else
     currentCmd = CMD_NONE;
 }
@@ -742,7 +742,7 @@ void doMode(int dir)
 
 void doSquelch(int dir)
 {
-  currentSquelch = clamp_range(currentSquelch, dir, 0, 127);
+  set_var_local_squelch(clamp_range(get_var_local_squelch(), dir, 0, 127));
 }
 
 void doSoftMute(int dir)

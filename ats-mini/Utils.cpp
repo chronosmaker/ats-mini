@@ -165,7 +165,7 @@ bool sleepOn(int x)
       netStop();
 
       // Unmute squelch
-      if (squelchCutoff)
+      if (get_var_local_squelch_cutoff())
         tempMuteOn(false);
 
       while (true)
@@ -200,7 +200,7 @@ bool sleepOn(int x)
       rtc_gpio_pulldown_dis((gpio_num_t)IOINT_PIN);
       rtc_gpio_deinit((gpio_num_t)IOINT_PIN);
       pinMode(IOINT_PIN, INPUT);
-      if (squelchCutoff)
+      if (get_var_local_squelch_cutoff())
         tempMuteOn(true);
       sleepOn(false);
       // Enable WiFi

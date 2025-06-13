@@ -1,11 +1,9 @@
 #include "Common.h"
 #include "Storage.h"
 #include "Themes.h"
-#include "Storage.h"
 #include "Utils.h"
 #include "Menu.h"
 #include "Draw.h"
-
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <AsyncTCP.h>
@@ -14,20 +12,20 @@
 #include <Preferences.h>
 #include <ESPmDNS.h>
 
-#define CONNECT_TIME 3000  // Time of inactivity to start connecting WiFi
+#define CONNECT_TIME 3000 // Time of inactivity to start connecting WiFi
 
 //
 // Access Point (AP) mode settings
 //
 static const char *apSSID = "ATS-Mini";
-static const char *apPWD = 0;        // No password
-static const int apChannel = 10;     // WiFi channel number (1..13)
-static const bool apHideMe = false;  // TRUE: disable SSID broadcast
-static const int apClients = 3;      // Maximum simultaneous connected clients
+static const char *apPWD = 0;       // No password
+static const int apChannel = 10;    // WiFi channel number (1..13)
+static const bool apHideMe = false; // TRUE: disable SSID broadcast
+static const int apClients = 3;     // Maximum simultaneous connected clients
 
 static uint16_t ajaxInterval = 2500;
 
-static bool itIsTimeToWiFi = false;  // TRUE: Need to connect to WiFi
+static bool itIsTimeToWiFi = false; // TRUE: Need to connect to WiFi
 static uint32_t connectTime = millis();
 
 static const char *eepromStatus = "No EEPROM data";
@@ -66,14 +64,17 @@ static const String webConfigPage();
 //
 // Delayed WiFi connection
 //
-void netRequestConnect() {
+void netRequestConnect()
+{
   connectTime = millis();
   itIsTimeToWiFi = true;
 }
 
-void netTickTime() {
+void netTickTime()
+{
   // Connect to WiFi if requested
-  if (itIsTimeToWiFi && ((millis() - connectTime) > CONNECT_TIME)) {
+  if (itIsTimeToWiFi && ((millis() - connectTime) > CONNECT_TIME))
+  {
     netInit(wifiModeIdx);
     connectTime = millis();
     itIsTimeToWiFi = false;
@@ -83,7 +84,8 @@ void netTickTime() {
 //
 // Clear all settings
 //
-void netClearPreferences() {
+void netClearPreferences()
+{
   preferences.begin("configData", false);
   preferences.clear();
   preferences.end();
@@ -93,33 +95,37 @@ void netClearPreferences() {
 // Get current connection status
 // (-1 - not connected, 0 - disabled, 1 - connected, 2 - connected to network)
 //
-int8_t getWiFiStatus() {
+int8_t getWiFiStatus()
+{
   wifi_mode_t mode = WiFi.getMode();
 
-  switch (mode) {
-    case WIFI_MODE_NULL:
-      return (0);
-    case WIFI_AP:
-      return (WiFi.softAPgetStationNum() ? 1 : -1);
-    case WIFI_STA:
-      return(WiFi.status()==WL_CONNECTED? 2 : -1);
-    case WIFI_AP_STA:
-      return((WiFi.status()==WL_CONNECTED)? 2 : WiFi.softAPgetStationNum()? 1 : -1);
-    default:
-      return (-1);
+  switch (mode)
+  {
+  case WIFI_MODE_NULL:
+    return (0);
+  case WIFI_AP:
+    return (WiFi.softAPgetStationNum() ? 1 : -1);
+  case WIFI_STA:
+    return (WiFi.status() == WL_CONNECTED ? 2 : -1);
+  case WIFI_AP_STA:
+    return ((WiFi.status() == WL_CONNECTED) ? 2 : WiFi.softAPgetStationNum() ? 1
+                                                                             : -1);
+  default:
+    return (-1);
   }
 }
 
 char *getWiFiIPAddress()
 {
   static char ip[16];
-  return strcpy(ip, WiFi.status()==WL_CONNECTED ? WiFi.localIP().toString().c_str() : "");
+  return strcpy(ip, WiFi.status() == WL_CONNECTED ? WiFi.localIP().toString().c_str() : "");
 }
 
 //
 // Stop WiFi hardware
 //
-void netStop() {
+void netStop()
+{
   wifi_mode_t mode = WiFi.getMode();
 
   MDNS.end();
@@ -138,36 +144,42 @@ void netStop() {
 //
 // Initialize WiFi network and services
 //
-void netInit(uint8_t netMode, bool showStatus) {
+void netInit(uint8_t netMode, bool showStatus)
+{
   // Always disable WiFi first
   netStop();
 
-  switch (netMode) {
-    case NET_OFF:
-      // Do not initialize WiFi if disabled
-      return;
-    case NET_AP_ONLY:
-      // Start WiFi access point if requested
-      WiFi.mode(WIFI_AP);
-      // Let user see connection status if successful
-      if (wifiInitAP() && showStatus) delay(2000);
-      break;
-    case NET_AP_CONNECT:
-      // Start WiFi access point if requested
-      WiFi.mode(WIFI_AP_STA);
-      // Let user see connection status if successful
-      if (wifiInitAP() && showStatus) delay(2000);
-      break;
-    default:
-      // No access point
-      WiFi.mode(WIFI_STA);
-      break;
+  switch (netMode)
+  {
+  case NET_OFF:
+    // Do not initialize WiFi if disabled
+    return;
+  case NET_AP_ONLY:
+    // Start WiFi access point if requested
+    WiFi.mode(WIFI_AP);
+    // Let user see connection status if successful
+    if (wifiInitAP() && showStatus)
+      delay(2000);
+    break;
+  case NET_AP_CONNECT:
+    // Start WiFi access point if requested
+    WiFi.mode(WIFI_AP_STA);
+    // Let user see connection status if successful
+    if (wifiInitAP() && showStatus)
+      delay(2000);
+    break;
+  default:
+    // No access point
+    WiFi.mode(WIFI_STA);
+    break;
   }
 
   // Initialize WiFi and try connecting to a network
-  if (netMode > NET_AP_ONLY && wifiConnect()) {
+  if (netMode > NET_AP_ONLY && wifiConnect())
+  {
     // Let user see connection status if successful
-    if (netMode != NET_SYNC && showStatus) delay(2000);
+    if (netMode != NET_SYNC && showStatus)
+      delay(2000);
 
     // NTP time updates will happen every 5 minutes
     ntpClient.setUpdateInterval(5 * 60 * 1000);
@@ -175,16 +187,21 @@ void netInit(uint8_t netMode, bool showStatus) {
     // Get NTP time from the network
     clockReset();
     for (int j = 0; j < 10; j++)
-      if (ntpSyncTime()) break;
-      else delay(500);
+      if (ntpSyncTime())
+        break;
+      else
+        delay(500);
   }
 
   // If only connected to sync...
-  if (netMode == NET_SYNC) {
+  if (netMode == NET_SYNC)
+  {
     // Drop network connection
     WiFi.disconnect(true);
     WiFi.mode(WIFI_MODE_NULL);
-  } else {
+  }
+  else
+  {
     // Initialize web server for remote configuration
     webInit();
 
@@ -197,22 +214,25 @@ void netInit(uint8_t netMode, bool showStatus) {
 //
 // Returns TRUE if NTP time is available
 //
-bool ntpIsAvailable() {
+bool ntpIsAvailable()
+{
   return (ntpClient.isTimeSet());
 }
 
 //
 // Update NTP time and synchronize clock with NTP time
 //
-bool ntpSyncTime() {
-  if (WiFi.status() == WL_CONNECTED) {
+bool ntpSyncTime()
+{
+  if (WiFi.status() == WL_CONNECTED)
+  {
     ntpClient.update();
 
     if (ntpClient.isTimeSet())
       return (clockSet(
-        ntpClient.getHours(),
-        ntpClient.getMinutes(),
-        ntpClient.getSeconds()));
+          ntpClient.getHours(),
+          ntpClient.getMinutes(),
+          ntpClient.getSeconds()));
   }
   return (false);
 }
@@ -220,7 +240,8 @@ bool ntpSyncTime() {
 //
 // Initialize WiFi access point (AP)
 //
-static bool wifiInitAP() {
+static bool wifiInitAP()
+{
   // These are our own access point (AP) addresses
   IPAddress ip(10, 1, 1, 1);
   IPAddress gateway(10, 1, 1, 1);
@@ -231,9 +252,8 @@ static bool wifiInitAP() {
   WiFi.softAPConfig(ip, gateway, subnet);
 
   drawScreen(
-    ("Use Access Point " + String(apSSID)).c_str(),
-    ("IP : " + WiFi.softAPIP().toString() + " or atsmini.local").c_str()
-  );
+      ("Use Access Point " + String(apSSID)).c_str(),
+      ("IP : " + WiFi.softAPIP().toString() + " or atsmini.local").c_str());
 
   ajaxInterval = 2500;
   return (true);
@@ -242,7 +262,8 @@ static bool wifiInitAP() {
 //
 // Connect to a WiFi network
 //
-static bool wifiConnect() {
+static bool wifiConnect()
+{
   String status = "Connecting to WiFi network..";
 
   // Get the preferences
@@ -251,7 +272,7 @@ static bool wifiConnect() {
   loginPassword = preferences.getString("loginpassword", "");
 
   // Try connecting to known WiFi networks
-  for(int j=0 ; (j<3) && (WiFi.status()!=WL_CONNECTED) ; j++)
+  for (int j = 0; (j < 3) && (WiFi.status() != WL_CONNECTED); j++)
   {
     char nameSSID[16], namePASS[16];
     sprintf(nameSSID, "wifissid%d", j + 1);
@@ -260,18 +281,20 @@ static bool wifiConnect() {
     String ssid = preferences.getString(nameSSID, "");
     String password = preferences.getString(namePASS, "");
 
-    if (ssid != "") {
+    if (ssid != "")
+    {
       WiFi.begin(ssid, password);
-      for(int j=0 ; (WiFi.status()!=WL_CONNECTED) && (j<24) ; j++)
+      for (int j = 0; (WiFi.status() != WL_CONNECTED) && (j < 24); j++)
       {
-        if(!(j&7))
+        if (!(j & 7))
         {
           status += ".";
           drawScreen(status.c_str());
         }
         delay(500);
 
-        if (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW) {
+        if (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW)
+        {
           WiFi.disconnect();
           break;
         }
@@ -283,17 +306,19 @@ static bool wifiConnect() {
   preferences.end();
 
   // If failed connecting to WiFi network...
-  if (WiFi.status() != WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED)
+  {
     // WiFi connection failed
     drawScreen(status.c_str(), "No WiFi connection");
     // Done
     return (false);
-  } else {
+  }
+  else
+  {
     // WiFi connection succeeded
     drawScreen(
-      ("Connected to WiFi network (" + WiFi.SSID() + ")").c_str(),
-      ("IP : " + WiFi.localIP().toString() + " or atsmini.local").c_str()
-    );
+        ("Connected to WiFi network (" + WiFi.SSID() + ")").c_str(),
+        ("IP : " + WiFi.localIP().toString() + " or atsmini.local").c_str());
     // Done
     ajaxInterval = 1000;
     return (true);
@@ -303,25 +328,23 @@ static bool wifiConnect() {
 //
 // Initialize internal web server
 //
-static void webInit() {
-  server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/html", webRadioPage());
-  });
+static void webInit()
+{
+  server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/html", webRadioPage()); });
 
-  server.on("/memory", HTTP_ANY, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/html", webMemoryPage());
-  });
+  server.on("/memory", HTTP_ANY, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/html", webMemoryPage()); });
 
-  server.on("/config", HTTP_ANY, [](AsyncWebServerRequest *request) {
+  server.on("/config", HTTP_ANY, [](AsyncWebServerRequest *request)
+            {
     if (loginUsername != "" && loginPassword != "")
       if (!request->authenticate(loginUsername.c_str(), loginPassword.c_str()))
         return request->requestAuthentication();
-    request->send(200, "text/html", webConfigPage());
-  });
+    request->send(200, "text/html", webConfigPage()); });
 
-  server.onNotFound([](AsyncWebServerRequest *request) {
-    request->send(404, "text/plain", "Not found");
-  });
+  server.onNotFound([](AsyncWebServerRequest *request)
+                    { request->send(404, "text/plain", "Not found"); });
 
   // This method saves configuration form contents
   server.on("/setconfig", HTTP_ANY, webSetConfig);
@@ -329,24 +352,26 @@ static void webInit() {
   // These methods let user read and write EEPROM
   server.on("/ats-mini-eeprom.bin", HTTP_ANY, webReadEEPROM);
   server.on(
-    "/writeeeprom", HTTP_POST, [](AsyncWebServerRequest *request) {
+      "/writeeeprom", HTTP_POST, [](AsyncWebServerRequest *request)
+      {
       request->send(200, "text/plain", eepromStatus);
-      eepromStatus = "No EEPROM data";
-    },
-    webWriteEEPROM);
+      eepromStatus = "No EEPROM data"; },
+      webWriteEEPROM);
 
   // Start web server
   server.begin();
 }
 
-void webSetConfig(AsyncWebServerRequest *request) {
+void webSetConfig(AsyncWebServerRequest *request)
+{
   bool eepromSave = false;
 
   // Start modifying preferences
   preferences.begin("configData", false);
 
   // Save user name and password
-  if (request->hasParam("username", true) && request->hasParam("password", true)) {
+  if (request->hasParam("username", true) && request->hasParam("password", true))
+  {
     loginUsername = request->getParam("username", true)->value();
     loginPassword = request->getParam("password", true)->value();
 
@@ -356,13 +381,15 @@ void webSetConfig(AsyncWebServerRequest *request) {
 
   // Save SSIDs and their passwords
   bool haveSSID = false;
-  for (int j = 0; j < 3; j++) {
+  for (int j = 0; j < 3; j++)
+  {
     char nameSSID[16], namePASS[16];
 
     sprintf(nameSSID, "wifissid%d", j + 1);
     sprintf(namePASS, "wifipass%d", j + 1);
 
-    if (request->hasParam(nameSSID, true) && request->hasParam(namePASS, true)) {
+    if (request->hasParam(nameSSID, true) && request->hasParam(namePASS, true))
+    {
       String ssid = request->getParam(nameSSID, true)->value();
       String pass = request->getParam(namePASS, true)->value();
       preferences.putString(nameSSID, ssid);
@@ -372,7 +399,8 @@ void webSetConfig(AsyncWebServerRequest *request) {
   }
 
   // Save time zone
-  if (request->hasParam("utcoffset", true)) {
+  if (request->hasParam("utcoffset", true))
+  {
     String utcOffset = request->getParam("utcoffset", true)->value();
     utcOffsetIdx = utcOffset.toInt();
     clockRefreshTime();
@@ -380,7 +408,8 @@ void webSetConfig(AsyncWebServerRequest *request) {
   }
 
   // Save theme
-  if (request->hasParam("theme", true)) {
+  if (request->hasParam("theme", true))
+  {
     String theme = request->getParam("theme", true)->value();
     themeIdx = theme.toInt();
     eepromSave = true;
@@ -395,7 +424,8 @@ void webSetConfig(AsyncWebServerRequest *request) {
   preferences.end();
 
   // Save EEPROM immediately
-  if (eepromSave) eepromRequestSave(true);
+  if (eepromSave)
+    eepromRequestSave(true);
 
   // Show config page again
   request->redirect("/config");
@@ -406,12 +436,14 @@ void webSetConfig(AsyncWebServerRequest *request) {
     netRequestConnect();
 }
 
-static void webReadEEPROM(AsyncWebServerRequest *request) {
+static void webReadEEPROM(AsyncWebServerRequest *request)
+{
   uint8_t buf[EEPROM_SIZE];
 
   if (!eepromReadBinary(buf, sizeof(buf)))
     request->send(200, "text/plain", "Failed reading EEPROM");
-  else {
+  else
+  {
     AsyncWebServerResponse *response = request->beginResponse(200, "application/octet-stream", buf, sizeof(buf));
     char hdr[100];
     sprintf(hdr, "attachment; filename=ats-mini-eeprom-%hu-%hu.bin", APP_VERSION, EEPROM_VERSION);
@@ -420,34 +452,39 @@ static void webReadEEPROM(AsyncWebServerRequest *request) {
   }
 }
 
-static void webWriteEEPROM(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool lastChunk) {
+static void webWriteEEPROM(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool lastChunk)
+{
   static uint8_t buf[EEPROM_SIZE];
 
   // Fill in the buffer with incoming chunks
-  if (index + len <= sizeof(buf)) memcpy(buf + index, data, len);
+  if (index + len <= sizeof(buf))
+    memcpy(buf + index, data, len);
 
   // When last chunk received...
-  if (lastChunk) {
+  if (lastChunk)
+  {
     if (!eepromVerify(buf))
       eepromStatus = "Wrong EEPROM version";
-    else if(!eepromRequestUpdate(buf, sizeof(buf)))
+    else if (!eepromRequestUpdate(buf, sizeof(buf)))
       eepromStatus = "Failed writing EEPROM";
     else
       eepromStatus = "Wrote EEPROM";
   }
 }
 
-static const String webInputField(const String &name, const String &value, bool pass) {
+static const String webInputField(const String &name, const String &value, bool pass)
+{
   String newValue(value);
 
   newValue.replace("\"", "&quot;");
   newValue.replace("'", "&apos;");
 
   return (
-    "<INPUT TYPE='" + String(pass ? "PASSWORD" : "TEXT") + "' NAME='" + name + "' VALUE='" + newValue + "'>");
+      "<INPUT TYPE='" + String(pass ? "PASSWORD" : "TEXT") + "' NAME='" + name + "' VALUE='" + newValue + "'>");
 }
 
-static const String webStyleSheet() {
+static const String webStyleSheet()
+{
   return "BODY"
          "{"
          "margin: 0;"
@@ -495,25 +532,28 @@ static const String webStyleSheet() {
          "}";
 }
 
-static const String webPage(const String &body) {
+static const String webPage(const String &body)
+{
   return "<!DOCTYPE HTML>"
          "<HTML>"
          "<HEAD>"
          "<META CHARSET='UTF-8'>"
          "<META NAME='viewport' CONTENT='width=device-width, initial-scale=1.0'>"
          "<TITLE>ATS-Mini Config</TITLE>"
-         "<STYLE>"
-         + webStyleSheet() + "</STYLE>"
-                             "</HEAD>"
-                             "<BODY STYLE='font-family: sans-serif;'>"
-         + body + "</BODY>"
-                  "</HTML>";
+         "<STYLE>" +
+         webStyleSheet() + "</STYLE>"
+                           "</HEAD>"
+                           "<BODY STYLE='font-family: sans-serif;'>" +
+         body + "</BODY>"
+                "</HTML>";
 }
 
-static const String webUtcOffsetSelector() {
+static const String webUtcOffsetSelector()
+{
   String result = "";
 
-  for (int i = 0; i < getTotalUTCOffsets(); i++) {
+  for (int i = 0; i < getTotalUTCOffsets(); i++)
+  {
     char text[64];
 
     sprintf(text,
@@ -527,10 +567,12 @@ static const String webUtcOffsetSelector() {
   return (result);
 }
 
-static const String webThemeSelector() {
+static const String webThemeSelector()
+{
   String result = "";
 
-  for (int i = 0; i < getTotalThemes(); i++) {
+  for (int i = 0; i < getTotalThemes(); i++)
+  {
     char text[64];
 
     sprintf(text,
@@ -543,80 +585,87 @@ static const String webThemeSelector() {
   return (result);
 }
 
-static const String webRadioPage() {
+static const String webRadioPage()
+{
   String ip = "";
   String ssid = "";
   String freq = currentMode == FM ? String(get_var_local_frequency() / 100.0) + "MHz "
                                   : String(get_var_local_frequency() + currentBFO / 1000.0) + "kHz ";
 
-  if (WiFi.status() == WL_CONNECTED) {
+  if (WiFi.status() == WL_CONNECTED)
+  {
     ip = WiFi.localIP().toString();
     ssid = WiFi.SSID();
-  } else {
+  }
+  else
+  {
     ip = WiFi.softAPIP().toString();
     ssid = String(apSSID);
   }
 
   return webPage(
-    "<H1>ATS-Mini Pocket Receiver</H1>"
-    "<P ALIGN='CENTER'>"
-    "<A HREF='/memory'>Memory</A>&nbsp;|&nbsp;<A HREF='/config'>Config</A>"
-    "</P>"
-    "<TABLE COLUMNS=2>"
-    "<TR>"
-    "<TD CLASS='LABEL'>IP Address</TD>"
-    "<TD><A HREF='http://"
-    + ip + "'>" + ip + "</A> (" + ssid + ")</TD>"
+      "<H1>ATS-Mini Pocket Receiver</H1>"
+      "<P ALIGN='CENTER'>"
+      "<A HREF='/memory'>Memory</A>&nbsp;|&nbsp;<A HREF='/config'>Config</A>"
+      "</P>"
+      "<TABLE COLUMNS=2>"
+      "<TR>"
+      "<TD CLASS='LABEL'>IP Address</TD>"
+      "<TD><A HREF='http://" +
+      ip + "'>" + ip + "</A> (" + ssid + ")</TD>"
                                          "</TR>"
                                          "<TR>"
                                          "<TD CLASS='LABEL'>MAC Address</TD>"
-                                         "<TD>"
-    + String(getMACAddress()) + "</TD>"
+                                         "<TD>" +
+      String(getMACAddress()) + "</TD>"
                                 "</TR>"
                                 "<TR>"
                                 "<TD CLASS='LABEL'>Firmware</TD>"
-                                "<TD>"
-    + String(getVersion(true)) + "</TD>"
+                                "<TD>" +
+      String(getVersion(true)) + "</TD>"
                                  "</TR>"
                                  "<TR>"
                                  "<TD CLASS='LABEL'>Band</TD>"
-                                 "<TD>"
-    + String(getCurrentBand()->bandName) + "</TD>"
+                                 "<TD>" +
+      String(getCurrentBand()->bandName) + "</TD>"
                                            "</TR>"
                                            "<TR>"
                                            "<TD CLASS='LABEL'>Frequency</TD>"
-                                           "<TD>"
-    + freq + String(bandModeDesc[currentMode]) + "</TD>"
+                                           "<TD>" +
+      freq + String(bandModeDesc[currentMode]) + "</TD>"
                                                  "</TR>"
                                                  "<TR>"
                                                  "<TD CLASS='LABEL'>Signal Strength</TD>"
-                                                 "<TD>"
-    + String(rssi) + "dBuV</TD>"
-                     "</TR>"
-                     "<TR>"
-                     "<TD CLASS='LABEL'>Signal to Noise</TD>"
-                     "<TD>"
-    + String(snr) + "dB</TD>"
-                    "</TR>"
-                    "<TR>"
-                    "<TD CLASS='LABEL'>Battery Voltage</TD>"
-                    "<TD>"
-    + String(batteryMonitor()) + "V</TD>"
+                                                 "<TD>" +
+      String(get_var_local_rssi()) + "dBuV</TD>"
+                                     "</TR>"
+                                     "<TR>"
+                                     "<TD CLASS='LABEL'>Signal to Noise</TD>"
+                                     "<TD>" +
+      String(get_var_local_snr()) + "dB</TD>"
+                                    "</TR>"
+                                    "<TR>"
+                                    "<TD CLASS='LABEL'>Battery Voltage</TD>"
+                                    "<TD>" +
+      String(batteryMonitor()) + "V</TD>"
                                  "</TR>"
                                  "</TABLE>");
 }
 
-static const String webMemoryPage() {
+static const String webMemoryPage()
+{
   String items = "";
 
-  for (int j = 0; j < MEMORY_COUNT; j++) {
+  for (int j = 0; j < MEMORY_COUNT; j++)
+  {
     char text[64];
     sprintf(text, "<TR><TD CLASS='LABEL' WIDTH='10%%'>%02d</TD><TD>", j + 1);
     items += text;
 
     if (!memories[j].freq)
       items += "&nbsp;---&nbsp;</TD></TR>";
-    else {
+    else
+    {
       String freq = memories[j].mode == FM ? String(memories[j].freq / 100.0) + "MHz "
                                            : String(memories[j].freq + memories[j].hz100 / 10.0) + "kHz ";
       items += freq + bandModeDesc[memories[j].mode] + "</TD></TR>";
@@ -624,15 +673,16 @@ static const String webMemoryPage() {
   }
 
   return webPage(
-    "<H1>ATS-Mini Pocket Receiver Memory</H1>"
-    "<P ALIGN='CENTER'>"
-    "<A HREF='/'>Status</A>&nbsp;|&nbsp;<A HREF='/config'>Config</A>"
-    "</P>"
-    "<TABLE COLUMNS=2>"
-    + items + "</TABLE>");
+      "<H1>ATS-Mini Pocket Receiver Memory</H1>"
+      "<P ALIGN='CENTER'>"
+      "<A HREF='/'>Status</A>&nbsp;|&nbsp;<A HREF='/config'>Config</A>"
+      "</P>"
+      "<TABLE COLUMNS=2>" +
+      items + "</TABLE>");
 }
 
-const String webConfigPage() {
+const String webConfigPage()
+{
   preferences.begin("configData", true);
   String ssid1 = preferences.getString("wifissid1", "");
   String pass1 = preferences.getString("wifipass1", "");
@@ -643,41 +693,43 @@ const String webConfigPage() {
   preferences.end();
 
   return webPage(
-    "<H1>ATS-Mini Config</H1>"
-    "<P ALIGN='CENTER'>"
-    "<A HREF='/'>Status</A>"
-    "&nbsp;|&nbsp;<A HREF='/memory'>Memory</A>"
-    "</P>"
-    "<FORM ACTION='/setconfig' METHOD='POST'>"
-    "<TABLE COLUMNS=2>"
-    "<TR><TH COLSPAN=2 CLASS='HEADING'>Login Credentials</TH></TR>"
-    "<TR>"
-    "<TD CLASS='LABEL'>Username</TD>"
-    "<TD>"
-      "<SELECT NAME='utcoffset'>" + webUtcOffsetSelector() + "</SELECT>"
-    "</TD>"
-  "</TR>"
-  "<TR>"
-    "<TD CLASS='LABEL'>Theme</TD>"
-    "<TD>"
-      "<SELECT NAME='theme'>" + webThemeSelector() + "</SELECT>"
-    "</TD>"
-  "</TR>"
-  "<TR>"
-    "<TD CLASS='LABEL'>Reverse Scrolling</TD>"
-    "<TD><INPUT TYPE='CHECKBOX' NAME='scroll' VALUE='on'" +
-    (scrollDirection<0? " CHECKED ":"") + "></TD>"
-  "</TR>"
-  "<TR>"
-    "<TD CLASS='LABEL'>Zoomed Menu</TD>"
-    "<TD><INPUT TYPE='CHECKBOX' NAME='zoom' VALUE='on'" +
-    (zoomMenu? " CHECKED ":"") + "></TD>"
-  "</TR>"
-  "<TR><TH COLSPAN=2 CLASS='HEADING'>"
-    "<INPUT TYPE='SUBMIT' VALUE='Save'>"
-  "</TH></TR>"
-  "</TABLE>"
-"</FORM>"
+      "<H1>ATS-Mini Config</H1>"
+      "<P ALIGN='CENTER'>"
+      "<A HREF='/'>Status</A>"
+      "&nbsp;|&nbsp;<A HREF='/memory'>Memory</A>"
+      "</P>"
+      "<FORM ACTION='/setconfig' METHOD='POST'>"
+      "<TABLE COLUMNS=2>"
+      "<TR><TH COLSPAN=2 CLASS='HEADING'>Login Credentials</TH></TR>"
+      "<TR>"
+      "<TD CLASS='LABEL'>Username</TD>"
+      "<TD>"
+      "<SELECT NAME='utcoffset'>" +
+      webUtcOffsetSelector() + "</SELECT>"
+                               "</TD>"
+                               "</TR>"
+                               "<TR>"
+                               "<TD CLASS='LABEL'>Theme</TD>"
+                               "<TD>"
+                               "<SELECT NAME='theme'>" +
+      webThemeSelector() + "</SELECT>"
+                           "</TD>"
+                           "</TR>"
+                           "<TR>"
+                           "<TD CLASS='LABEL'>Reverse Scrolling</TD>"
+                           "<TD><INPUT TYPE='CHECKBOX' NAME='scroll' VALUE='on'" +
+      (scrollDirection < 0 ? " CHECKED " : "") + "></TD>"
+                                                 "</TR>"
+                                                 "<TR>"
+                                                 "<TD CLASS='LABEL'>Zoomed Menu</TD>"
+                                                 "<TD><INPUT TYPE='CHECKBOX' NAME='zoom' VALUE='on'" +
+      (zoomMenu ? " CHECKED " : "") + "></TD>"
+                                      "</TR>"
+                                      "<TR><TH COLSPAN=2 CLASS='HEADING'>"
+                                      "<INPUT TYPE='SUBMIT' VALUE='Save'>"
+                                      "</TH></TR>"
+                                      "</TABLE>"
+                                      "</FORM>"
 #if 0
 // @@@ Reenable once /writeeeprom stops breaking 30m band entry
 "<FORM ACTION='/writeeeprom' METHOD='POST' ENCTYPE='multipart/form-data'>"
@@ -695,5 +747,5 @@ const String webConfigPage() {
   "</TABLE>"
 "</FORM>"
 #endif
-);
+  );
 }

@@ -23,7 +23,6 @@
 
 // SI473/5 and UI
 #define MIN_ELAPSED_TIME 5           // 300
-#define MIN_ELAPSED_RSSI_TIME 200    // RSSI check uses IN_ELAPSED_RSSI_TIME * 6 = 1.2s
 #define ELAPSED_COMMAND 10000        // time to turn off the last command controlled by encoder. Time to goes back to the VFO control // G8PTN: Increased time and corrected comment
 #define DEFAULT_VOLUME 15            // change it for your favorite sound volume
 #define DEFAULT_SLEEP 0              // Default sleep interval, range = 0 (off) to 255 in steps of 5
@@ -43,7 +42,6 @@ uint8_t disableAgc = 0;
 int8_t agcNdx = 0;
 int8_t softMuteMaxAttIdx = 4;
 
-long elapsedRSSI = millis();
 long elapsedButton = millis();
 
 long lastStrengthCheck = millis();
@@ -66,8 +64,6 @@ int8_t SsbAvcIdx = 48; // Default SSB = 48, range = 12 to 90 in steps of 2
 int8_t AmSoftMuteIdx = 4;  // Default AM  = 4, range = 0 to 32
 int8_t SsbSoftMuteIdx = 4; // Default SSB = 4, range = 0 to 32
 
-uint8_t currentSquelch = 0; // Squelch, range = 0 (disabled) - 127
-bool squelchCutoff = false; // True if the Squelch cutoff is in effect
 uint8_t FmRegionIdx = 0;    // FM Region
 
 uint16_t currentSleep = DEFAULT_SLEEP; // Display sleep timeout, range = 0 to 255 in steps of 5
@@ -86,9 +82,6 @@ bool tuning_flag = false;             // Flag to indicate tuning
 uint16_t currentCmd = CMD_NONE;
 uint8_t currentMode = FM;
 int16_t currentBFO = 0;
-
-uint8_t rssi = 0;
-uint8_t snr = 0;
 
 bool ioInterrupt = false;
 
@@ -477,6 +470,7 @@ void loop()
     encoderCount2 = 0;
   }
 
+  // Tick EEPROM time, saving changes if the occurred and there has been no activity for a while
   eepromTickTime();
 
   ui_tick();

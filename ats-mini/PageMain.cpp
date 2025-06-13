@@ -11,7 +11,7 @@ void updatePageMain()
   if (encoderCount1)
   {
     int32_t page_index_count = 3;
-    int32_t page_index = get_var_page_index() + encoderCount1;
+    int32_t page_index = get_var_page_index() - encoderCount1;
     if (page_index < 0)
     {
       page_index = page_index_count;
@@ -21,7 +21,7 @@ void updatePageMain()
       page_index = 0;
     }
     set_var_page_index(page_index);
-    set_var_page_index_dir(encoderCount1);
+    set_var_page_index_dir(-encoderCount1);
   }
 
   if (encoderCount2)

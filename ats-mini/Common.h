@@ -175,12 +175,7 @@ extern TFT_eSprite spr;
 extern TFT_eSPI tft;
 
 extern bool tuning_flag;
-extern bool pushAndRotate;
-extern uint8_t rssi;
-extern uint8_t snr;
 
-extern uint8_t currentSquelch;
-extern bool squelchCutoff;
 extern int16_t currentBFO;
 extern uint8_t currentMode;
 extern uint16_t currentCmd;

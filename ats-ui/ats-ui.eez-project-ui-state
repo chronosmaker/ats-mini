@@ -2,7 +2,8 @@
   "navigation": {
     "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/4",
-    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/3",
+    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/16",
+    "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/1",
     "selectedFontObject": "[ats-ui.eez-project]:/fonts/2",
     "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/3",
     "subnavigationSelectedItems": {
@@ -135,7 +136,6 @@
                   "type": "tabset",
                   "id": "#b94b0058-14ff-4336-ba9d-2be0a19a2c8f",
                   "weight": 0.6774178875019536,
-                  "selected": 1,
                   "enableClose": false,
                   "children": [
                     {
@@ -167,7 +167,7 @@
                 {
                   "type": "tabset",
                   "id": "#b083a100-d8ee-4a16-b105-135f005bfef8",
-                  "weight": 0.7188944633922526,
+                  "weight": 1.2476966407913617,
                   "enableClose": false,
                   "children": [
                     {
@@ -183,7 +183,7 @@
                 {
                   "type": "tabset",
                   "id": "#e1bbee84-2746-4759-98a9-516f7341ba20",
-                  "weight": 1.6036876491057945,
+                  "weight": 1.0748854717066854,
                   "enableClose": false,
                   "children": [
                     {
@@ -194,32 +194,32 @@
                       "enableClose": false,
                       "icon": "svg:variable"
                     }
-                  ],
-                  "active": true
+                  ]
                 }
               ]
             },
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 39.098244048200456,
+              "weight": 41.0429748272946,
+              "selected": 2,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
-                  "id": "#a882c497-b216-4ff7-bc62-835d08ac3c3a",
-                  "name": "screen_setting",
+                  "id": "#069fe379-ac68-43b5-92e6-023d8e7c918d",
+                  "name": "Setting",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[ats-ui.eez-project]:/userWidgets/4",
+                    "objectPath": "[ats-ui.eez-project]:/userPages/5",
                     "permanent": false
                   },
-                  "icon": "svg:user_widget"
+                  "icon": "svg:page"
                 },
                 {
                   "type": "tab",
-                  "id": "#9b6a98e9-541c-405b-9013-3cde49d924d7",
+                  "id": "#995f7651-a587-482c-ae51-1f5139adc8f8",
                   "name": "CN_16",
                   "component": "editor",
                   "config": {
@@ -239,12 +239,13 @@
                   },
                   "icon": "svg:page"
                 }
-              ]
+              ],
+              "active": true
             },
             {
               "type": "tabset",
               "id": "#2b6d8aba-d8f7-4a0d-ada0-f2526c4599ab",
-              "weight": 21.677749828977227,
+              "weight": 19.733019049883076,
               "children": [
                 {
                   "type": "tab",
@@ -1112,7 +1113,7 @@
           "x": -316.9622719734665,
           "y": 144.54033404406533
         },
-        "scale": 1.1
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1188,15 +1189,16 @@
     "[ats-ui.eez-project]:/userPages/2[flow-state]": {
       "selection": {
         "0": {
-          "0": {
-            "$selected": true
-          }
+          "0": {},
+          "1": {},
+          "2": {},
+          "7": {}
         }
       },
       "transform": {
         "translate": {
-          "x": -68.22651515151517,
-          "y": -34.86969696969669
+          "x": -325,
+          "y": -200
         },
         "scale": 1
       },
@@ -1306,13 +1308,17 @@
       "selection": {
         "0": {
           "0": {},
-          "1": {}
+          "1": {},
+          "2": {}
+        },
+        "1": {
+          "$selected": true
         }
       },
       "transform": {
         "translate": {
-          "x": -160,
-          "y": -120
+          "x": -351,
+          "y": -282
         },
         "scale": 1
       },
@@ -1497,7 +1503,9 @@
   "lvglPart": "MAIN",
   "lvglState": "DEFAULT",
   "lvglExpandedPropertiesGroup": [
-    "TEXT"
+    "TEXT",
+    "MISCELLANEOUS",
+    "BORDER"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,

@@ -3,8 +3,12 @@
 #include "Menu.h"
 #include "PageLocalRadio.h"
 
-using namespace eez;
+// using namespace eez;
 using namespace eez::flow;
+
+#define MIN_ELAPSED_RSSI_TIME 200 // RSSI check uses IN_ELAPSED_RSSI_TIME * 6 = 1.2s
+
+long elapsedRSSI = millis();
 
 bool seekStop = false; // G8PTN: Added flag to abort seeking on rotary encoder detection
 
@@ -77,8 +81,8 @@ void useBand(const Band *band)
   // Wait a bit for things to calm down
   delay(100);
   // Clear signal strength readings
-  rssi = 0;
-  snr = 0;
+  set_var_local_snr(0);
+  set_var_local_rssi(0);
 }
 
 // This function is called by the seek function process.
@@ -273,7 +277,8 @@ bool doSeek(int8_t dir)
     {
       // Clear stale parameters
       clearStationInfo();
-      rssi = snr = 0;
+      set_var_local_snr(0);
+      set_var_local_rssi(0);
 
       // G8PTN: Flag is set by rotary encoder and cleared on seek entry
       seekStop = false;
@@ -375,60 +380,77 @@ bool clickFreq(bool shortPress)
   return false;
 }
 
-bool processRssiSnr()
+void processRssiSnr()
 {
   static uint32_t updateCounter = 0;
-  bool needRedraw = false;
 
   rx.getCurrentReceivedSignalQuality();
   int newRSSI = rx.getCurrentRSSI();
   int newSNR = rx.getCurrentSNR();
 
   // Apply squelch if the volume is not muted
+  int32_t currentSquelch = get_var_local_squelch();
+  bool squelchCutoff = get_var_local_squelch_cutoff();
   if (currentSquelch && currentSquelch <= 127)
   {
     if (newRSSI >= currentSquelch && squelchCutoff)
     {
       tempMuteOn(false);
-      squelchCutoff = false;
+      set_var_local_squelch_cutoff(false);
     }
     else if (newRSSI < currentSquelch && !squelchCutoff)
     {
       tempMuteOn(true);
-      squelchCutoff = true;
+      set_var_local_squelch_cutoff(true);
     }
   }
   else if (squelchCutoff)
   {
     tempMuteOn(false);
-    squelchCutoff = false;
+    set_var_local_squelch_cutoff(false);
   }
 
   // G8PTN: Based on 1.2s interval, update RSSI & SNR
   if (!(updateCounter++ & 7))
   {
     // Show RSSI status only if this condition has changed
-    if (newRSSI != rssi)
+    if (newRSSI != get_var_local_rssi())
     {
-      rssi = newRSSI;
-      needRedraw = true;
+      set_var_local_rssi(newRSSI);
     }
     // Show SNR status only if this condition has changed
-    if (newSNR != snr)
+    if (newSNR != get_var_local_snr())
     {
-      snr = newSNR;
-      needRedraw = true;
+      set_var_local_snr(newSNR);
     }
   }
-  return needRedraw;
 }
 
 void updatePageLocalRadio()
 {
+  uint32_t currentTime = millis();
+  int32_t local_index = get_var_local_index();
+
   if (encoderCount1)
   {
-    doTune(encoderCount1);
-    eepromRequestSave();
+    if (local_index < 0)
+    {
+      doTune(-encoderCount1);
+      eepromRequestSave();
+    }
+    else
+    {
+      local_index = local_index - encoderCount1;
+      if (local_index < 0)
+      {
+        local_index = 9;
+      }
+      else if (local_index > 9)
+      {
+        local_index = 0;
+      }
+      set_var_local_index(local_index);
+    }
   }
 
   if (encoderCount2)
@@ -444,7 +466,7 @@ void updatePageLocalRadio()
 
   if (pb1st.wasClicked)
   {
-    //
+    set_var_local_index(local_index < 0 ? 0 : -1);
   }
 
   if (pb1st.wasShortPressed || pb1st.isLongPressed)
@@ -460,7 +482,10 @@ void updatePageLocalRadio()
 
   if (pb2st.wasClicked)
   {
-    //
+    if (local_index >= 0)
+    {
+      set_var_local_index(-1);
+    }
   }
 
   if (pb2st.wasShortPressed)
@@ -471,5 +496,11 @@ void updatePageLocalRadio()
   if (pb2st.isLongPressed)
   {
     //
+  }
+
+  if ((currentTime - elapsedRSSI) > MIN_ELAPSED_RSSI_TIME)
+  {
+    processRssiSnr();
+    elapsedRSSI = currentTime;
   }
 }
