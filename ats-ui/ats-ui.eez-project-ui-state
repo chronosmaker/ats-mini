@@ -1,11 +1,12 @@
 {
   "navigation": {
     "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
-    "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/4",
-    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/16",
+    "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/0",
+    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/21",
     "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/1",
-    "selectedFontObject": "[ats-ui.eez-project]:/fonts/2",
-    "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/3",
+    "selectedFontObject": "[ats-ui.eez-project]:/fonts/4",
+    "selectedGlyphObject": "[ats-ui.eez-project]:/fonts/0/glyphs/1",
+    "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/18",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
     }
@@ -136,6 +137,7 @@
                   "type": "tabset",
                   "id": "#b94b0058-14ff-4336-ba9d-2be0a19a2c8f",
                   "weight": 0.6774178875019536,
+                  "selected": 1,
                   "enableClose": false,
                   "children": [
                     {
@@ -167,7 +169,7 @@
                 {
                   "type": "tabset",
                   "id": "#b083a100-d8ee-4a16-b105-135f005bfef8",
-                  "weight": 1.2476966407913617,
+                  "weight": 1.3271897785703126,
                   "enableClose": false,
                   "children": [
                     {
@@ -183,7 +185,7 @@
                 {
                   "type": "tabset",
                   "id": "#e1bbee84-2746-4759-98a9-516f7341ba20",
-                  "weight": 1.0748854717066854,
+                  "weight": 0.9953923339277344,
                   "enableClose": false,
                   "children": [
                     {
@@ -201,29 +203,29 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 41.0429748272946,
+              "weight": 46.095802119405285,
               "selected": 2,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
-                  "id": "#069fe379-ac68-43b5-92e6-023d8e7c918d",
-                  "name": "Setting",
+                  "id": "#c357d67d-c1a8-469a-a09d-3eccf65847db",
+                  "name": "header",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[ats-ui.eez-project]:/userPages/5",
+                    "objectPath": "[ats-ui.eez-project]:/userWidgets/0",
                     "permanent": false
                   },
-                  "icon": "svg:page"
+                  "icon": "svg:user_widget"
                 },
                 {
                   "type": "tab",
-                  "id": "#995f7651-a587-482c-ae51-1f5139adc8f8",
-                  "name": "CN_16",
+                  "id": "#3d92948e-a15b-4612-b99a-4dabf002da5c",
+                  "name": "CN_28",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[ats-ui.eez-project]:/fonts/2",
+                    "objectPath": "[ats-ui.eez-project]:/fonts/4",
                     "permanent": false
                   },
                   "icon": "material:font_download"
@@ -245,7 +247,7 @@
             {
               "type": "tabset",
               "id": "#2b6d8aba-d8f7-4a0d-ada0-f2526c4599ab",
-              "weight": 19.733019049883076,
+              "weight": 14.680191757772384,
               "children": [
                 {
                   "type": "tab",
@@ -630,6 +632,7 @@
             {
               "type": "tabset",
               "id": "#97807795-3a22-462b-81f8-43f216c980fa",
+              "weight": 51.663405088062625,
               "enableDrop": false,
               "enableDrag": false,
               "enableClose": false,
@@ -647,6 +650,7 @@
             {
               "type": "tabset",
               "id": "#f87ad907-32ec-45d8-8b4f-3e40598c6b63",
+              "weight": 148.33659491193737,
               "enableDrop": false,
               "enableDrag": false,
               "enableClose": false,
@@ -1128,8 +1132,8 @@
       },
       "transform": {
         "translate": {
-          "x": -160,
-          "y": -12
+          "x": -273.0952380952382,
+          "y": -36.66666666666666
         },
         "scale": 1
       },
@@ -1192,13 +1196,14 @@
           "0": {},
           "1": {},
           "2": {},
-          "7": {}
+          "3": {},
+          "11": {}
         }
       },
       "transform": {
         "translate": {
-          "x": -325,
-          "y": -200
+          "x": -160,
+          "y": -120
         },
         "scale": 1
       },
@@ -1505,7 +1510,9 @@
   "lvglExpandedPropertiesGroup": [
     "TEXT",
     "MISCELLANEOUS",
-    "BORDER"
+    "BORDER",
+    "PADDING",
+    "BACKGROUND"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,

@@ -17,6 +17,15 @@ extern const lv_img_dsc_t img_home;
 extern const lv_img_dsc_t img_speaker;
 extern const lv_img_dsc_t img_wifi;
 extern const lv_img_dsc_t img_radio;
+extern const lv_img_dsc_t img_favorite;
+extern const lv_img_dsc_t img_search;
+extern const lv_img_dsc_t img_manual;
+extern const lv_img_dsc_t img_step;
+extern const lv_img_dsc_t img_band;
+extern const lv_img_dsc_t img_config;
+extern const lv_img_dsc_t img_mode;
+extern const lv_img_dsc_t img_save;
+extern const lv_img_dsc_t img_width;
 
 #ifndef EXT_IMG_DESC_T
 #define EXT_IMG_DESC_T
@@ -26,7 +35,7 @@ typedef struct _ext_img_desc_t {
 } ext_img_desc_t;
 #endif
 
-extern const ext_img_desc_t images[10];
+extern const ext_img_desc_t images[19];
 
 
 #ifdef __cplusplus

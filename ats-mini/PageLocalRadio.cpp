@@ -417,11 +417,13 @@ void processRssiSnr()
     if (newRSSI != get_var_local_rssi())
     {
       set_var_local_rssi(newRSSI);
+      set_var_local_rssi_bar(getRssiBar(newRSSI));
     }
     // Show SNR status only if this condition has changed
     if (newSNR != get_var_local_snr())
     {
       set_var_local_snr(newSNR);
+      set_var_local_snr_bar(getSnrBar(newSNR));
     }
   }
 }

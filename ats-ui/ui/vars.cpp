@@ -257,6 +257,30 @@ extern "C" void set_var_local_rssi(int32_t value)
     local_rssi = value;
 }
 
+int32_t local_snr_bar = 0;
+
+extern "C" int32_t get_var_local_snr_bar()
+{
+    return local_snr_bar;
+}
+
+extern "C" void set_var_local_snr_bar(int32_t value)
+{
+    local_snr_bar = value;
+}
+
+int32_t local_rssi_bar = 0;
+
+extern "C" int32_t get_var_local_rssi_bar()
+{
+    return local_rssi_bar;
+}
+
+extern "C" void set_var_local_rssi_bar(int32_t value)
+{
+    local_rssi_bar = value;
+}
+
 int32_t local_squelch = 0;
 
 extern "C" int32_t get_var_local_squelch()

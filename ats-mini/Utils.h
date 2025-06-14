@@ -13,8 +13,8 @@ const char *getVersion(bool shorter = false);
 // Hardware info
 const char *getMACAddress();
 
-// Convert RSSI to signal strength
-int getStrength(int rssi);
+int getRssiBar(int rssi);
+int getSnrBar(int snr);
 
 // Set, reset, toggle, or query switches
 bool sleepOn(int x = 2);
