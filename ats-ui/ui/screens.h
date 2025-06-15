@@ -17,6 +17,20 @@ typedef struct _objects_t {
     lv_obj_t *main_header;
     lv_obj_t *main_header__time;
     lv_obj_t *main_header__volume;
+    lv_obj_t *obj0;
+    lv_obj_t *obj0__local_select;
+    lv_obj_t *obj0__obj0;
+    lv_obj_t *obj0__obj1;
+    lv_obj_t *obj0__obj2;
+    lv_obj_t *obj0__obj3;
+    lv_obj_t *obj0__obj4;
+    lv_obj_t *obj0__obj5;
+    lv_obj_t *obj0__obj6;
+    lv_obj_t *obj0__obj7;
+    lv_obj_t *obj0__obj8;
+    lv_obj_t *obj0__obj9;
+    lv_obj_t *obj0__obj10;
+    lv_obj_t *obj0__obj11;
     lv_obj_t *local_radio_header;
     lv_obj_t *local_radio_header__time;
     lv_obj_t *local_radio_header__volume;
@@ -34,13 +48,13 @@ typedef struct _objects_t {
     lv_obj_t *time_setting;
     lv_obj_t *screen_setting;
     lv_obj_t *screen_setting__screen_brightness;
-    lv_obj_t *screen_setting__obj0;
-    lv_obj_t *screen_setting__obj1;
-    lv_obj_t *screen_setting__obj2;
+    lv_obj_t *screen_setting__obj12;
+    lv_obj_t *screen_setting__obj13;
+    lv_obj_t *screen_setting__obj14;
     lv_obj_t *screen_setting__screen_off_time;
-    lv_obj_t *screen_setting__obj3;
-    lv_obj_t *screen_setting__obj4;
-    lv_obj_t *screen_setting__obj5;
+    lv_obj_t *screen_setting__obj15;
+    lv_obj_t *screen_setting__obj16;
+    lv_obj_t *screen_setting__obj17;
     lv_obj_t *sleep_setting;
     lv_obj_t *operation_setting;
     lv_obj_t *about_setting;
@@ -52,8 +66,6 @@ typedef struct _objects_t {
     lv_obj_t *index_3;
     lv_obj_t *index_4;
     lv_obj_t *index_5;
-    lv_obj_t *local_select;
-    lv_obj_t *obj0;
     lv_obj_t *obj1;
     lv_obj_t *obj2;
     lv_obj_t *obj3;
@@ -63,13 +75,6 @@ typedef struct _objects_t {
     lv_obj_t *obj7;
     lv_obj_t *obj8;
     lv_obj_t *obj9;
-    lv_obj_t *obj10;
-    lv_obj_t *obj11;
-    lv_obj_t *obj12;
-    lv_obj_t *obj13;
-    lv_obj_t *obj14;
-    lv_obj_t *obj15;
-    lv_obj_t *obj16;
     lv_obj_t *setting_detail_select;
     lv_obj_t *setting_detail_wrap;
 } objects_t;
@@ -111,6 +116,9 @@ void tick_screen_setting();
 
 void create_user_widget_header(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_header(void *flowState, int startWidgetIndex);
+
+void create_user_widget_local_toolbar(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_local_toolbar(void *flowState, int startWidgetIndex);
 
 void create_user_widget_wifi_setting(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_wifi_setting(void *flowState, int startWidgetIndex);

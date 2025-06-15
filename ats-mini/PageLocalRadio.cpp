@@ -445,9 +445,9 @@ void updatePageLocalRadio()
       local_index = local_index - encoderCount1;
       if (local_index < 0)
       {
-        local_index = 9;
+        local_index = 3;
       }
-      else if (local_index > 9)
+      else if (local_index > 3)
       {
         local_index = 0;
       }
