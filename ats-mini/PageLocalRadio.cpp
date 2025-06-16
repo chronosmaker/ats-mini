@@ -109,6 +109,8 @@ bool checkStopSeeking()
 void showFrequencySeek(uint16_t freq)
 {
   set_var_local_frequency(freq);
+  ui_tick();
+  lv_timer_handler();
 }
 
 // Tune using BFO, using algorithm from Goshante's ATS-20_EX firmware
@@ -215,12 +217,6 @@ bool doTune(int8_t dir)
   //
   if (isSSB())
   {
-#ifdef ENABLE_HOLDOFF
-    // Tuning timer to hold off (SSB) display updates
-    tuning_flag = true;
-    tuning_timer = millis();
-#endif
-
     uint32_t step = getCurrentStep()->step;
     uint32_t stepAdjust = (get_var_local_frequency() * 1000 + currentBFO) % step;
     step = !stepAdjust ? step : dir > 0 ? step - stepAdjust
@@ -234,12 +230,6 @@ bool doTune(int8_t dir)
   //
   else
   {
-#ifdef ENABLE_HOLDOFF
-    // Tuning timer to hold off (FM/AM) display updates
-    tuning_flag = true;
-    tuning_timer = millis();
-#endif
-
     // G8PTN: Used in place of rx.frequencyUp() and rx.frequencyDown()
     uint16_t step = getCurrentStep()->step;
     uint16_t stepAdjust = get_var_local_frequency() % step;
@@ -265,12 +255,6 @@ bool doSeek(int8_t dir)
   {
     if (isSSB())
     {
-#ifdef ENABLE_HOLDOFF
-      // Tuning timer to hold off (FM/AM) display updates
-      tuning_flag = true;
-      tuning_timer = millis();
-#endif
-
       updateBFO(currentBFO + dir * getCurrentStep(true)->step, true);
     }
     else
@@ -315,12 +299,6 @@ bool doDigit(int8_t dir)
   // SSB tuning
   if (isSSB())
   {
-#ifdef ENABLE_HOLDOFF
-    // Tuning timer to hold off (SSB) display updates
-    tuning_flag = true;
-    tuning_timer = millis();
-#endif
-
     updated = updateBFO(currentBFO + dir * getFreqInputStep(), false);
   }
 
@@ -329,12 +307,6 @@ bool doDigit(int8_t dir)
   //
   else
   {
-#ifdef ENABLE_HOLDOFF
-    // Tuning timer to hold off (FM/AM) display updates
-    tuning_flag = true;
-    tuning_timer = millis();
-#endif
-
     // Tune to a new frequency
     updated = updateFrequency(get_var_local_frequency() + getFreqInputStep() * dir, false);
   }
@@ -437,27 +409,48 @@ void updatePageLocalRadio()
   {
     if (local_index < 0)
     {
-      doTune(-encoderCount1);
-      eepromRequestSave();
+      int32_t local_seek_index = get_var_local_seek_index();
+      if (local_seek_index == 0)
+      {
+        doSeek(-encoderCount1);
+      }
+      else if (local_seek_index == 1)
+      {
+        doTune(-encoderCount1);
+      }
+      else
+      {
+      }
     }
     else
     {
-      local_index = local_index - encoderCount1;
-      if (local_index < 0)
-      {
-        local_index = 3;
-      }
-      else if (local_index > 3)
-      {
-        local_index = 0;
-      }
-      set_var_local_index(local_index);
+      set_var_local_index(wrap_range(local_index, -encoderCount1, 0, 3));
     }
+    eepromRequestSave();
   }
 
   if (encoderCount2)
   {
-    doVolume(encoderCount2);
+    if (local_index < 0)
+    {
+      doVolume(encoderCount2);
+    }
+    else if (local_index == 0)
+    {
+      set_var_local_seek_index(wrap_range(get_var_local_seek_index(), -encoderCount2, 0, 6));
+    }
+    else if (local_index == 1)
+    {
+      set_var_local_band_index(wrap_range(get_var_local_band_index(), -encoderCount2, 0, 27));
+    }
+    else if (local_index == 2)
+    {
+      set_var_local_bandwidth_index(wrap_range(get_var_local_bandwidth_index(), -encoderCount2, 0, 4));
+    }
+    else if (local_index == 3)
+    {
+      set_var_local_step_index(wrap_range(get_var_local_step_index(), -encoderCount2, 0, 4));
+    }
     eepromRequestSave();
   }
 
@@ -473,6 +466,7 @@ void updatePageLocalRadio()
 
   if (pb1st.wasShortPressed || pb1st.isLongPressed)
   {
+    set_var_local_index(-1);
     eez_flow_set_screen(SCREEN_ID_MAIN, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 200, 0);
     set_var_page_name(PageName_Main);
   }
@@ -490,14 +484,11 @@ void updatePageLocalRadio()
     }
   }
 
-  if (pb2st.wasShortPressed)
+  if (pb2st.wasShortPressed || pb2st.isLongPressed)
   {
-    //
-  }
-
-  if (pb2st.isLongPressed)
-  {
-    //
+    set_var_local_index(-1);
+    eez_flow_set_screen(SCREEN_ID_MAIN, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 200, 0);
+    set_var_page_name(PageName_Main);
   }
 
   if ((currentTime - elapsedRSSI) > MIN_ELAPSED_RSSI_TIME)

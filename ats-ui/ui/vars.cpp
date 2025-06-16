@@ -209,6 +209,54 @@ extern "C" void set_var_local_index(int32_t value)
     local_index = value;
 }
 
+int32_t local_seek_index = 0;
+
+extern "C" int32_t get_var_local_seek_index()
+{
+    return local_seek_index;
+}
+
+extern "C" void set_var_local_seek_index(int32_t value)
+{
+    local_seek_index = value;
+}
+
+int32_t local_band_index = 0;
+
+extern "C" int32_t get_var_local_band_index()
+{
+    return local_band_index;
+}
+
+extern "C" void set_var_local_band_index(int32_t value)
+{
+    local_band_index = value;
+}
+
+int32_t local_bandwidth_index = 0;
+
+extern "C" int32_t get_var_local_bandwidth_index()
+{
+    return local_bandwidth_index;
+}
+
+extern "C" void set_var_local_bandwidth_index(int32_t value)
+{
+    local_bandwidth_index = value;
+}
+
+int32_t local_step_index = 0;
+
+extern "C" int32_t get_var_local_step_index()
+{
+    return local_step_index;
+}
+
+extern "C" void set_var_local_step_index(int32_t value)
+{
+    local_step_index = value;
+}
+
 LocalMode local_mode = LocalMode_FM;
 
 extern "C" LocalMode get_var_local_mode()

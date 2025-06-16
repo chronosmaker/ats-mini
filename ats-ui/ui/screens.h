@@ -20,6 +20,8 @@ typedef struct _objects_t {
     lv_obj_t *obj0;
     lv_obj_t *obj0__local_select;
     lv_obj_t *obj0__obj0;
+    lv_obj_t *obj0__local_seek_image;
+    lv_obj_t *obj0__local_seek_label;
     lv_obj_t *obj0__obj1;
     lv_obj_t *obj0__obj2;
     lv_obj_t *obj0__obj3;
@@ -30,7 +32,6 @@ typedef struct _objects_t {
     lv_obj_t *obj0__obj8;
     lv_obj_t *obj0__obj9;
     lv_obj_t *obj0__obj10;
-    lv_obj_t *obj0__obj11;
     lv_obj_t *local_radio_header;
     lv_obj_t *local_radio_header__time;
     lv_obj_t *local_radio_header__volume;
@@ -48,13 +49,13 @@ typedef struct _objects_t {
     lv_obj_t *time_setting;
     lv_obj_t *screen_setting;
     lv_obj_t *screen_setting__screen_brightness;
+    lv_obj_t *screen_setting__obj11;
     lv_obj_t *screen_setting__obj12;
     lv_obj_t *screen_setting__obj13;
-    lv_obj_t *screen_setting__obj14;
     lv_obj_t *screen_setting__screen_off_time;
+    lv_obj_t *screen_setting__obj14;
     lv_obj_t *screen_setting__obj15;
     lv_obj_t *screen_setting__obj16;
-    lv_obj_t *screen_setting__obj17;
     lv_obj_t *sleep_setting;
     lv_obj_t *operation_setting;
     lv_obj_t *about_setting;

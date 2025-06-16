@@ -1,13 +1,13 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
+    "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/0",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/1",
-    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/16",
+    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/19",
     "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/1",
-    "selectedFontObject": "[ats-ui.eez-project]:/fonts/5",
+    "selectedFontObject": "[ats-ui.eez-project]:/fonts/4",
     "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/18",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Global"
+      "variables-tab/sub-navigation/selected-item": "Local"
     }
   },
   "layoutModel": {
@@ -28,7 +28,6 @@
           },
           {
             "type": "border",
-            "selected": 0,
             "size": 240,
             "location": "right",
             "children": [
@@ -130,7 +129,7 @@
             {
               "type": "row",
               "id": "#042e346d-d7af-407a-83b2-5c42abc3ac7d",
-              "weight": 11.89097589614777,
+              "weight": 12.61668911133628,
               "children": [
                 {
                   "type": "tabset",
@@ -168,7 +167,7 @@
                 {
                   "type": "tabset",
                   "id": "#b083a100-d8ee-4a16-b105-135f005bfef8",
-                  "weight": 1.3271897785703126,
+                  "weight": 1.0264983443629763,
                   "enableClose": false,
                   "children": [
                     {
@@ -179,13 +178,12 @@
                       "enableClose": false,
                       "icon": "svg:hierarchy"
                     }
-                  ],
-                  "active": true
+                  ]
                 },
                 {
                   "type": "tabset",
                   "id": "#e1bbee84-2746-4759-98a9-516f7341ba20",
-                  "weight": 0.9953923339277344,
+                  "weight": 1.2960837681350708,
                   "enableClose": false,
                   "children": [
                     {
@@ -203,18 +201,18 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 46.095802119405285,
-              "selected": 2,
+              "weight": 40.79111986334061,
+              "selected": 1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
                   "id": "#a1540861-8394-489b-a59f-431e18cc4f13",
-                  "name": "CN_14",
+                  "name": "CN_16",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[ats-ui.eez-project]:/fonts/5",
+                    "objectPath": "[ats-ui.eez-project]:/fonts/4",
                     "permanent": false
                   },
                   "icon": "material:font_download"
@@ -241,12 +239,13 @@
                   },
                   "icon": "svg:page"
                 }
-              ]
+              ],
+              "active": true
             },
             {
               "type": "tabset",
               "id": "#2b6d8aba-d8f7-4a0d-ada0-f2526c4599ab",
-              "weight": 14.680191757772384,
+              "weight": 19.259160798648605,
               "children": [
                 {
                   "type": "tab",
@@ -1193,6 +1192,9 @@
       "selection": {
         "0": {
           "5": {},
+          "8": {
+            "$selected": true
+          },
           "9": {}
         }
       },
@@ -1332,15 +1334,17 @@
     },
     "[ats-ui.eez-project]:/userWidgets/1[flow-state]": {
       "selection": {
-        "9": {},
-        "12": {
+        "3": {},
+        "4": {},
+        "7": {},
+        "10": {
           "$selected": true
         }
       },
       "transform": {
         "translate": {
-          "x": -229,
-          "y": -45
+          "x": -234,
+          "y": -161
         },
         "scale": 1
       },
@@ -1500,7 +1504,7 @@
   "replaceEnabled": false,
   "replaceText": "",
   "pageEditorFrontFace": false,
-  "pageRuntimeFrontFace": false,
+  "pageRuntimeFrontFace": true,
   "breakpoints": {},
   "watchExpressions": [],
   "showComponentDescriptions": true,

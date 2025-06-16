@@ -361,14 +361,6 @@ void drawScreen(const char *statusLine1, const char *statusLine2) {
       break;
   }
 
-#ifdef ENABLE_HOLDOFF
-  // Update if not tuning
-  if (!tuning_flag) {
-    spr.pushSprite(0, 0);
-  }
-#else
-  // No hold off
   spr.pushSprite(0, 0);
-#endif
   */
 }

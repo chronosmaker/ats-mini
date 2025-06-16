@@ -452,28 +452,6 @@ uint8_t seekMode(bool toggle)
 }
 
 //
-// Utility functions to change menu values
-//
-
-static inline int min(int x, int y) { return (x < y ? x : y); }
-
-static inline int wrap_range(int v, int dir, int vMin, int vMax)
-{
-  v += dir;
-  v = v > vMax ? vMin + (v - vMax - 1) : v < vMin ? vMax - (vMin - v - 1)
-                                                  : v;
-  return (v);
-}
-
-static inline int clamp_range(int v, int dir, int vMin, int vMax)
-{
-  v += dir;
-  v = v > vMax ? vMax : v < vMin ? vMin
-                                 : v;
-  return (v);
-}
-
-//
 // Encoder input handlers
 //
 

@@ -79,13 +79,10 @@ void updatePageSetting()
     //
   }
 
-  if (pb2st.wasShortPressed)
+  if (pb2st.wasShortPressed || pb2st.isLongPressed)
   {
-    //
-  }
-
-  if (pb2st.isLongPressed)
-  {
-    //
+    set_var_setting_detail_index(-2);
+    set_var_page_name(PageName_Main);
+    eez_flow_set_screen(SCREEN_ID_MAIN, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 200, 0);
   }
 }
