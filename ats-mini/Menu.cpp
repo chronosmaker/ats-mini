@@ -1022,6 +1022,79 @@ bool clickHandler(uint16_t cmd, bool shortPress)
   return (true);
 }
 
+// Switch radio to given band
+void useBand(const Band *band)
+{
+  // Set current frequency and mode, reset BFO
+  set_var_local_frequency(band->currentFreq);
+  currentMode = band->bandMode;
+  currentBFO = 0;
+
+  if (band->bandMode == FM)
+  {
+    rx.setFM(band->minimumFreq, band->maximumFreq, band->currentFreq, getCurrentStep()->step);
+    // rx.setTuneFrequencyAntennaCapacitor(0);
+    rx.setSeekFmLimits(band->minimumFreq, band->maximumFreq);
+
+    // More sensitive seek thresholds
+    // https://github.com/pu2clr/SI4735/issues/7#issuecomment-810963604
+    rx.setSeekFmRssiThreshold(5); // default is 20
+    rx.setSeekFmSNRThreshold(3);  // default is 3
+
+    rx.setFMDeEmphasis(fmRegions[FmRegionIdx].value);
+    rx.RdsInit();
+    rx.setRdsConfig(1, 2, 2, 2, 2);
+    rx.setGpioCtl(1, 0, 0); // G8PTN: Enable GPIO1 as output
+    rx.setGpio(0, 0, 0);    // G8PTN: Set GPIO1 = 0
+  }
+  else
+  {
+    if (band->bandMode == AM)
+    {
+      rx.setAM(band->minimumFreq, band->maximumFreq, band->currentFreq, getCurrentStep()->step);
+      // More sensitive seek thresholds
+      // https://github.com/pu2clr/SI4735/issues/7#issuecomment-810963604
+      rx.setSeekAmRssiThreshold(15); // default is 25
+      rx.setSeekAmSNRThreshold(5);   // default is 5
+    }
+    else
+    {
+      // Configure SI4732 for SSB (SI4732 step not used, set to 0)
+      rx.setSSB(band->minimumFreq, band->maximumFreq, band->currentFreq, 0, currentMode);
+      // G8PTN: Always enabled
+      rx.setSSBAutomaticVolumeControl(1);
+      // G8PTN: Commented out
+      // rx.setSsbSoftMuteMaxAttenuation(softMuteMaxAttIdx);
+      // To move frequency forward, need to move the BFO backwards
+      rx.setSSBBfo(-(currentBFO + band->bandCal));
+    }
+
+    // Set the tuning capacitor for SW or MW/LW
+    // rx.setTuneFrequencyAntennaCapacitor((band->bandType == MW_BAND_TYPE || band->bandType == LW_BAND_TYPE) ? 0 : 1);
+
+    // G8PTN: Enable GPIO1 as output
+    rx.setGpioCtl(1, 0, 0);
+    // G8PTN: Set GPIO1 = 1
+    rx.setGpio(1, 0, 0);
+    // Consider the range all defined current band
+    rx.setSeekAmLimits(band->minimumFreq, band->maximumFreq);
+  }
+
+  // Set step and spacing based on mode (FM, AM, SSB)
+  doStep(0);
+  // Set softMuteMaxAttIdx based on mode (AM, SSB)
+  doSoftMute(0);
+  // Set disableAgc and agcNdx values based on mode (FM, AM , SSB)
+  doAgc(0);
+  // Set currentAVC values based on mode (AM, SSB)
+  doAvc(0);
+  // Wait a bit for things to calm down
+  delay(100);
+  // Clear signal strength readings
+  set_var_local_snr(0);
+  set_var_local_rssi(0);
+}
+
 //
 // Selecting given band
 //
