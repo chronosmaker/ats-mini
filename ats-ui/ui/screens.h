@@ -11,6 +11,7 @@ typedef struct _objects_t {
     lv_obj_t *welcome;
     lv_obj_t *main;
     lv_obj_t *local_radio;
+    lv_obj_t *local_radio_config;
     lv_obj_t *net_radio;
     lv_obj_t *alarm;
     lv_obj_t *setting;
@@ -35,6 +36,9 @@ typedef struct _objects_t {
     lv_obj_t *local_radio_header;
     lv_obj_t *local_radio_header__time;
     lv_obj_t *local_radio_header__volume;
+    lv_obj_t *obj1;
+    lv_obj_t *obj1__time;
+    lv_obj_t *obj1__volume;
     lv_obj_t *net_radio_header;
     lv_obj_t *net_radio_header__time;
     lv_obj_t *net_radio_header__volume;
@@ -67,7 +71,6 @@ typedef struct _objects_t {
     lv_obj_t *index_3;
     lv_obj_t *index_4;
     lv_obj_t *index_5;
-    lv_obj_t *obj1;
     lv_obj_t *obj2;
     lv_obj_t *obj3;
     lv_obj_t *obj4;
@@ -76,6 +79,14 @@ typedef struct _objects_t {
     lv_obj_t *obj7;
     lv_obj_t *obj8;
     lv_obj_t *obj9;
+    lv_obj_t *obj10;
+    lv_obj_t *obj11;
+    lv_obj_t *obj12;
+    lv_obj_t *obj13;
+    lv_obj_t *obj14;
+    lv_obj_t *obj15;
+    lv_obj_t *obj16;
+    lv_obj_t *obj17;
     lv_obj_t *setting_detail_select;
     lv_obj_t *setting_detail_wrap;
 } objects_t;
@@ -86,9 +97,10 @@ enum ScreensEnum {
     SCREEN_ID_WELCOME = 1,
     SCREEN_ID_MAIN = 2,
     SCREEN_ID_LOCAL_RADIO = 3,
-    SCREEN_ID_NET_RADIO = 4,
-    SCREEN_ID_ALARM = 5,
-    SCREEN_ID_SETTING = 6,
+    SCREEN_ID_LOCAL_RADIO_CONFIG = 4,
+    SCREEN_ID_NET_RADIO = 5,
+    SCREEN_ID_ALARM = 6,
+    SCREEN_ID_SETTING = 7,
 };
 
 void create_screen_welcome();
@@ -102,6 +114,10 @@ void tick_screen_main();
 void create_screen_local_radio();
 void delete_screen_local_radio();
 void tick_screen_local_radio();
+
+void create_screen_local_radio_config();
+void delete_screen_local_radio_config();
+void tick_screen_local_radio_config();
 
 void create_screen_net_radio();
 void delete_screen_net_radio();

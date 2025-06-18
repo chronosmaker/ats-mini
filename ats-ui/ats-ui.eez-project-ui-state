@@ -1,13 +1,13 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/0",
+    "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/3",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/1",
-    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/19",
+    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/21",
     "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/1",
     "selectedFontObject": "[ats-ui.eez-project]:/fonts/4",
     "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/18",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Local"
+      "variables-tab/sub-navigation/selected-item": "Global"
     }
   },
   "layoutModel": {
@@ -129,13 +129,12 @@
             {
               "type": "row",
               "id": "#042e346d-d7af-407a-83b2-5c42abc3ac7d",
-              "weight": 12.61668911133628,
+              "weight": 14.833134495760223,
               "children": [
                 {
                   "type": "tabset",
                   "id": "#b94b0058-14ff-4336-ba9d-2be0a19a2c8f",
-                  "weight": 0.6774178875019536,
-                  "selected": 1,
+                  "weight": 0.8260364694030796,
                   "enableClose": false,
                   "children": [
                     {
@@ -167,7 +166,7 @@
                 {
                   "type": "tabset",
                   "id": "#b083a100-d8ee-4a16-b105-135f005bfef8",
-                  "weight": 1.0264983443629763,
+                  "weight": 0.8778797624618503,
                   "enableClose": false,
                   "children": [
                     {
@@ -201,25 +200,14 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 40.79111986334061,
+              "weight": 38.57467447891667,
               "selected": 1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
-                  "id": "#a1540861-8394-489b-a59f-431e18cc4f13",
-                  "name": "CN_16",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[ats-ui.eez-project]:/fonts/4",
-                    "permanent": false
-                  },
-                  "icon": "material:font_download"
-                },
-                {
-                  "type": "tab",
-                  "id": "#49756b55-6dbc-4e93-b24f-ce41eb273c0f",
+                  "id": "#b71b0af2-1de6-48d8-af16-6db1828b01c3",
                   "name": "local_toolbar",
                   "component": "editor",
                   "config": {
@@ -227,6 +215,17 @@
                     "permanent": false
                   },
                   "icon": "svg:user_widget"
+                },
+                {
+                  "type": "tab",
+                  "id": "#82648f8c-1bfc-44d8-afa6-70b00dca4d49",
+                  "name": "LocalRadioConfig",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[ats-ui.eez-project]:/userPages/3",
+                    "permanent": false
+                  },
+                  "icon": "svg:page"
                 },
                 {
                   "type": "tab",
@@ -1200,8 +1199,8 @@
       },
       "transform": {
         "translate": {
-          "x": -328.20000000000005,
-          "y": -141.70000000000005
+          "x": -160,
+          "y": -120
         },
         "scale": 1
       },
@@ -1214,19 +1213,14 @@
     },
     "[ats-ui.eez-project]:/userPages/3[flow-state]": {
       "selection": {
-        "0": {
-          "0": {
-            "$selected": true
-          },
-          "1": {}
-        }
+        "0": {}
       },
       "transform": {
         "translate": {
           "x": -160,
           "y": -120
         },
-        "scale": 1.1
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1248,7 +1242,7 @@
           "x": -50.31343283582089,
           "y": -31.522388059701512
         },
-        "scale": 1.1
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1337,14 +1331,13 @@
         "3": {},
         "4": {},
         "7": {},
-        "10": {
-          "$selected": true
-        }
+        "9": {},
+        "10": {}
       },
       "transform": {
         "translate": {
-          "x": -234,
-          "y": -161
+          "x": -284,
+          "y": -169
         },
         "scale": 1
       },
@@ -1416,14 +1409,19 @@
     },
     "[ats-ui.eez-project]:/userWidgets/5[flow-state]": {
       "selection": {
-        "0": {}
+        "0": {
+          "$selected": true
+        },
+        "1": {
+          "$selected": true
+        }
       },
       "transform": {
         "translate": {
-          "x": -193.96864646464655,
-          "y": -324.99737373737423
+          "x": -56.968646464646554,
+          "y": -7.997373737374232
         },
-        "scale": 1.1
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1495,6 +1493,29 @@
         "secondToPx": 200,
         "scrollLeft": 0
       }
+    },
+    "[ats-ui.eez-project]:/userPages/6[flow-state]": {
+      "selection": {
+        "0": {
+          "0": {},
+          "1": {},
+          "2": {},
+          "3": {}
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -433.2500000000001,
+          "y": -467.5
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
     }
   },
   "activeOutputSection": 0,
@@ -1513,8 +1534,8 @@
   "lvglPart": "MAIN",
   "lvglState": "DEFAULT",
   "lvglExpandedPropertiesGroup": [
-    "BORDER",
-    "TEXT"
+    "TEXT",
+    "BACKGROUND"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
