@@ -11,16 +11,16 @@
 #include "Button.h"
 #include "ExtensionIOXL9555.hpp"
 
-#define RECEIVER_NAME  "ESP32-SI4732 Receiver"
-#define FIRMWARE_NAME  "ATS-Mini"
-#define FIRMWARE_URL   "https://github.com/esp32-si4732/ats-mini"
-#define MANUAL_URL     "https://esp32-si4732.github.io/ats-mini/manual.html"
-#define AUTHORS_LINE1  "Authors: PU2CLR (Ricardo Caratti),"
-#define AUTHORS_LINE2  "Volos Projects, Ralph Xavier, Sunnygold,"
-#define AUTHORS_LINE3  "Goshante, G8PTN (Dave), R9UCL (Max Arnold),"
-#define AUTHORS_LINE4  "Marat Fayzullin"
-#define APP_VERSION    227  // FIRMWARE VERSION
-#define EEPROM_VERSION 71   // EEPROM VERSION (forces reset)
+#define RECEIVER_NAME "ESP32-SI4732 Receiver"
+#define FIRMWARE_NAME "ATS-Mini"
+#define FIRMWARE_URL "https://github.com/esp32-si4732/ats-mini"
+#define MANUAL_URL "https://esp32-si4732.github.io/ats-mini/manual.html"
+#define AUTHORS_LINE1 "Authors: PU2CLR (Ricardo Caratti),"
+#define AUTHORS_LINE2 "Volos Projects, Ralph Xavier, Sunnygold,"
+#define AUTHORS_LINE3 "Goshante, G8PTN (Dave), R9UCL (Max Arnold),"
+#define AUTHORS_LINE4 "Marat Fayzullin"
+#define APP_VERSION 227   // FIRMWARE VERSION
+#define EEPROM_VERSION 71 // EEPROM VERSION (forces reset)
 
 // Modes
 #define FM 0
@@ -29,17 +29,17 @@
 #define AM 3
 
 // RDS Modes
-#define RDS_PS 0b00000001    // Station name
-#define RDS_CT 0b00000010    // Time
-#define RDS_PI 0b00000100    // PI code
-#define RDS_RT 0b00001000    // Radio text
-#define RDS_PT 0b00010000    // Program type
-#define RDS_RBDS 0b00100000  // Use US PTYs
+#define RDS_PS 0b00000001   // Station name
+#define RDS_CT 0b00000010   // Time
+#define RDS_PI 0b00000100   // PI code
+#define RDS_RT 0b00001000   // Radio text
+#define RDS_PT 0b00010000   // Program type
+#define RDS_RBDS 0b00100000 // Use US PTYs
 
 // Sleep modes
-#define SLEEP_LOCKED 0    // Lock the encoder
-#define SLEEP_UNLOCKED 1  // Do not lock the encoder
-#define SLEEP_LIGHT 2     // ESP32 light sleep
+#define SLEEP_LOCKED 0   // Lock the encoder
+#define SLEEP_UNLOCKED 1 // Do not lock the encoder
+#define SLEEP_LIGHT 2    // ESP32 light sleep
 
 // SI4732/5 PINs
 // #define PIN_POWER_ON  15            // GPIO15   External LDO regulator enable (1 = Enable)
@@ -49,36 +49,36 @@
 // #define AUDIO_MUTE     3            // GPIO3    Hardware L/R mute, controlled via SI4735 code (1 = Mute)
 // #define PIN_AMP_EN    10            // GPIO10   Hardware Audio Amplifer enable (1 = Enable)
 
-#define ESP32_I2C_SDA 17  // GPIO17   SI4732/5 Data
-#define ESP32_I2C_SCL 18  // GPIO18   SI4732/5 Clock
-#define AUDIO_MUTE 13     // GPIO13   Hardware L/R mute, controlled via SI4735 code (1 = Mute)
-#define RESET_PIN 16      // GPIO16   SI4732/5 Reset
+#define ESP32_I2C_SDA 17 // GPIO17   SI4732/5 Data
+#define ESP32_I2C_SCL 18 // GPIO18   SI4732/5 Clock
+#define AUDIO_MUTE 13    // GPIO13   Hardware L/R mute, controlled via SI4735 code (1 = Mute)
+#define RESET_PIN 16     // GPIO16   SI4732/5 Reset
 
 #define PIN_PCM5102A_DIN 11
 #define PIN_PCM5102A_BCLK 10
 #define PIN_PCM5102A_LRCLK 12
 
 // Display PINs
-#define PIN_LCD_BL 38  // GPIO38   LCD backlight (PWM brightness control)
+#define PIN_LCD_BL 38 // GPIO38   LCD backlight (PWM brightness control)
 // All other pins are defined by the TFT_eSPI library
 
 // Rotary Enconder PINs
 // #define ENCODER_PIN_A  2            // GPIO02
 // #define ENCODER_PIN_B  1            // GPIO01
 // #define ENCODER_PUSH_BUTTON 21      // GPIO21
-#define ENCODER1_PIN_A 21  // GPIO21
-#define ENCODER1_PIN_B 14  // GPIO14
-#define ENCODER2_PIN_A 1   // GPIO01
-#define ENCODER2_PIN_B 2   // GPIO02
+#define ENCODER1_PIN_A 21 // GPIO21
+#define ENCODER1_PIN_B 14 // GPIO14
+#define ENCODER2_PIN_A 1  // GPIO01
+#define ENCODER2_PIN_B 2  // GPIO02
 
 // 扩展IO配置参数
-#define TCA9555_ADDR 0x20  // 默认I2C地址 (A0-A2接地)
-#define IOINT_PIN 15       // 中断引脚连接 GPIO15
+#define TCA9555_ADDR 0x20 // 默认I2C地址 (A0-A2接地)
+#define IOINT_PIN 15      // 中断引脚连接 GPIO15
 // 引脚定义
-#define PIN_RADIO_EN 8  // External LDO regulator enable (1 = Enable)
+#define PIN_RADIO_EN 8 // External LDO regulator enable (1 = Enable)
 #define PIN_PCM5102_EN 9
 #define PIN_MAX97220_EN 12
-#define PIN_NS4160_EN 13  // Hardware Audio Amplifer enable (1 = Enable)
+#define PIN_NS4160_EN 13 // Hardware Audio Amplifer enable (1 = Enable)
 #define PIN_BT_CON 14
 #define PCF85063_INT 15
 #define ENCODER1_PUSH_BUTTON 10
@@ -89,15 +89,15 @@
 #define LAST_ITEM(array) (ITEM_COUNT(array) - 1)
 
 // BFO and Calibration limits (MAX_BFO + MAX_CAL <= 16000)
-#define MAX_BFO 14000  // Maximum range for currentBFO = +/- MAX_BFO
-#define MAX_CAL 2000   // Maximum range for currentCAL = +/- MAX_CAL
+#define MAX_BFO 14000 // Maximum range for currentBFO = +/- MAX_BFO
+#define MAX_CAL 2000  // Maximum range for currentCAL = +/- MAX_CAL
 
 // Network connection modes
-#define NET_OFF 0         // Do not connect to the network
-#define NET_AP_ONLY 1     // Create access point, do not connect to network
-#define NET_AP_CONNECT 2  // Create access point, connect to a network normally, if possible
-#define NET_CONNECT 3     // Connect to a network normally, if possible
-#define NET_SYNC 4        // Connect to sync time, then disconnect
+#define NET_OFF 0        // Do not connect to the network
+#define NET_AP_ONLY 1    // Create access point, do not connect to network
+#define NET_AP_CONNECT 2 // Create access point, connect to a network normally, if possible
+#define NET_CONNECT 3    // Connect to a network normally, if possible
+#define NET_SYNC 4       // Connect to sync time, then disconnect
 
 //
 // Data Types
@@ -116,35 +116,49 @@ typedef struct
 
 typedef struct
 {
-  const char *bandName;   // Band description
-  uint8_t bandType;       // Band type (FM, MW, or SW)
-  uint8_t bandMode;       // Band mode (FM, AM, LSB, or USB)
-  uint16_t minimumFreq;   // Minimum frequency of the band
-  uint16_t maximumFreq;   // Maximum frequency of the band
-  uint16_t currentFreq;   // Default frequency or current frequency
-  int8_t currentStepIdx;  // Default frequency step
-  int8_t bandwidthIdx;    // Index of the table bandwidthFM, bandwidthAM or bandwidthSSB;
-  int16_t bandCal;        // Calibration value
+  const char *bandName;  // Band description
+  uint8_t bandType;      // Band type (FM, MW, or SW)
+  uint8_t bandMode;      // Band mode (FM, AM, LSB, or USB)
+  uint16_t minimumFreq;  // Minimum frequency of the band
+  uint16_t maximumFreq;  // Maximum frequency of the band
+  uint16_t currentFreq;  // Default frequency or current frequency
+  int8_t currentStepIdx; // Default frequency step
+  int8_t bandwidthIdx;   // Index of the table bandwidthFM, bandwidthAM or bandwidthSSB;
+  int16_t bandCal;       // Calibration value
 } Band;
 
-typedef struct __attribute__((packed)) {
-  uint16_t freq;      // Frequency
-  uint8_t band;       // Band
-  uint8_t mode : 4;   // Modulation
-  uint8_t hz100 : 4;  // Hz * 100
+typedef struct
+{
+  uint8_t idx;      // SI473X device bandwidth index
+  const char *desc; // Bandwidth description
+} Bandwidth;
+
+typedef struct
+{
+  int step;         // Step
+  const char *desc; // Step description
+  uint8_t spacing;  // Seek spacing
+} Step;
+
+typedef struct __attribute__((packed))
+{
+  uint16_t freq;     // Frequency
+  uint8_t band;      // Band
+  uint8_t mode : 4;  // Modulation
+  uint8_t hz100 : 4; // Hz * 100
 } Memory;
 
 typedef struct
 {
-  uint16_t freq;     // Frequency
-  const char *name;  // Frequency name
+  uint16_t freq;    // Frequency
+  const char *name; // Frequency name
 } NamedFreq;
 
 typedef struct
 {
-  int8_t offset;     // UTC offset in 30 minute intervals
-  const char *desc;  // Short description
-  const char *city;  // City name
+  int8_t offset;    // UTC offset in 30 minute intervals
+  const char *desc; // Short description
+  const char *city; // City name
 } UTCOffset;
 
 typedef struct
@@ -204,7 +218,8 @@ extern uint8_t disableAgc;
 
 extern const int CALMax;
 
-static inline bool isSSB() {
+static inline bool isSSB()
+{
   return (currentMode > FM && currentMode < AM);
 }
 
@@ -258,4 +273,4 @@ int remoteDoCommand(char key);
 char readSerialChar();
 #endif
 
-#endif  // COMMON_H
+#endif // COMMON_H

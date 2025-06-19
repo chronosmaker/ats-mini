@@ -64,7 +64,7 @@ int8_t SsbAvcIdx = 48; // Default SSB = 48, range = 12 to 90 in steps of 2
 int8_t AmSoftMuteIdx = 4;  // Default AM  = 4, range = 0 to 32
 int8_t SsbSoftMuteIdx = 4; // Default SSB = 4, range = 0 to 32
 
-uint8_t FmRegionIdx = 0;    // FM Region
+uint8_t FmRegionIdx = 0; // FM Region
 
 uint16_t currentSleep = DEFAULT_SLEEP; // Display sleep timeout, range = 0 to 255 in steps of 5
 long elapsedSleep = millis();          // Display sleep timer

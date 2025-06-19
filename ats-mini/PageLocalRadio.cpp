@@ -365,18 +365,21 @@ void updatePageLocalRadio()
     else if (local_index == 0)
     {
       set_var_local_seek_index(wrap_range(get_var_local_seek_index(), -encoderCount2, 0, 6));
+      set_var_local_step_index(0);
     }
     else if (local_index == 1)
     {
       set_var_local_band_index(wrap_range(get_var_local_band_index(), -encoderCount2, 0, 27));
+      set_var_local_step_index(0);
     }
     else if (local_index == 2)
     {
-      set_var_local_bandwidth_index(wrap_range(get_var_local_bandwidth_index(), -encoderCount2, 0, 4));
+      set_var_local_mode_index(wrap_range(get_var_local_mode_index(), -encoderCount2, 0, 3));
+      set_var_local_step_index(0);
     }
     else if (local_index == 3)
     {
-      set_var_local_step_index(wrap_range(get_var_local_step_index(), -encoderCount2, 0, 4));
+      set_var_local_step_index(wrap_range(get_var_local_step_index(), -encoderCount2, 0, getTotalSteps() - 1));
     }
     eepromRequestSave();
   }

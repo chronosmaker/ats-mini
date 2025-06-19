@@ -440,7 +440,7 @@ int getRssiBar(int rssi)
   const int *thresholds;
   const int *values;
 
-  if (get_var_local_mode() != FM)
+  if (get_var_local_mode_index() != FM)
   {
     num_thresholds = ITEM_COUNT(am_thresholds);
     thresholds = am_thresholds;

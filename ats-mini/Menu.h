@@ -57,19 +57,6 @@
 
 typedef struct
 {
-  uint8_t idx;      // SI473X device bandwidth index
-  const char *desc; // Bandwidth description
-} Bandwidth;
-
-typedef struct
-{
-  int step;         // Step
-  const char *desc; // Step description
-  uint8_t spacing;  // Seek spacing
-} Step;
-
-typedef struct
-{
   uint8_t mode;     // Combination of RDS_* values
   const char *desc; // Mode description
 } RDSMode;
@@ -79,6 +66,9 @@ typedef struct
 //
 
 extern Band bands[];
+extern Step fmSteps[];
+extern Step ssbSteps[];
+extern Step amSteps[];
 extern Memory memories[];
 extern const UTCOffset utcOffsets[];
 extern const char *bandModeDesc[];
@@ -126,6 +116,7 @@ void doSelectDigit(int dir);
 bool clickHandler(uint16_t cmd, bool shortPress);
 void selectBand(uint8_t idx, bool drawLoadingSSB = true);
 int getTotalBands();
+int getTotalSteps();
 int getTotalModes();
 int getTotalMemories();
 Band *getCurrentBand();

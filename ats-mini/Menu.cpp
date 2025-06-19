@@ -40,13 +40,6 @@ Band bands[] =
         {"60M", SW_BAND_TYPE, AM, 4000, 5100, 4950, 1, 4, 0},
         {"75M", SW_BAND_TYPE, AM, 3500, 4000, 3950, 1, 4, 0},
         {"90M", SW_BAND_TYPE, AM, 3000, 3500, 3300, 1, 4, 0},
-        //  {"25M",  SW_BAND_TYPE, AM,  11600, 12100, 11850, 1, 4, 0},
-        //  {"31M",  SW_BAND_TYPE, AM,   9400,  9900,  9650, 1, 4, 0},
-        //  {"41M",  SW_BAND_TYPE, AM,   7200,  7500,  7300, 1, 4, 0},
-        //  {"49M",  SW_BAND_TYPE, AM,   5900,  6200,  6000, 1, 4, 0},
-        //  {"60M",  SW_BAND_TYPE, AM,   4700,  5100,  4950, 1, 4, 0},
-        //  {"75M",  SW_BAND_TYPE, AM,   3900,  4000,  3950, 1, 4, 0},
-        //  {"90M",  SW_BAND_TYPE, AM,   3200,  3400,  3300, 1, 4, 0},
         {"MW3", MW_BAND_TYPE, AM, 1700, 3500, 2500, 1, 4, 0},
         {"MW2", MW_BAND_TYPE, AM, 495, 1701, 783, 2, 4, 0},
         {"MW1", MW_BAND_TYPE, AM, 150, 1800, 810, 3, 4, 0},
@@ -304,6 +297,22 @@ const Step *getCurrentStep(bool fast)
 {
   uint8_t idx = stepIdx[currentMode];
   return (&steps[currentMode][fast && isSSB() ? ssbFastSteps[idx] : idx]);
+}
+
+int getTotalSteps()
+{
+  switch (currentMode)
+  {
+  case FM:
+    return (ITEM_COUNT(fmSteps));
+  case LSB:
+    return (ITEM_COUNT(ssbSteps));
+  case USB:
+    return (ITEM_COUNT(ssbSteps));
+  case AM:
+    return (ITEM_COUNT(amSteps));
+  }
+  return 0;
 }
 
 static int getLastStep(int mode)
