@@ -14,6 +14,7 @@ typedef enum {
     PageName_Welcome = 0,
     PageName_Main = 1,
     PageName_LocalRadio = 2,
+    PageName_LocalRadioConfig = 13,
     PageName_NetRadio = 3,
     PageName_Alarm = 4,
     PageName_Setting = 5,
@@ -26,17 +27,18 @@ typedef enum {
     PageName_SettingAbout = 12
 } PageName;
 
-typedef enum {
-    LocalMode_FM = 0,
-    LocalMode_LSB = 1,
-    LocalMode_USB = 2,
-    LocalMode_AM = 3
-} LocalMode;
-
 // Flow global variables
 
 enum FlowGlobalVariables {
-    FLOW_GLOBAL_VARIABLE_NONE
+    FLOW_GLOBAL_VARIABLE_LOCAL_SEEK_OPTIONS = 0,
+    FLOW_GLOBAL_VARIABLE_LOCAL_BAND_OPTIONS = 1,
+    FLOW_GLOBAL_VARIABLE_LOCAL_MODE_OPTIONS = 2,
+    FLOW_GLOBAL_VARIABLE_LOCAL_FMSTEP_OPTIONS = 3,
+    FLOW_GLOBAL_VARIABLE_LOCAL_SSBSTEP_OPTIONS = 4,
+    FLOW_GLOBAL_VARIABLE_LOCAL_AMSTEP_OPTIONS = 5,
+    FLOW_GLOBAL_VARIABLE_LOCAL_FMBANDWIDTH_OPTIONS = 6,
+    FLOW_GLOBAL_VARIABLE_LOCAL_SSBBANDWIDTH_OPTIONS = 7,
+    FLOW_GLOBAL_VARIABLE_LOCAL_AMBANDWIDTH_OPTIONS = 8
 };
 
 // Native global variables
@@ -79,12 +81,14 @@ extern int32_t get_var_local_seek_index();
 extern void set_var_local_seek_index(int32_t value);
 extern int32_t get_var_local_band_index();
 extern void set_var_local_band_index(int32_t value);
-extern int32_t get_var_local_bandwidth_index();
-extern void set_var_local_bandwidth_index(int32_t value);
+extern int32_t get_var_local_mode_index();
+extern void set_var_local_mode_index(int32_t value);
 extern int32_t get_var_local_step_index();
 extern void set_var_local_step_index(int32_t value);
-extern LocalMode get_var_local_mode();
-extern void set_var_local_mode(LocalMode value);
+extern int32_t get_var_local_bandwidth_index();
+extern void set_var_local_bandwidth_index(int32_t value);
+extern int32_t get_var_local_region_index();
+extern void set_var_local_region_index(int32_t value);
 extern int32_t get_var_local_frequency();
 extern void set_var_local_frequency(int32_t value);
 extern int32_t get_var_local_snr();

@@ -64,7 +64,7 @@ static void event_handler_cb_local_toolbar_obj7(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_roller_get_selected(ta);
-            assignIntegerProperty(flowState, 15, 4, value, "Failed to assign Selected in Roller widget");
+            assignIntegerProperty(flowState, 15, 5, value, "Failed to assign Selected in Roller widget");
         }
     }
 }
@@ -78,7 +78,7 @@ static void event_handler_cb_local_toolbar_obj8(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_roller_get_selected(ta);
-            assignIntegerProperty(flowState, 16, 4, value, "Failed to assign Selected in Roller widget");
+            assignIntegerProperty(flowState, 16, 5, value, "Failed to assign Selected in Roller widget");
         }
     }
 }
@@ -1313,7 +1313,7 @@ void create_user_widget_local_toolbar(lv_obj_t *parent_obj, void *flowState, int
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xff81d8cf), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &ui_font_cn_16, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "VHF");
+                    lv_label_set_text(obj, "");
                 }
             }
         }
@@ -1390,7 +1390,7 @@ void create_user_widget_local_toolbar(lv_obj_t *parent_obj, void *flowState, int
             ((lv_obj_t **)&objects)[startWidgetIndex + 10] = obj;
             lv_obj_set_pos(obj, 0, 32);
             lv_obj_set_size(obj, 77, 182);
-            lv_roller_set_options(obj, "自动搜索\n手动搜索\n01-89.50\n02-101.20\n03-102.00\n04-_____\n05-_____", LV_ROLLER_MODE_INFINITE);
+            lv_roller_set_options(obj, "", LV_ROLLER_MODE_INFINITE);
             lv_obj_add_event_cb(obj, event_handler_cb_local_toolbar_obj7, LV_EVENT_ALL, flowState);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xff000000), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_border_color(obj, lv_color_hex(0xff2e4150), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1404,7 +1404,7 @@ void create_user_widget_local_toolbar(lv_obj_t *parent_obj, void *flowState, int
             ((lv_obj_t **)&objects)[startWidgetIndex + 11] = obj;
             lv_obj_set_pos(obj, 81, 32);
             lv_obj_set_size(obj, 77, 182);
-            lv_roller_set_options(obj, "VHF (FM)\nALL (AM)\n11M (AM)\n13M (AM)\n15M (AM)\n16M (AM)\n19M (AM)\n22M (AM)\n25M (AM)\n31M (AM)\n41M (AM)\n49M (AM)\n60M (AM)\n75M (AM)\n90M (AM)\nMW3 (AM)\nMW2 (AM)\nMW1 (AM)\n160M (LSB)\n80M (LSB)\n40M (LSB)\n30M (LSB)\n20M (USB)\n17M (USB)\n15M (USB)\n12M (USB)\n10M (USB)\nCB (AM)", LV_ROLLER_MODE_INFINITE);
+            lv_roller_set_options(obj, "", LV_ROLLER_MODE_INFINITE);
             lv_obj_add_event_cb(obj, event_handler_cb_local_toolbar_obj8, LV_EVENT_ALL, flowState);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xff000000), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_border_color(obj, lv_color_hex(0xff2e4150), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1448,6 +1448,15 @@ void tick_user_widget_local_toolbar(void *flowState, int startWidgetIndex) {
     (void)flowState;
     (void)startWidgetIndex;
     {
+        const char *new_val = evalTextProperty(flowState, 6, 3, "Failed to evaluate Text in Label widget");
+        const char *cur_val = lv_label_get_text(((lv_obj_t **)&objects)[startWidgetIndex + 5]);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 5];
+            lv_label_set_text(((lv_obj_t **)&objects)[startWidgetIndex + 5], new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
         const char *new_val = evalTextProperty(flowState, 9, 3, "Failed to evaluate Text in Label widget");
         const char *cur_val = lv_label_get_text(((lv_obj_t **)&objects)[startWidgetIndex + 7]);
         if (strcmp(new_val, cur_val) != 0) {
@@ -1476,8 +1485,17 @@ void tick_user_widget_local_toolbar(void *flowState, int startWidgetIndex) {
         }
     }
     {
+        const char *new_val = evalStringArrayPropertyAndJoin(flowState, 15, 4, "Failed to evaluate Options in Roller widget", "\n");
+        const char *cur_val = lv_roller_get_options(((lv_obj_t **)&objects)[startWidgetIndex + 10]);
+        if (compareRollerOptions((lv_roller_t *)((lv_obj_t **)&objects)[startWidgetIndex + 10], new_val, cur_val, LV_ROLLER_MODE_INFINITE) != 0) {
+            tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 10];
+            lv_roller_set_options(((lv_obj_t **)&objects)[startWidgetIndex + 10], new_val, LV_ROLLER_MODE_INFINITE);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
         if (!(lv_obj_get_state(((lv_obj_t **)&objects)[startWidgetIndex + 10]) & LV_STATE_EDITED)) {
-            int32_t new_val = evalIntegerProperty(flowState, 15, 4, "Failed to evaluate Selected in Roller widget");
+            int32_t new_val = evalIntegerProperty(flowState, 15, 5, "Failed to evaluate Selected in Roller widget");
             int32_t cur_val = lv_roller_get_selected(((lv_obj_t **)&objects)[startWidgetIndex + 10]);
             if (new_val != cur_val) {
                 tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 10];
@@ -1497,8 +1515,17 @@ void tick_user_widget_local_toolbar(void *flowState, int startWidgetIndex) {
         }
     }
     {
+        const char *new_val = evalStringArrayPropertyAndJoin(flowState, 16, 4, "Failed to evaluate Options in Roller widget", "\n");
+        const char *cur_val = lv_roller_get_options(((lv_obj_t **)&objects)[startWidgetIndex + 11]);
+        if (compareRollerOptions((lv_roller_t *)((lv_obj_t **)&objects)[startWidgetIndex + 11], new_val, cur_val, LV_ROLLER_MODE_INFINITE) != 0) {
+            tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 11];
+            lv_roller_set_options(((lv_obj_t **)&objects)[startWidgetIndex + 11], new_val, LV_ROLLER_MODE_INFINITE);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
         if (!(lv_obj_get_state(((lv_obj_t **)&objects)[startWidgetIndex + 11]) & LV_STATE_EDITED)) {
-            int32_t new_val = evalIntegerProperty(flowState, 16, 4, "Failed to evaluate Selected in Roller widget");
+            int32_t new_val = evalIntegerProperty(flowState, 16, 5, "Failed to evaluate Selected in Roller widget");
             int32_t cur_val = lv_roller_get_selected(((lv_obj_t **)&objects)[startWidgetIndex + 11]);
             if (new_val != cur_val) {
                 tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 11];
