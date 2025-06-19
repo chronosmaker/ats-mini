@@ -66,9 +66,6 @@ typedef struct
 //
 
 extern Band bands[];
-extern Step fmSteps[];
-extern Step ssbSteps[];
-extern Step amSteps[];
 extern Memory memories[];
 extern const UTCOffset utcOffsets[];
 extern const char *bandModeDesc[];
