@@ -22,17 +22,13 @@
 #include "PageSettingAbout.h"
 
 // SI473/5 and UI
-#define MIN_ELAPSED_TIME 5           // 300
-#define ELAPSED_COMMAND 10000        // time to turn off the last command controlled by encoder. Time to goes back to the VFO control // G8PTN: Increased time and corrected comment
-#define DEFAULT_VOLUME 15            // change it for your favorite sound volume
-#define DEFAULT_SLEEP 0              // Default sleep interval, range = 0 (off) to 255 in steps of 5
-#define STRENGTH_CHECK_TIME 1500     // Not used
-#define RDS_CHECK_TIME 250           // Increased from 90
-#define SEEK_TIMEOUT 600000          // Max seek timeout (ms)
-#define NTP_CHECK_TIME 60000         // NTP time refresh period (ms)
-#define SCHEDULE_CHECK_TIME 2000     // How often to identify the same frequency (ms)
-#define BACKGROUND_REFRESH_TIME 5000 // Background screen refresh time. Covers the situation where there are no other events causing a refresh
-#define TUNE_HOLDOFF_TIME 90         // Timer to hold off display whilst tuning
+#define ELAPSED_COMMAND 10000    // time to turn off the last command controlled by encoder. Time to goes back to the VFO control // G8PTN: Increased time and corrected comment
+#define DEFAULT_VOLUME 15        // change it for your favorite sound volume
+#define DEFAULT_SLEEP 0          // Default sleep interval, range = 0 (off) to 255 in steps of 5
+#define RDS_CHECK_TIME 250       // Increased from 90
+#define SEEK_TIMEOUT 600000      // Max seek timeout (ms)
+#define NTP_CHECK_TIME 60000     // NTP time refresh period (ms)
+#define SCHEDULE_CHECK_TIME 2000 // How often to identify the same frequency (ms)
 
 // =================================
 // CONSTANTS AND VARIABLES
@@ -44,7 +40,6 @@ int8_t softMuteMaxAttIdx = 4;
 
 long elapsedButton = millis();
 
-long lastStrengthCheck = millis();
 long lastRDSCheck = millis();
 long lastNTPCheck = millis();
 long lastScheduleCheck = millis();
@@ -68,21 +63,11 @@ uint8_t FmRegionIdx = 0; // FM Region
 
 uint16_t currentSleep = DEFAULT_SLEEP; // Display sleep timeout, range = 0 to 255 in steps of 5
 long elapsedSleep = millis();          // Display sleep timer
-bool zoomMenu = false;                 // Display zoomed menu item
 int8_t scrollDirection = 1;            // Menu scroll direction
-
-// Background screen refresh
-uint32_t background_timer = millis(); // Background screen refresh timer.
-uint32_t tuning_timer = millis();     // Tuning hold off timer.
-bool tuning_flag = false;             // Flag to indicate tuning
 
 //
 // Current parameters
 //
-uint16_t currentCmd = CMD_NONE;
-uint8_t currentMode = FM;
-int16_t currentBFO = 0;
-
 bool ioInterrupt = false;
 
 volatile int encoderCount1 = 0;

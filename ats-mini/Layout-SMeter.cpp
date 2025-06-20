@@ -124,7 +124,7 @@ void drawLayoutSmeter(const char *statusLine1, const char *statusLine2)
   // Draw band and mode
   drawBandAndMode(
     getCurrentBand()->bandName,
-    bandModeDesc[currentMode],
+    bandModeDesc[get_var_local_mode_index()],
     BAND_OFFSET_X, BAND_OFFSET_Y
   );
 
@@ -150,14 +150,14 @@ void drawLayoutSmeter(const char *statusLine1, const char *statusLine2)
     drawStationName(getStationName(), RDS_OFFSET_X, RDS_OFFSET_Y);
 
   // Draw band scale
-  drawSmallScale(isSSB()? (currentFrequency + currentBFO/1000) : currentFrequency, 120);
+  drawSmallScale(isSSB()? (currentFrequency + get_var_local_bfo()/1000) : currentFrequency, 120);
 
   // Draw left-side menu/info bar
   // @@@ FIXME: Frequency display (above) intersects the side bar!
   drawSideBar(currentCmd, ALT_MENU_OFFSET_X, ALT_MENU_OFFSET_Y, MENU_DELTA_X);
 
   // Indicate FM pilot detection (stereo indicator)
-  drawAltStereoIndicator(ALT_STEREO_OFFSET_X, ALT_STEREO_OFFSET_Y, (currentMode==FM) && rx.getCurrentPilot());
+  drawAltStereoIndicator(ALT_STEREO_OFFSET_X, ALT_STEREO_OFFSET_Y, (get_var_local_mode_index()==FM) && rx.getCurrentPilot());
 
   if(!drawWiFiStatus(statusLine1, statusLine2, STATUS_OFFSET_X, STATUS_OFFSET_Y))
   {

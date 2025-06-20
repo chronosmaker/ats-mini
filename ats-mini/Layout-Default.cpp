@@ -22,7 +22,7 @@ void drawLayoutDefault(const char *statusLine1, const char *statusLine2)
   // Draw band and mode
   drawBandAndMode(
     getCurrentBand()->bandName,
-    bandModeDesc[currentMode],
+    bandModeDesc[get_var_local_mode_index()],
     BAND_OFFSET_X, BAND_OFFSET_Y
   );
 
@@ -55,7 +55,7 @@ void drawLayoutDefault(const char *statusLine1, const char *statusLine2)
   drawSMeter(getStrength(rssi), METER_OFFSET_X, METER_OFFSET_Y);
 
   // Indicate FM pilot detection (stereo indicator)
-  drawStereoIndicator(METER_OFFSET_X, METER_OFFSET_Y, (currentMode==FM) && rx.getCurrentPilot());
+  drawStereoIndicator(METER_OFFSET_X, METER_OFFSET_Y, (get_var_local_mode_index()==FM) && rx.getCurrentPilot());
 
   if(!drawWiFiStatus(statusLine1, statusLine2, STATUS_OFFSET_X, STATUS_OFFSET_Y))
   {
@@ -63,7 +63,7 @@ void drawLayoutDefault(const char *statusLine1, const char *statusLine2)
     if(*getRadioText() || *getProgramInfo())
       drawRadioText(STATUS_OFFSET_Y, STATUS_OFFSET_Y + 25);
     else
-      drawScale(isSSB()? (currentFrequency + currentBFO/1000) : currentFrequency);
+      drawScale(isSSB()? (currentFrequency + get_var_local_bfo()/1000) : currentFrequency);
   }
   */
 }

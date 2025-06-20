@@ -130,18 +130,18 @@ void eepromSaveConfig()
 {
   // G8PTN: For SSB ensures BFO value is valid with respect to
   // bands[bandIdx].currentFreq = currentFrequency
-  int16_t currentBFOs = currentBFO % 1000;
+  int16_t currentBFOs = get_var_local_bfo() % 1000;
   int addr = EEPROM_BASE_ADDR;
 
   EEPROM.begin(EEPROM_SIZE);
 
-  EEPROM.write(addr++, EEPROM_VERSION);           // Stores the EEPROM_VERSION;
-  EEPROM.write(addr++, get_var_speaker_volume()); // Stores the current Volume
-  EEPROM.write(addr++, bandIdx);                  // Stores the current band
-  EEPROM.write(addr++, wifiModeIdx);              // Stores WiFi connection mode
-  EEPROM.write(addr++, currentMode);              // Stores the current mode (FM / AM / LSB / USB). Now per mode, leave for compatibility
-  EEPROM.write(addr++, currentBFOs >> 8);         // G8PTN: Stores the current BFO % 1000 (HIGH byte)
-  EEPROM.write(addr++, currentBFOs & 0XFF);       // G8PTN: Stores the current BFO % 1000 (LOW byte)
+  EEPROM.write(addr++, EEPROM_VERSION);             // Stores the EEPROM_VERSION;
+  EEPROM.write(addr++, get_var_speaker_volume());   // Stores the current Volume
+  EEPROM.write(addr++, bandIdx);                    // Stores the current band
+  EEPROM.write(addr++, wifiModeIdx);                // Stores WiFi connection mode
+  EEPROM.write(addr++, get_var_local_mode_index()); // Stores the current mode (FM / AM / LSB / USB). Now per mode, leave for compatibility
+  EEPROM.write(addr++, currentBFOs >> 8);           // G8PTN: Stores the current BFO % 1000 (HIGH byte)
+  EEPROM.write(addr++, currentBFOs & 0XFF);         // G8PTN: Stores the current BFO % 1000 (LOW byte)
   EEPROM.commit();
 
   // G8PTN: Commented out the assignment
@@ -175,26 +175,26 @@ void eepromSaveConfig()
   // G8PTN: Added
   addr = EEPROM_SET_ADDR;
   int32_t currentBrt = get_var_screen_brightness();
-  EEPROM.write(addr++, currentBrt >> 8);             // Stores the current Brightness value (HIGH byte)
-  EEPROM.write(addr++, currentBrt & 0XFF);           // Stores the current Brightness value (LOW byte)
-  EEPROM.write(addr++, FmAgcIdx);                    // Stores the current FM AGC/ATTN index value
-  EEPROM.write(addr++, AmAgcIdx);                    // Stores the current AM AGC/ATTN index value
-  EEPROM.write(addr++, SsbAgcIdx);                   // Stores the current SSB AGC/ATTN index value
-  EEPROM.write(addr++, AmAvcIdx);                    // Stores the current AM AVC index value
-  EEPROM.write(addr++, SsbAvcIdx);                   // Stores the current SSB AVC index value
-  EEPROM.write(addr++, AmSoftMuteIdx);               // Stores the current AM SoftMute index value
-  EEPROM.write(addr++, SsbSoftMuteIdx);              // Stores the current SSB SoftMute index value
-  EEPROM.write(addr++, currentSleep >> 8);           // Stores the current Sleep value (HIGH byte)
-  EEPROM.write(addr++, currentSleep & 0XFF);         // Stores the current Sleep value (LOW byte)
-  EEPROM.write(addr++, themeIdx);                    // Stores the current Theme index value
-  EEPROM.write(addr++, rdsModeIdx);                  // Stores the current RDS Mode value
-  EEPROM.write(addr++, sleepModeIdx);                // Stores the current Sleep Mode value
-  EEPROM.write(addr++, (uint8_t)zoomMenu);           // Stores the current Zoom Menu setting
+  EEPROM.write(addr++, currentBrt >> 8);     // Stores the current Brightness value (HIGH byte)
+  EEPROM.write(addr++, currentBrt & 0XFF);   // Stores the current Brightness value (LOW byte)
+  EEPROM.write(addr++, FmAgcIdx);            // Stores the current FM AGC/ATTN index value
+  EEPROM.write(addr++, AmAgcIdx);            // Stores the current AM AGC/ATTN index value
+  EEPROM.write(addr++, SsbAgcIdx);           // Stores the current SSB AGC/ATTN index value
+  EEPROM.write(addr++, AmAvcIdx);            // Stores the current AM AVC index value
+  EEPROM.write(addr++, SsbAvcIdx);           // Stores the current SSB AVC index value
+  EEPROM.write(addr++, AmSoftMuteIdx);       // Stores the current AM SoftMute index value
+  EEPROM.write(addr++, SsbSoftMuteIdx);      // Stores the current SSB SoftMute index value
+  EEPROM.write(addr++, currentSleep >> 8);   // Stores the current Sleep value (HIGH byte)
+  EEPROM.write(addr++, currentSleep & 0XFF); // Stores the current Sleep value (LOW byte)
+  EEPROM.write(addr++, themeIdx);            // Stores the current Theme index value
+  EEPROM.write(addr++, rdsModeIdx);          // Stores the current RDS Mode value
+  EEPROM.write(addr++, sleepModeIdx);        // Stores the current Sleep Mode value
+  // EEPROM.write(addr++, (uint8_t)zoomMenu);           // Stores the current Zoom Menu setting
   EEPROM.write(addr++, scrollDirection < 0 ? 1 : 0); // Stores the current Scroll setting
   EEPROM.write(addr++, utcOffsetIdx);                // Stores the current UTC Offset
   EEPROM.write(addr++, get_var_local_squelch());     // Stores the current Squelch value
   EEPROM.write(addr++, FmRegionIdx);                 // Stores the current FM region value
-  EEPROM.write(addr++, uiLayoutIdx);                 // Stores the current UI Layout index value
+  // EEPROM.write(addr++, uiLayoutIdx);                 // Stores the current UI Layout index value
   EEPROM.commit();
 
   addr = EEPROM_SETP_ADDR;
@@ -227,10 +227,11 @@ void eepromLoadConfig()
   // volume = ; // Reads stored volume
   set_var_speaker_volume(EEPROM.read(addr++));
   bandIdx = EEPROM.read(addr++);
-  wifiModeIdx = EEPROM.read(addr++);     // Reads stored WiFi connection mode
-  currentMode = EEPROM.read(addr++);     // Reads stored mode. Now per mode, leave for compatibility
-  currentBFO = EEPROM.read(addr++) << 8; // Reads stored BFO value (HIGH byte)
-  currentBFO |= EEPROM.read(addr++);     // Reads stored BFO value (HIGH byte)
+  wifiModeIdx = EEPROM.read(addr++);             // Reads stored WiFi connection mode
+  set_var_local_mode_index(EEPROM.read(addr++)); // Reads stored mode. Now per mode, leave for compatibility
+  int32_t currentBFO = EEPROM.read(addr++) << 8; // Reads stored BFO value (HIGH byte)
+  currentBFO |= EEPROM.read(addr++);             // Reads stored BFO value (HIGH byte)
+  set_var_local_bfo(currentBFO);
 
   // Read current band settings
   for (int i = 0; i < getTotalBands(); i++)
@@ -255,25 +256,25 @@ void eepromLoadConfig()
   int32_t currentBrt = EEPROM.read(addr++) << 8; // Reads stored Brightness value (HIGH byte)
   currentBrt |= EEPROM.read(addr++);             // Reads stored Brightness value (LOW byte)
   set_var_screen_brightness(currentBrt);
-  FmAgcIdx = EEPROM.read(addr++);                 // Reads stored FM AGC/ATTN index value
-  AmAgcIdx = EEPROM.read(addr++);                 // Reads stored AM AGC/ATTN index value
-  SsbAgcIdx = EEPROM.read(addr++);                // Reads stored SSB AGC/ATTN index value
-  AmAvcIdx = EEPROM.read(addr++);                 // Reads stored AM AVC index value
-  SsbAvcIdx = EEPROM.read(addr++);                // Reads stored SSB AVC index value
-  AmSoftMuteIdx = EEPROM.read(addr++);            // Reads stored AM SoftMute index value
-  SsbSoftMuteIdx = EEPROM.read(addr++);           // Reads stored SSB SoftMute index value
-  currentSleep = EEPROM.read(addr++) << 8;        // Reads stored Sleep value (HIGH byte)
-  currentSleep |= EEPROM.read(addr++);            // Reads stored Sleep value (LOW byte)
-  themeIdx = EEPROM.read(addr++);                 // Reads stored Theme index value
-  rdsModeIdx = EEPROM.read(addr++);               // Reads stored RDS Mode value
-  sleepModeIdx = EEPROM.read(addr++);             // Reads stored Sleep Mode value
-  zoomMenu = (bool)EEPROM.read(addr++);           // Reads stored Zoom Menu setting
+  FmAgcIdx = EEPROM.read(addr++);          // Reads stored FM AGC/ATTN index value
+  AmAgcIdx = EEPROM.read(addr++);          // Reads stored AM AGC/ATTN index value
+  SsbAgcIdx = EEPROM.read(addr++);         // Reads stored SSB AGC/ATTN index value
+  AmAvcIdx = EEPROM.read(addr++);          // Reads stored AM AVC index value
+  SsbAvcIdx = EEPROM.read(addr++);         // Reads stored SSB AVC index value
+  AmSoftMuteIdx = EEPROM.read(addr++);     // Reads stored AM SoftMute index value
+  SsbSoftMuteIdx = EEPROM.read(addr++);    // Reads stored SSB SoftMute index value
+  currentSleep = EEPROM.read(addr++) << 8; // Reads stored Sleep value (HIGH byte)
+  currentSleep |= EEPROM.read(addr++);     // Reads stored Sleep value (LOW byte)
+  themeIdx = EEPROM.read(addr++);          // Reads stored Theme index value
+  rdsModeIdx = EEPROM.read(addr++);        // Reads stored RDS Mode value
+  sleepModeIdx = EEPROM.read(addr++);      // Reads stored Sleep Mode value
+  // zoomMenu = (bool)EEPROM.read(addr++);           // Reads stored Zoom Menu setting
   scrollDirection = EEPROM.read(addr++) ? -1 : 1; // Reads stored Scroll setting
   utcOffsetIdx = EEPROM.read(addr++);             // Reads the current UTC Offset
   set_var_local_squelch(EEPROM.read(addr++));     // Reads the current Squelch value
   FmRegionIdx = EEPROM.read(addr++);              // Reads the current FM region value
   FmRegionIdx = FmRegionIdx >= getTotalFmRegions() ? 0 : FmRegionIdx;
-  uiLayoutIdx = EEPROM.read(addr++); // Reads stored UI Layout index value
+  // uiLayoutIdx = EEPROM.read(addr++); // Reads stored UI Layout index value
 
   addr = EEPROM_SETP_ADDR;
   for (int i = 0; i < getTotalBands(); i++)

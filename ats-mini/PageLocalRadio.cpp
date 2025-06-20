@@ -90,13 +90,13 @@ bool updateBFO(int newBFO, bool wrap)
   }
 
   // Update current BFO
-  currentBFO = newBFO;
+  set_var_local_bfo(newBFO);
 
   // To move frequency forward, need to move the BFO backwards
-  rx.setSSBBfo(-(currentBFO + band->bandCal));
+  rx.setSSBBfo(-(get_var_local_bfo() + band->bandCal));
 
   // Save current band frequency, w.r.t. new BFO value
-  band->currentFreq = get_var_local_frequency() + currentBFO / 1000;
+  band->currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
   return true;
 }
 
@@ -125,14 +125,14 @@ bool updateFrequency(int newFreq, bool wrap)
   rx.setFrequency(newFreq);
 
   // Clear BFO, if present
-  if (currentBFO)
+  if (get_var_local_bfo())
     updateBFO(0, true);
 
   // Update current frequency
   set_var_local_frequency(rx.getFrequency());
 
   // Save current band frequency
-  band->currentFreq = get_var_local_frequency() + currentBFO / 1000;
+  band->currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
   return true;
 }
 
@@ -145,11 +145,11 @@ bool doTune(int8_t dir)
   if (isSSB())
   {
     uint32_t step = getCurrentStep()->step;
-    uint32_t stepAdjust = (get_var_local_frequency() * 1000 + currentBFO) % step;
+    uint32_t stepAdjust = (get_var_local_frequency() * 1000 + get_var_local_bfo()) % step;
     step = !stepAdjust ? step : dir > 0 ? step - stepAdjust
                                         : stepAdjust;
 
-    updateBFO(currentBFO + dir * step, true);
+    updateBFO(get_var_local_bfo() + dir * step, true);
   }
 
   //
@@ -170,7 +170,7 @@ bool doTune(int8_t dir)
   // Clear current station name and information
   clearStationInfo();
   // Check for named frequencies
-  identifyFrequency(get_var_local_frequency() + currentBFO / 1000);
+  identifyFrequency(get_var_local_frequency() + get_var_local_bfo() / 1000);
   // Will need a redraw
   return (true);
 }
@@ -182,7 +182,7 @@ bool doSeek(int8_t dir)
   {
     if (isSSB())
     {
-      updateBFO(currentBFO + dir * getCurrentStep(true)->step, true);
+      updateBFO(get_var_local_bfo() + dir * getCurrentStep(true)->step, true);
     }
     else
     {
@@ -204,7 +204,7 @@ bool doSeek(int8_t dir)
     // clockGetHM(&hour, &minute);
 
     // size_t offset = -1;
-    // const StationSchedule *schedule = dir > 0 ? eibiNext(currentFrequency + currentBFO / 1000, hour, minute, &offset) : eibiPrev(currentFrequency + currentBFO / 1000, hour, minute, &offset);
+    // const StationSchedule *schedule = dir > 0 ? eibiNext(currentFrequency + get_var_local_bfo() / 1000, hour, minute, &offset) : eibiPrev(currentFrequency + get_var_local_bfo() / 1000, hour, minute, &offset);
 
     // if (schedule)
     //   updateFrequency(schedule->freq, false);
@@ -213,7 +213,7 @@ bool doSeek(int8_t dir)
   // Clear current station name and information
   clearStationInfo();
   // Check for named frequencies
-  identifyFrequency(get_var_local_frequency() + currentBFO / 1000);
+  identifyFrequency(get_var_local_frequency() + get_var_local_bfo() / 1000);
   // Will need a redraw
   return (true);
 }
@@ -226,7 +226,7 @@ bool doDigit(int8_t dir)
   // SSB tuning
   if (isSSB())
   {
-    updated = updateBFO(currentBFO + dir * getFreqInputStep(), false);
+    updated = updateBFO(get_var_local_bfo() + dir * getFreqInputStep(), false);
   }
 
   //
@@ -243,7 +243,7 @@ bool doDigit(int8_t dir)
     // Clear current station name and information
     clearStationInfo();
     // Check for named frequencies
-    identifyFrequency(get_var_local_frequency() + currentBFO / 1000);
+    identifyFrequency(get_var_local_frequency() + get_var_local_bfo() / 1000);
   }
 
   // Will need a redraw
@@ -259,7 +259,7 @@ bool clickFreq(bool shortPress)
     // SSB tuning
     if (isSSB())
     {
-      updated = updateBFO(currentBFO - (get_var_local_frequency() * 1000 + currentBFO) % getFreqInputStep(), false);
+      updated = updateBFO(get_var_local_bfo() - (get_var_local_frequency() * 1000 + get_var_local_bfo()) % getFreqInputStep(), false);
     }
     else
     {
@@ -272,7 +272,7 @@ bool clickFreq(bool shortPress)
       // Clear current station name and information
       clearStationInfo();
       // Check for named frequencies
-      identifyFrequency(get_var_local_frequency() + currentBFO / 1000);
+      identifyFrequency(get_var_local_frequency() + get_var_local_bfo() / 1000);
     }
     return true;
   }

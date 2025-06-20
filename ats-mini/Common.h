@@ -188,17 +188,10 @@ extern SI4735_fixed rx;
 extern TFT_eSprite spr;
 extern TFT_eSPI tft;
 
-extern bool tuning_flag;
-
-extern int16_t currentBFO;
-extern uint8_t currentMode;
-extern uint16_t currentCmd;
 extern uint16_t currentSleep;
 extern uint8_t sleepModeIdx;
-extern bool zoomMenu;
 extern int8_t scrollDirection;
 extern uint8_t utcOffsetIdx;
-extern uint8_t uiLayoutIdx;
 
 extern int8_t FmAgcIdx;
 extern int8_t AmAgcIdx;
@@ -216,11 +209,9 @@ extern int8_t agcNdx;
 extern int8_t softMuteMaxAttIdx;
 extern uint8_t disableAgc;
 
-extern const int CALMax;
-
 static inline bool isSSB()
 {
-  return (currentMode > FM && currentMode < AM);
+  return (get_var_local_mode_index() > FM && get_var_local_mode_index() < AM);
 }
 
 void updateIOStatus();

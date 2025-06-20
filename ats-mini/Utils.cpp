@@ -286,7 +286,7 @@ bool clockSet(uint8_t hours, uint8_t minutes, uint8_t seconds)
     clockMinutes = minutes;
     clockSeconds = seconds;
     clockRefreshTime();
-    identifyFrequency(get_var_local_frequency() + currentBFO / 1000);
+    identifyFrequency(get_var_local_frequency() + get_var_local_bfo() / 1000);
     return (true);
   }
 
@@ -363,7 +363,7 @@ int getStrength(int rssi)
   if (switchThemeEditor())
     return (17);
 
-  if (currentMode != FM)
+  if (get_var_local_mode_index() != FM)
   {
     // dBuV to S point conversion HF
     if (rssi <= 1)

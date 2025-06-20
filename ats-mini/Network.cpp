@@ -417,7 +417,7 @@ void webSetConfig(AsyncWebServerRequest *request)
 
   // Save scroll direction and menu zoom
   scrollDirection = request->hasParam("scroll", true) ? -1 : 1;
-  zoomMenu = request->hasParam("zoom", true);
+  // zoomMenu = request->hasParam("zoom", true);
   eepromSave = true;
 
   // Done with the preferences
@@ -589,8 +589,8 @@ static const String webRadioPage()
 {
   String ip = "";
   String ssid = "";
-  String freq = currentMode == FM ? String(get_var_local_frequency() / 100.0) + "MHz "
-                                  : String(get_var_local_frequency() + currentBFO / 1000.0) + "kHz ";
+  String freq = get_var_local_mode_index() == FM ? String(get_var_local_frequency() / 100.0) + "MHz "
+                                                 : String(get_var_local_frequency() + get_var_local_bfo() / 1000.0) + "kHz ";
 
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -632,11 +632,11 @@ static const String webRadioPage()
                                            "<TR>"
                                            "<TD CLASS='LABEL'>Frequency</TD>"
                                            "<TD>" +
-      freq + String(bandModeDesc[currentMode]) + "</TD>"
-                                                 "</TR>"
-                                                 "<TR>"
-                                                 "<TD CLASS='LABEL'>Signal Strength</TD>"
-                                                 "<TD>" +
+      freq + String(bandModeDesc[get_var_local_mode_index()]) + "</TD>"
+                                                                "</TR>"
+                                                                "<TR>"
+                                                                "<TD CLASS='LABEL'>Signal Strength</TD>"
+                                                                "<TD>" +
       String(get_var_local_rssi()) + "dBuV</TD>"
                                      "</TR>"
                                      "<TR>"
@@ -720,16 +720,16 @@ const String webConfigPage()
                            "<TD><INPUT TYPE='CHECKBOX' NAME='scroll' VALUE='on'" +
       (scrollDirection < 0 ? " CHECKED " : "") + "></TD>"
                                                  "</TR>"
-                                                 "<TR>"
-                                                 "<TD CLASS='LABEL'>Zoomed Menu</TD>"
-                                                 "<TD><INPUT TYPE='CHECKBOX' NAME='zoom' VALUE='on'" +
-      (zoomMenu ? " CHECKED " : "") + "></TD>"
-                                      "</TR>"
-                                      "<TR><TH COLSPAN=2 CLASS='HEADING'>"
-                                      "<INPUT TYPE='SUBMIT' VALUE='Save'>"
-                                      "</TH></TR>"
-                                      "</TABLE>"
-                                      "</FORM>"
+                                                 //                                            "<TR>"
+                                                 //                                            "<TD CLASS='LABEL'>Zoomed Menu</TD>"
+                                                 //                                            "<TD><INPUT TYPE='CHECKBOX' NAME='zoom' VALUE='on'" +
+                                                 // (zoomMenu ? " CHECKED " : "") + "></TD>"
+                                                 //                                 "</TR>"
+                                                 "<TR><TH COLSPAN=2 CLASS='HEADING'>"
+                                                 "<INPUT TYPE='SUBMIT' VALUE='Save'>"
+                                                 "</TH></TR>"
+                                                 "</TABLE>"
+                                                 "</FORM>"
 #if 0
 // @@@ Reenable once /writeeeprom stops breaking 30m band entry
 "<FORM ACTION='/writeeeprom' METHOD='POST' ENCTYPE='multipart/form-data'>"

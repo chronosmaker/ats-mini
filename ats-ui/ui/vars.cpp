@@ -293,6 +293,18 @@ extern "C" void set_var_local_frequency(int32_t value)
     local_frequency = value;
 }
 
+int32_t local_bfo = 0;
+
+extern "C" int32_t get_var_local_bfo()
+{
+    return local_bfo;
+}
+
+extern "C" void set_var_local_bfo(int32_t value)
+{
+    local_bfo = value;
+}
+
 int32_t local_snr = 0;
 
 extern "C" int32_t get_var_local_snr()

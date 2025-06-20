@@ -91,6 +91,8 @@ extern int32_t get_var_local_region_index();
 extern void set_var_local_region_index(int32_t value);
 extern int32_t get_var_local_frequency();
 extern void set_var_local_frequency(int32_t value);
+extern int32_t get_var_local_bfo();
+extern void set_var_local_bfo(int32_t value);
 extern int32_t get_var_local_snr();
 extern void set_var_local_snr(int32_t value);
 extern int32_t get_var_local_rssi();
