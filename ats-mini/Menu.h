@@ -4,7 +4,7 @@
 #include "Common.h"
 
 // Number of memory slots
-#define MEMORY_COUNT 32
+#define MEMORY_COUNT 10
 
 // Band Types
 #define FM_BAND_TYPE 0
@@ -70,7 +70,6 @@ extern Memory memories[];
 extern const UTCOffset utcOffsets[];
 extern const char *bandModeDesc[];
 extern const FMRegion fmRegions[];
-extern int bandIdx;
 
 //
 // Utility functions to change menu values
@@ -134,6 +133,9 @@ void doAvc(int dir);
 void doFmRegion(int dir);
 void doBandwidth(int dir);
 void doVolume(int dir);
+void doMemory(int dir);
+void doSeekMemory(int dir);
+void doSaveMemory();
 void doBrt(int dir);
 void doCal(int dir);
 void doStep(int dir);

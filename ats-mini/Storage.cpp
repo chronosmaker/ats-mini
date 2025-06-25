@@ -49,7 +49,7 @@ void eepromTickTime()
   {
     eepromWriteBinary(updateBuf, sizeof(updateBuf));
     eepromLoadConfig();
-    selectBand(bandIdx, false);
+    selectBand(get_var_local_band_index(), false);
     rx.setVolume(get_var_speaker_volume() * 2);
     itIsTimeToUpdate = false;
     itIsTimeToSave = false;
@@ -129,7 +129,7 @@ bool eepromVerify(const uint8_t *buf)
 void eepromSaveConfig()
 {
   // G8PTN: For SSB ensures BFO value is valid with respect to
-  // bands[bandIdx].currentFreq = currentFrequency
+  // bands[get_var_local_band_index()].currentFreq = currentFrequency
   int16_t currentBFOs = get_var_local_bfo() % 1000;
   int addr = EEPROM_BASE_ADDR;
 
@@ -137,7 +137,7 @@ void eepromSaveConfig()
 
   EEPROM.write(addr++, EEPROM_VERSION);             // Stores the EEPROM_VERSION;
   EEPROM.write(addr++, get_var_speaker_volume());   // Stores the current Volume
-  EEPROM.write(addr++, bandIdx);                    // Stores the current band
+  EEPROM.write(addr++, get_var_local_band_index()); // Stores the current band
   EEPROM.write(addr++, wifiModeIdx);                // Stores WiFi connection mode
   EEPROM.write(addr++, get_var_local_mode_index()); // Stores the current mode (FM / AM / LSB / USB). Now per mode, leave for compatibility
   EEPROM.write(addr++, currentBFOs >> 8);           // G8PTN: Stores the current BFO % 1000 (HIGH byte)
@@ -224,9 +224,8 @@ void eepromLoadConfig()
   EEPROM.begin(EEPROM_SIZE);
 
   addr = EEPROM_BASE_ADDR + 1;
-  // volume = ; // Reads stored volume
   set_var_speaker_volume(EEPROM.read(addr++));
-  bandIdx = EEPROM.read(addr++);
+  set_var_local_band_index(EEPROM.read(addr++));
   wifiModeIdx = EEPROM.read(addr++);             // Reads stored WiFi connection mode
   set_var_local_mode_index(EEPROM.read(addr++)); // Reads stored mode. Now per mode, leave for compatibility
   int32_t currentBFO = EEPROM.read(addr++) << 8; // Reads stored BFO value (HIGH byte)

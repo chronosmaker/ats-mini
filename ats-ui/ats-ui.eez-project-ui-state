@@ -2,7 +2,7 @@
   "navigation": {
     "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/1",
-    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/9",
+    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/36",
     "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/0",
     "selectedFontObject": "[ats-ui.eez-project]:/fonts/4",
     "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/18",
@@ -129,7 +129,7 @@
             {
               "type": "row",
               "id": "#042e346d-d7af-407a-83b2-5c42abc3ac7d",
-              "weight": 17.731563075391527,
+              "weight": 13.085552558041346,
               "children": [
                 {
                   "type": "tabset",
@@ -202,13 +202,13 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 35.676245899285355,
+              "weight": 40.78642079758722,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
-                  "id": "#b71b0af2-1de6-48d8-af16-6db1828b01c3",
+                  "id": "#e4f625ab-3bb2-4721-9759-66f041c0384a",
                   "name": "local_toolbar",
                   "component": "editor",
                   "config": {
@@ -216,35 +216,13 @@
                     "permanent": false
                   },
                   "icon": "svg:user_widget"
-                },
-                {
-                  "type": "tab",
-                  "id": "#82648f8c-1bfc-44d8-afa6-70b00dca4d49",
-                  "name": "LocalRadioConfig",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[ats-ui.eez-project]:/userPages/3",
-                    "permanent": false
-                  },
-                  "icon": "svg:page"
-                },
-                {
-                  "type": "tab",
-                  "id": "#71b0e1ed-4d66-40f6-a581-45a9bcceea58",
-                  "name": "LocalRadio",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[ats-ui.eez-project]:/userPages/2",
-                    "permanent": true
-                  },
-                  "icon": "svg:page"
                 }
               ]
             },
             {
               "type": "tabset",
               "id": "#2b6d8aba-d8f7-4a0d-ada0-f2526c4599ab",
-              "weight": 19.259160798648605,
+              "weight": 18.79499641769693,
               "children": [
                 {
                   "type": "tab",
@@ -1330,14 +1308,16 @@
         "2": {},
         "3": {},
         "4": {},
-        "7": {},
+        "7": {
+          "$selected": true
+        },
         "9": {},
         "10": {}
       },
       "transform": {
         "translate": {
-          "x": -294,
-          "y": -69
+          "x": -363,
+          "y": -175
         },
         "scale": 1
       },
@@ -1532,7 +1512,7 @@
   "logsPanelFilter": "all",
   "selectedStylePropertyName": "",
   "lvglPart": "MAIN",
-  "lvglState": "DEFAULT",
+  "lvglState": "DISABLED",
   "lvglExpandedPropertiesGroup": [
     "TEXT",
     "BACKGROUND"

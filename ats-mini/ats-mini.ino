@@ -286,7 +286,7 @@ void setup()
 
   // ** SI4732 STARTUP **
   // Uses values from EEPROM (Last stored or defaults after EEPROM reset)
-  selectBand(bandIdx, false);
+  selectBand(get_var_local_band_index(), false);
   delay(50);
   rx.setVolume(get_var_speaker_volume() * 2);
   rx.setMaxSeekTime(SEEK_TIMEOUT);

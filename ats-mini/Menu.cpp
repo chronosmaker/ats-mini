@@ -19,8 +19,6 @@
 // at first time to RESET the EEPROM.
 //
 
-int bandIdx = 0;
-
 // Band limits are expanded to align with the nearest tuning scale mark
 Band bands[] =
     {
@@ -57,27 +55,7 @@ Band bands[] =
 };
 
 int getTotalBands() { return (ITEM_COUNT(bands)); }
-Band *getCurrentBand() { return (&bands[bandIdx]); }
-
-//
-// Main Menu
-//
-
-#define MENU_MODE 0
-#define MENU_BAND 1
-#define MENU_VOLUME 2
-#define MENU_STEP 3
-#define MENU_SEEK 4
-#define MENU_MEMORY 5
-#define MENU_SQUELCH 6
-#define MENU_BW 7
-#define MENU_AGC_ATT 8
-#define MENU_AVC 9
-#define MENU_SOFTMUTE 10
-#define MENU_SETTINGS 11
-#define MENU_SCAN 12
-
-int8_t menuIdx = MENU_VOLUME;
+Band *getCurrentBand() { return (&bands[get_var_local_band_index()]); }
 
 static const char *menu[] =
     {
@@ -95,27 +73,6 @@ static const char *menu[] =
         "Settings",
         "Scan",
 };
-
-//
-// Settings Menu
-//
-
-#define MENU_BRIGHTNESS 0
-#define MENU_CALIBRATION 1
-#define MENU_RDS 2
-#define MENU_UTCOFFSET 3
-#define MENU_FM_REGION 4
-#define MENU_THEME 5
-#define MENU_UI 6
-#define MENU_ZOOM 7
-#define MENU_SCROLL 8
-#define MENU_SLEEP 9
-#define MENU_SLEEPMODE 10
-#define MENU_LOADEIBI 11
-#define MENU_WIFIMODE 12
-#define MENU_ABOUT 13
-
-int8_t settingsIdx = MENU_BRIGHTNESS;
 
 static const char *settings[] =
     {
@@ -159,9 +116,7 @@ int getTotalModes() { return (ITEM_COUNT(bandModeDesc)); }
 // Memory Menu
 //
 
-uint8_t memoryIdx = 0;
 Memory memories[MEMORY_COUNT];
-Memory newMemory;
 
 int getTotalMemories() { return (ITEM_COUNT(memories)); }
 
@@ -534,6 +489,7 @@ void doFmRegion(int dir)
 
 void doCal(int dir)
 {
+  int32_t bandIdx = get_var_local_band_index();
   bands[bandIdx].bandCal = clamp_range(bands[bandIdx].bandCal, 10 * dir, -MAX_CAL, MAX_CAL);
 
   // If in SSB mode set the SI4732/5 BFO value
@@ -611,6 +567,7 @@ bool tuneToMemory(const Memory *memory)
   // Band must contain frequency and modulation
   if (!isMemoryInBand(&bands[memory->band], memory))
     return (false);
+  int32_t bandIdx = get_var_local_band_index();
   // Must differ from the current band, frequency and modulation
   if (memory->band == bandIdx &&
       memory->freq == bands[bandIdx].currentFreq &&
@@ -619,6 +576,8 @@ bool tuneToMemory(const Memory *memory)
   // Save current band settings
   bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
   bands[bandIdx].currentStepIdx = stepIdx[get_var_local_mode_index()];
+
+  set_var_local_step_index(stepIdx[get_var_local_mode_index()]);
 
   // Load frequency and modulation from memory slot
   bands[memory->band].currentFreq = memory->freq;
@@ -634,26 +593,68 @@ bool tuneToMemory(const Memory *memory)
   return (true);
 }
 
-static void doMemory(int dir)
+void doMemory(int dir)
 {
-  memoryIdx = wrap_range(memoryIdx, dir, 0, LAST_ITEM(memories));
-  if (!tuneToMemory(&memories[memoryIdx]))
-    tuneToMemory(&newMemory);
+  set_var_local_seek_index(wrap_range(get_var_local_seek_index(), dir, 0, LAST_ITEM(memories) + 2));
+  int32_t memoryIdx = get_var_local_seek_index() - 2;
+  if (memoryIdx >= 0)
+  {
+    tuneToMemory(&memories[memoryIdx]);
+  }
+}
+
+void doSeekMemory(int dir)
+{
+  int32_t current = get_var_local_seek_index() - 2;
+  int32_t next = wrap_range(current, dir, 0, LAST_ITEM(memories));
+
+  while (!tuneToMemory(&memories[next]))
+  {
+    next = wrap_range(next, dir, 0, LAST_ITEM(memories));
+    if (next == current)
+    {
+      break;
+    }
+  }
+  if (next != current)
+  {
+    set_var_local_seek_index(next + 2);
+  }
+}
+
+void doSaveMemory()
+{
+  int32_t idx = get_var_local_seek_index() - 2;
+  if (!memories[idx].freq)
+  {
+    Memory newMemory;
+    newMemory.freq = get_var_local_frequency() + get_var_local_bfo() / 1000;
+    newMemory.hz100 = (get_var_local_bfo() % 1000) / 100;
+    newMemory.mode = get_var_local_mode_index();
+    newMemory.band = get_var_local_band_index();
+
+    memories[idx] = newMemory;
+    tuneToMemory(&memories[idx]);
+  }
+  else
+  {
+    memories[idx].freq = 0;
+  }
 }
 
 static void clickMemory(uint8_t idx, bool shortPress)
 {
-  // Must have a valid index
-  if (idx > LAST_ITEM(memories))
-    return;
+  // // Must have a valid index
+  // if (idx > LAST_ITEM(memories))
+  //   return;
 
-  // If clicking on an empty memory slot, save to it
-  if (!memories[idx].freq)
-    memories[idx] = newMemory;
-  // On a press, delete memory slot contents
-  else if (shortPress)
-    memories[idx].freq = 0;
-  // On a click, do nothing, slot already activated in doMemory()
+  // // If clicking on an empty memory slot, save to it
+  // if (!memories[idx].freq)
+  //   memories[idx] = newMemory;
+  // // On a press, delete memory slot contents
+  // else if (shortPress)
+  //   memories[idx].freq = 0;
+  // // On a click, do nothing, slot already activated in doMemory()
 }
 
 void doStep(int dir)
@@ -661,7 +662,9 @@ void doStep(int dir)
   uint8_t idx = stepIdx[get_var_local_mode_index()];
 
   idx = wrap_range(idx, dir, 0, getLastStep(get_var_local_mode_index()));
-  bands[bandIdx].currentStepIdx = stepIdx[get_var_local_mode_index()] = idx;
+  bands[get_var_local_band_index()].currentStepIdx = stepIdx[get_var_local_mode_index()] = idx;
+
+  set_var_local_step_index(idx);
 
   rx.setFrequencyStep(steps[get_var_local_mode_index()][idx].step);
 
@@ -696,6 +699,7 @@ void doAgc(int dir)
 
 void doMode(int dir)
 {
+  int32_t bandIdx = get_var_local_band_index();
   // This is our current mode for the current band
   set_var_local_mode_index(bands[bandIdx].bandMode);
 
@@ -712,6 +716,8 @@ void doMode(int dir)
   bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
   bands[bandIdx].currentStepIdx = stepIdx[get_var_local_mode_index()];
   bands[bandIdx].bandMode = get_var_local_mode_index();
+
+  set_var_local_step_index(stepIdx[get_var_local_mode_index()]);
 
   // Enable the new band
   selectBand(bandIdx);
@@ -738,13 +744,17 @@ void doSoftMute(int dir)
 
 void doBand(int dir)
 {
+  int32_t bandIdx = get_var_local_band_index();
   // Save current band settings
   bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
   bands[bandIdx].currentStepIdx = stepIdx[get_var_local_mode_index()];
   bands[bandIdx].bandMode = get_var_local_mode_index();
 
+  set_var_local_step_index(stepIdx[get_var_local_mode_index()]);
+
   // Change band
   bandIdx = wrap_range(bandIdx, dir, 0, LAST_ITEM(bands));
+  set_var_local_band_index(bandIdx);
 
   // Enable the new band
   selectBand(bandIdx);
@@ -755,7 +765,7 @@ void doBandwidth(int dir)
   uint8_t idx = bwIdx[get_var_local_mode_index()];
 
   idx = wrap_range(idx, dir, 0, getLastBandwidth(get_var_local_mode_index()));
-  bands[bandIdx].bandwidthIdx = bwIdx[get_var_local_mode_index()] = idx;
+  bands[get_var_local_band_index()].bandwidthIdx = bwIdx[get_var_local_mode_index()] = idx;
   setBandwidth();
 }
 
@@ -763,66 +773,56 @@ void doBandwidth(int dir)
 // Handle encoder input in menu
 //
 
-static void doMenu(int dir)
-{
-  menuIdx = wrap_range(menuIdx, dir, 0, LAST_ITEM(menu));
-}
-
 static void clickMenu(int cmd, bool shortPress)
 {
-  switch (cmd)
-  {
-  case MENU_MEMORY:
-    newMemory.freq = get_var_local_frequency() + get_var_local_bfo() / 1000;
-    newMemory.hz100 = (get_var_local_bfo() % 1000) / 100;
-    newMemory.mode = get_var_local_mode_index();
-    newMemory.band = bandIdx;
-    doMemory(0);
-    break;
+  // switch (cmd)
+  // {
+  // case MENU_MEMORY:
+  // newMemory.freq = get_var_local_frequency() + get_var_local_bfo() / 1000;
+  // newMemory.hz100 = (get_var_local_bfo() % 1000) / 100;
+  // newMemory.mode = get_var_local_mode_index();
+  // newMemory.band = get_var_local_band_index();
+  // doMemory(0);
+  // break;
 
-  case MENU_SOFTMUTE:
-    // No soft mute in FM mode
-    // if (get_var_local_mode_index() != FM)
-    // currentCmd = CMD_SOFTMUTE;
-    break;
+  // case MENU_SOFTMUTE:
+  // No soft mute in FM mode
+  // if (get_var_local_mode_index() != FM)
+  // currentCmd = CMD_SOFTMUTE;
+  //   break;
 
-  case MENU_AVC:
-    // No AVC in FM mode
-    // if (get_var_local_mode_index() != FM)
-    // currentCmd = CMD_AVC;
-    break;
+  // case MENU_AVC:
+  // No AVC in FM mode
+  // if (get_var_local_mode_index() != FM)
+  // currentCmd = CMD_AVC;
+  //   break;
 
-  case MENU_SCAN:
-    // Run a band scan around current frequency with the same
-    // step as scale resolution (10kHz for AM, 100kHz for FM)
-    drawMessage("Scanning...");
-    scanRun(get_var_local_frequency(), 10);
-    break;
-  }
-}
-
-static void doSettings(int dir)
-{
-  settingsIdx = wrap_range(settingsIdx, dir, 0, LAST_ITEM(settings));
+  // case MENU_SCAN:
+  // Run a band scan around current frequency with the same
+  // step as scale resolution (10kHz for AM, 100kHz for FM)
+  // drawMessage("Scanning...");
+  // scanRun(get_var_local_frequency(), 10);
+  // break;
+  // }
 }
 
 static void clickSettings(int cmd, bool shortPress)
 {
-  switch (cmd)
-  {
-  case MENU_CALIBRATION:
-    // if (isSSB())
-    //   currentCmd = CMD_CAL;
-    break;
-  case MENU_FM_REGION:
-    // Only in FM mode
-    // if (get_var_local_mode_index() == FM)
-    //   currentCmd = CMD_FM_REGION;
-    break;
-  case MENU_LOADEIBI:
-    eibiLoadSchedule();
-    break;
-  }
+  // switch (cmd)
+  // {
+  // case MENU_CALIBRATION:
+  //   // if (isSSB())
+  //   //   currentCmd = CMD_CAL;
+  //   break;
+  // case MENU_FM_REGION:
+  //   // Only in FM mode
+  //   // if (get_var_local_mode_index() == FM)
+  //   //   currentCmd = CMD_FM_REGION;
+  //   break;
+  // case MENU_LOADEIBI:
+  //   eibiLoadSchedule();
+  //   break;
+  // }
 }
 
 bool doSideBar(uint16_t cmd, int dir)
@@ -834,9 +834,6 @@ bool doSideBar(uint16_t cmd, int dir)
   switch (cmd)
   {
   // Menus and list-based options must take scrollDirection into account
-  case CMD_MENU:
-    doMenu(scrollDirection * dir);
-    break;
   case CMD_MODE:
     doMode(scrollDirection * dir);
     break;
@@ -865,7 +862,7 @@ bool doSideBar(uint16_t cmd, int dir)
     doFmRegion(scrollDirection * dir);
     break;
   case CMD_SETTINGS:
-    doSettings(scrollDirection * dir);
+    // doSettings(scrollDirection * dir);
     break;
   case CMD_BRT:
     doBrt(dir);
@@ -922,13 +919,13 @@ bool clickHandler(uint16_t cmd, bool shortPress)
   switch (cmd)
   {
   case CMD_MENU:
-    clickMenu(menuIdx, shortPress);
+    // clickMenu(menuIdx, shortPress);
     break;
   case CMD_SETTINGS:
-    clickSettings(settingsIdx, shortPress);
+    // clickSettings(settingsIdx, shortPress);
     break;
   case CMD_MEMORY:
-    clickMemory(memoryIdx, shortPress);
+    // clickMemory(memoryIdx, shortPress);
     break;
   case CMD_WIFIMODE:
     clickWiFiMode(wifiModeIdx, shortPress);
@@ -1022,7 +1019,9 @@ void useBand(const Band *band)
   delay(100);
   // Clear signal strength readings
   set_var_local_snr(0);
+  set_var_local_snr_bar(getSnrBar(0));
   set_var_local_rssi(0);
+  set_var_local_rssi_bar(getRssiBar(0));
 }
 
 //
@@ -1032,7 +1031,8 @@ void useBand(const Band *band)
 void selectBand(uint8_t idx, bool drawLoadingSSB)
 {
   // Set band and mode
-  bandIdx = min(idx, LAST_ITEM(bands));
+  int32_t bandIdx = min(idx, LAST_ITEM(bands));
+  set_var_local_band_index(bandIdx);
   set_var_local_mode_index(bands[bandIdx].bandMode);
 
   // Set tuning step

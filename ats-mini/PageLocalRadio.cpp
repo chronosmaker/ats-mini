@@ -347,6 +347,7 @@ void updatePageLocalRadio()
       }
       else
       {
+        doSeekMemory(-encoderCount1);
       }
     }
     else
@@ -364,22 +365,19 @@ void updatePageLocalRadio()
     }
     else if (local_index == 0)
     {
-      set_var_local_seek_index(wrap_range(get_var_local_seek_index(), -encoderCount2, 0, 6));
-      set_var_local_step_index(0);
+      doMemory(-encoderCount2);
     }
     else if (local_index == 1)
     {
-      set_var_local_band_index(wrap_range(get_var_local_band_index(), -encoderCount2, 0, 27));
-      set_var_local_step_index(0);
+      doBand(-encoderCount2);
     }
     else if (local_index == 2)
     {
-      set_var_local_mode_index(wrap_range(get_var_local_mode_index(), -encoderCount2, 0, 3));
-      set_var_local_step_index(0);
+      doMode(-encoderCount2);
     }
     else if (local_index == 3)
     {
-      set_var_local_step_index(wrap_range(get_var_local_step_index(), -encoderCount2, 0, getTotalSteps() - 1));
+      doStep(-encoderCount2);
     }
     eepromRequestSave();
   }
@@ -410,7 +408,14 @@ void updatePageLocalRadio()
   {
     if (local_index >= 0)
     {
-      set_var_local_index(-1);
+      if (local_index == 0 && get_var_local_seek_index() > 1)
+      {
+        doSaveMemory();
+      }
+      else
+      {
+        set_var_local_index(-1);
+      }
     }
   }
 
