@@ -6,6 +6,7 @@
 #include <ui.h>
 #include <screens.h>
 #include <vars.h>
+#include <actions.h>
 #include "Storage.h"
 #include "SI4735-fixed.h"
 #include "Button.h"

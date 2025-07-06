@@ -2,7 +2,8 @@
   "navigation": {
     "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/1",
-    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/36",
+    "selectedActionObject": "[ats-ui.eez-project]:/actions/-1",
+    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/23",
     "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/0",
     "selectedFontObject": "[ats-ui.eez-project]:/fonts/4",
     "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/18",
@@ -129,12 +130,12 @@
             {
               "type": "row",
               "id": "#042e346d-d7af-407a-83b2-5c42abc3ac7d",
-              "weight": 13.085552558041346,
+              "weight": 15.93996679984579,
               "children": [
                 {
                   "type": "tabset",
                   "id": "#b94b0058-14ff-4336-ba9d-2be0a19a2c8f",
-                  "weight": 0.6912441062348071,
+                  "weight": 1.0939363368590758,
                   "selected": 1,
                   "enableClose": false,
                   "children": [
@@ -167,7 +168,7 @@
                 {
                   "type": "tabset",
                   "id": "#b083a100-d8ee-4a16-b105-135f005bfef8",
-                  "weight": 0.9677419913985843,
+                  "weight": 0.5650497607743159,
                   "enableClose": false,
                   "children": [
                     {
@@ -194,18 +195,41 @@
                       "enableClose": false,
                       "icon": "svg:variable"
                     }
-                  ],
-                  "active": true
+                  ]
                 }
               ]
             },
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 40.78642079758722,
+              "weight": 35.03350596859526,
+              "selected": 2,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
+                {
+                  "type": "tab",
+                  "id": "#a7fee73f-45d9-4c80-af43-153fe5ea7075",
+                  "name": "LocalRadio",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[ats-ui.eez-project]:/userPages/2",
+                    "permanent": false
+                  },
+                  "icon": "svg:page"
+                },
+                {
+                  "type": "tab",
+                  "id": "#b9ff98a4-6d41-4153-aace-56718cb81169",
+                  "name": "Settings",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[ats-ui.eez-project]:/settings",
+                    "subObjectPath": "[ats-ui.eez-project]:/settings",
+                    "permanent": false
+                  },
+                  "icon": "material:settings"
+                },
                 {
                   "type": "tab",
                   "id": "#e4f625ab-3bb2-4721-9759-66f041c0384a",
@@ -222,7 +246,7 @@
             {
               "type": "tabset",
               "id": "#2b6d8aba-d8f7-4a0d-ada0-f2526c4599ab",
-              "weight": 18.79499641769693,
+              "weight": 21.693497004884414,
               "children": [
                 {
                   "type": "tab",
@@ -232,7 +256,8 @@
                   "enableClose": false,
                   "icon": "svg:properties"
                 }
-              ]
+              ],
+              "active": true
             },
             {
               "type": "tabset",
@@ -1169,7 +1194,9 @@
       "selection": {
         "0": {
           "5": {},
-          "8": {},
+          "8": {
+            "$selected": true
+          },
           "9": {}
         }
       },
@@ -1308,16 +1335,18 @@
         "2": {},
         "3": {},
         "4": {},
-        "7": {
-          "$selected": true
-        },
+        "7": {},
         "9": {},
-        "10": {}
+        "10": {},
+        "11": {},
+        "15": {
+          "$selected": true
+        }
       },
       "transform": {
         "translate": {
-          "x": -363,
-          "y": -175
+          "x": -718.8,
+          "y": -505
         },
         "scale": 1
       },
@@ -1337,7 +1366,7 @@
           "x": -160,
           "y": -120
         },
-        "scale": 1.1
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1355,7 +1384,7 @@
           "x": -160,
           "y": -120
         },
-        "scale": 1.1
+        "scale": 1
       },
       "timeline": {
         "isEditorActive": false,

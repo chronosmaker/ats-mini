@@ -277,6 +277,23 @@ void setup()
   {
     // Load configuration from EEPROM
     eepromLoadConfig();
+
+    int total = getTotalMemories();
+    char result[256] = "自动搜索\n手动搜索";
+    for (int i = 0; i < total; i++)
+    {
+      char buffer[10];
+      if (memories[i].freq)
+      {
+        sprintf(buffer, "\n%02u-%u", i + 1, memories[i].freq);
+      }
+      else
+      {
+        sprintf(buffer, "\n%02u-_____", i + 1);
+      }
+      strncat(result, buffer, sizeof(result) - strlen(result) - 1);
+    }
+    set_var_local_seek_options(result);
   }
   else
   {

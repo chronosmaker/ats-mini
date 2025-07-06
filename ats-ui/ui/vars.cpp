@@ -281,6 +281,18 @@ extern "C" void set_var_local_region_index(int32_t value)
     local_region_index = value;
 }
 
+std::string local_seek_options = "";
+
+extern "C" const char *get_var_local_seek_options()
+{
+    return local_seek_options.c_str();
+}
+
+extern "C" void set_var_local_seek_options(const char *value)
+{
+    local_seek_options = value;
+}
+
 int32_t local_frequency = 0;
 
 extern "C" int32_t get_var_local_frequency()

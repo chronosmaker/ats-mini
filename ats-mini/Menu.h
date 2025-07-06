@@ -4,7 +4,7 @@
 #include "Common.h"
 
 // Number of memory slots
-#define MEMORY_COUNT 10
+#define MEMORY_COUNT 20
 
 // Band Types
 #define FM_BAND_TYPE 0
@@ -114,7 +114,7 @@ void selectBand(uint8_t idx, bool drawLoadingSSB = true);
 int getTotalBands();
 int getTotalSteps();
 int getTotalModes();
-int getTotalMemories();
+extern int getTotalMemories();
 Band *getCurrentBand();
 uint8_t getFreqInputPos();
 int getFreqInputStep();
