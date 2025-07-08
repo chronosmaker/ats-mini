@@ -2,7 +2,6 @@
   "navigation": {
     "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/1",
-    "selectedActionObject": "[ats-ui.eez-project]:/actions/-1",
     "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/23",
     "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/0",
     "selectedFontObject": "[ats-ui.eez-project]:/fonts/4",
@@ -241,7 +240,8 @@
                   },
                   "icon": "svg:user_widget"
                 }
-              ]
+              ],
+              "active": true
             },
             {
               "type": "tabset",
@@ -256,8 +256,7 @@
                   "enableClose": false,
                   "icon": "svg:properties"
                 }
-              ],
-              "active": true
+              ]
             },
             {
               "type": "tabset",
