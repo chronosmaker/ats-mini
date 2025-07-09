@@ -196,7 +196,7 @@ static const char *wifiModeDesc[] =
 //
 
 // FM (kHz * 10)
-static const Step fmSteps[] =
+const Step fmSteps[] =
     {
         {1, "10k", 1},
         {5, "50k", 5},
@@ -206,7 +206,7 @@ static const Step fmSteps[] =
 };
 
 // SSB (Hz)
-static const Step ssbSteps[] =
+const Step ssbSteps[] =
     {
         {10, "10", 1},
         {25, "25", 1},
@@ -233,7 +233,7 @@ static const uint8_t ssbFastSteps[] =
 };
 
 // AM (kHz)
-static const Step amSteps[] =
+const Step amSteps[] =
     {
         {1, "1k", 1},
         {5, "5k", 5},
@@ -267,6 +267,19 @@ int getTotalSteps()
     return (ITEM_COUNT(amSteps));
   }
   return 0;
+}
+
+int getTotalFmSteps()
+{
+  return (ITEM_COUNT(fmSteps));
+}
+int getTotalSsbSteps()
+{
+  return (ITEM_COUNT(ssbSteps));
+}
+int getTotalAmSteps()
+{
+  return (ITEM_COUNT(amSteps));
 }
 
 static int getLastStep(int mode)
@@ -322,7 +335,7 @@ static uint8_t getMaxFreqInputPos()
 // Bandwidth Menu
 //
 
-static const Bandwidth fmBandwidths[] =
+const Bandwidth fmBandwidths[] =
     {
         {0, "Auto"}, // Automatic - default
         {1, "110k"}, // Force wide (110 kHz) channel filter.
@@ -330,7 +343,7 @@ static const Bandwidth fmBandwidths[] =
         {3, "60k"},
         {4, "40k"}};
 
-static const Bandwidth ssbBandwidths[] =
+const Bandwidth ssbBandwidths[] =
     {
         {4, "0.5k"},
         {5, "1.0k"},
@@ -339,7 +352,7 @@ static const Bandwidth ssbBandwidths[] =
         {2, "3.0k"},
         {3, "4.0k"}};
 
-static const Bandwidth amBandwidths[] =
+const Bandwidth amBandwidths[] =
     {
         {4, "1.0k"},
         {5, "1.8k"},
@@ -354,6 +367,19 @@ static const Bandwidth *bandwidths[4] =
         fmBandwidths, ssbBandwidths, ssbBandwidths, amBandwidths};
 
 static uint8_t bwIdx[4] = {0, 4, 4, 4};
+
+int getTotalFmBandwidths()
+{
+  return (ITEM_COUNT(fmBandwidths));
+}
+int getTotalSsbBandwidths()
+{
+  return (ITEM_COUNT(ssbBandwidths));
+}
+int getTotalAmBandwidths()
+{
+  return (ITEM_COUNT(amBandwidths));
+}
 
 const Bandwidth *getCurrentBandwidth()
 {

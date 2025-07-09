@@ -293,6 +293,102 @@ extern "C" void set_var_local_seek_options(const char *value)
     local_seek_options = value;
 }
 
+std::string local_band_options = "";
+
+extern "C" const char *get_var_local_band_options()
+{
+    return local_band_options.c_str();
+}
+
+extern "C" void set_var_local_band_options(const char *value)
+{
+    local_band_options = value;
+}
+
+std::string local_mode_options = "";
+
+extern "C" const char *get_var_local_mode_options()
+{
+    return local_mode_options.c_str();
+}
+
+extern "C" void set_var_local_mode_options(const char *value)
+{
+    local_mode_options = value;
+}
+
+std::string local_fmstep_options = "";
+
+extern "C" const char *get_var_local_fmstep_options()
+{
+    return local_fmstep_options.c_str();
+}
+
+extern "C" void set_var_local_fmstep_options(const char *value)
+{
+    local_fmstep_options = value;
+}
+
+std::string local_ssbstep_options = "";
+
+extern "C" const char *get_var_local_ssbstep_options()
+{
+    return local_ssbstep_options.c_str();
+}
+
+extern "C" void set_var_local_ssbstep_options(const char *value)
+{
+    local_ssbstep_options = value;
+}
+
+std::string local_amstep_options = "";
+
+extern "C" const char *get_var_local_amstep_options()
+{
+    return local_amstep_options.c_str();
+}
+
+extern "C" void set_var_local_amstep_options(const char *value)
+{
+    local_amstep_options = value;
+}
+
+std::string local_fmbandwidth_options = "";
+
+extern "C" const char *get_var_local_fmbandwidth_options()
+{
+    return local_fmbandwidth_options.c_str();
+}
+
+extern "C" void set_var_local_fmbandwidth_options(const char *value)
+{
+    local_fmbandwidth_options = value;
+}
+
+std::string local_ssbbandwidth_options = "";
+
+extern "C" const char *get_var_local_ssbbandwidth_options()
+{
+    return local_ssbbandwidth_options.c_str();
+}
+
+extern "C" void set_var_local_ssbbandwidth_options(const char *value)
+{
+    local_ssbbandwidth_options = value;
+}
+
+std::string local_ambandwidth_options = "";
+
+extern "C" const char *get_var_local_ambandwidth_options()
+{
+    return local_ambandwidth_options.c_str();
+}
+
+extern "C" void set_var_local_ambandwidth_options(const char *value)
+{
+    local_ambandwidth_options = value;
+}
+
 int32_t local_frequency = 0;
 
 extern "C" int32_t get_var_local_frequency()

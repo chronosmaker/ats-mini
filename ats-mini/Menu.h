@@ -70,6 +70,12 @@ extern Memory memories[];
 extern const UTCOffset utcOffsets[];
 extern const char *bandModeDesc[];
 extern const FMRegion fmRegions[];
+extern const Step fmSteps[];
+extern const Step ssbSteps[];
+extern const Step amSteps[];
+extern const Bandwidth fmBandwidths[];
+extern const Bandwidth ssbBandwidths[];
+extern const Bandwidth amBandwidths[];
 
 //
 // Utility functions to change menu values
@@ -111,10 +117,18 @@ bool doSideBar(uint16_t cmd, int dir);
 void doSelectDigit(int dir);
 bool clickHandler(uint16_t cmd, bool shortPress);
 void selectBand(uint8_t idx, bool drawLoadingSSB = true);
-int getTotalBands();
-int getTotalSteps();
-int getTotalModes();
+
+extern int getTotalBands();
+extern int getTotalModes();
 extern int getTotalMemories();
+extern int getTotalSteps();
+extern int getTotalFmSteps();
+extern int getTotalSsbSteps();
+extern int getTotalAmSteps();
+extern int getTotalFmBandwidths();
+extern int getTotalSsbBandwidths();
+extern int getTotalAmBandwidths();
+
 Band *getCurrentBand();
 uint8_t getFreqInputPos();
 int getFreqInputStep();

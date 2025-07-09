@@ -2,12 +2,12 @@
   "navigation": {
     "selectedUserPageObject": "[ats-ui.eez-project]:/userPages/2",
     "selectedUserWidgetObject": "[ats-ui.eez-project]:/userWidgets/1",
-    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/23",
+    "selectedGlobalVariableObject": "[ats-ui.eez-project]:/variables/globalVariables/31",
     "selectedEnumObject": "[ats-ui.eez-project]:/variables/enums/0",
     "selectedFontObject": "[ats-ui.eez-project]:/fonts/4",
     "selectedBitmapObject": "[ats-ui.eez-project]:/bitmaps/18",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Global"
+      "variables-tab/sub-navigation/selected-item": "Local"
     }
   },
   "layoutModel": {
@@ -201,11 +201,21 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 35.03350596859526,
-              "selected": 2,
+              "weight": 37.207117652778166,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
+                {
+                  "type": "tab",
+                  "id": "#dc93932d-cac1-4c7b-bffe-01f074f2e349",
+                  "name": "local_toolbar",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[ats-ui.eez-project]:/userWidgets/1",
+                    "permanent": false
+                  },
+                  "icon": "svg:user_widget"
+                },
                 {
                   "type": "tab",
                   "id": "#a7fee73f-45d9-4c80-af43-153fe5ea7075",
@@ -228,25 +238,13 @@
                     "permanent": false
                   },
                   "icon": "material:settings"
-                },
-                {
-                  "type": "tab",
-                  "id": "#e4f625ab-3bb2-4721-9759-66f041c0384a",
-                  "name": "local_toolbar",
-                  "component": "editor",
-                  "config": {
-                    "objectPath": "[ats-ui.eez-project]:/userWidgets/1",
-                    "permanent": false
-                  },
-                  "icon": "svg:user_widget"
                 }
-              ],
-              "active": true
+              ]
             },
             {
               "type": "tabset",
               "id": "#2b6d8aba-d8f7-4a0d-ada0-f2526c4599ab",
-              "weight": 21.693497004884414,
+              "weight": 19.51988532070149,
               "children": [
                 {
                   "type": "tab",
@@ -256,7 +254,8 @@
                   "enableClose": false,
                   "icon": "svg:properties"
                 }
-              ]
+              ],
+              "active": true
             },
             {
               "type": "tabset",
@@ -1193,9 +1192,7 @@
       "selection": {
         "0": {
           "5": {},
-          "8": {
-            "$selected": true
-          },
+          "8": {},
           "9": {}
         }
       },
@@ -1331,21 +1328,23 @@
     "[ats-ui.eez-project]:/userWidgets/1[flow-state]": {
       "selection": {
         "1": {},
-        "2": {},
+        "2": {
+          "1": {
+            "$selected": true
+          }
+        },
         "3": {},
         "4": {},
         "7": {},
         "9": {},
         "10": {},
         "11": {},
-        "15": {
-          "$selected": true
-        }
+        "15": {}
       },
       "transform": {
         "translate": {
-          "x": -718.8,
-          "y": -505
+          "x": -102.5,
+          "y": -267
         },
         "scale": 1
       },

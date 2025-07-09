@@ -279,7 +279,7 @@ void setup()
     eepromLoadConfig();
 
     int total = getTotalMemories();
-    char result[256] = "自动搜索\n手动搜索";
+    char local_seek_options[256] = "自动搜索\n手动搜索";
     for (int i = 0; i < total; i++)
     {
       char buffer[10];
@@ -291,9 +291,161 @@ void setup()
       {
         sprintf(buffer, "\n%02u-_____", i + 1);
       }
-      strncat(result, buffer, sizeof(result) - strlen(result) - 1);
+      strncat(local_seek_options, buffer, sizeof(local_seek_options) - strlen(local_seek_options) - 1);
     }
-    set_var_local_seek_options(result);
+    set_var_local_seek_options(local_seek_options);
+
+    total = getTotalBands();
+    size_t total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(bands[i].bandName) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_band_options = (char *)malloc(total_len);
+    *local_band_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_band_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_band_options, bands[i].bandName); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_band_options(local_band_options);
+    free(local_band_options); // 避免内存泄漏
+
+    total = getTotalModes();
+    total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(bandModeDesc[i]) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_mode_options = (char *)malloc(total_len);
+    *local_mode_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_mode_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_mode_options, bandModeDesc[i]); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_mode_options(local_mode_options);
+    free(local_mode_options); // 避免内存泄漏
+
+    total = getTotalFmSteps();
+    total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(fmSteps[i].desc) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_fmstep_options = (char *)malloc(total_len);
+    *local_fmstep_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_fmstep_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_fmstep_options, fmSteps[i].desc); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_fmstep_options(local_fmstep_options);
+    free(local_fmstep_options); // 避免内存泄漏
+
+    total = getTotalSsbSteps();
+    total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(ssbSteps[i].desc) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_ssbstep_options = (char *)malloc(total_len);
+    *local_ssbstep_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_ssbstep_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_ssbstep_options, ssbSteps[i].desc); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_ssbstep_options(local_ssbstep_options);
+    free(local_ssbstep_options); // 避免内存泄漏
+
+    total = getTotalAmSteps();
+    total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(amSteps[i].desc) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_amstep_options = (char *)malloc(total_len);
+    *local_amstep_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_amstep_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_amstep_options, amSteps[i].desc); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_amstep_options(local_amstep_options);
+    free(local_amstep_options); // 避免内存泄漏
+
+    total = getTotalFmBandwidths();
+    total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(fmBandwidths[i].desc) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_fmbandwidth_options = (char *)malloc(total_len);
+    *local_fmbandwidth_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_fmbandwidth_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_fmbandwidth_options, fmBandwidths[i].desc); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_fmbandwidth_options(local_fmbandwidth_options);
+    free(local_fmbandwidth_options); // 避免内存泄漏
+
+    total = getTotalSsbBandwidths();
+    total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(ssbBandwidths[i].desc) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_ssbbandwidth_options = (char *)malloc(total_len);
+    *local_ssbbandwidth_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_ssbbandwidth_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_ssbbandwidth_options, ssbBandwidths[i].desc); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_ssbbandwidth_options(local_ssbbandwidth_options);
+    free(local_ssbbandwidth_options); // 避免内存泄漏
+
+    total = getTotalAmBandwidths();
+    total_len = 1; // 包含结尾 '\0'
+    for (size_t i = 0; i < total; i++)
+    {
+      total_len += strlen(amBandwidths[i].desc) + 1; // 每个字符串长度 + 换行符
+    }
+    char *local_ambandwidth_options = (char *)malloc(total_len);
+    *local_ambandwidth_options = '\0'; // 确保初始为空字符串
+    for (size_t i = 0; i < total; i++)
+    {
+      if (i > 0)
+      {
+        strcat(local_ambandwidth_options, "\n"); // 非首元素添加换行
+      }
+      strcat(local_ambandwidth_options, amBandwidths[i].desc); // 安全追加（因预分配足够空间）
+    }
+    set_var_local_ambandwidth_options(local_ambandwidth_options);
+    free(local_ambandwidth_options); // 避免内存泄漏
   }
   else
   {

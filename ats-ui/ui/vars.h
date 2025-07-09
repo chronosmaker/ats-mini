@@ -30,14 +30,7 @@ typedef enum {
 // Flow global variables
 
 enum FlowGlobalVariables {
-    FLOW_GLOBAL_VARIABLE_LOCAL_BAND_OPTIONS = 0,
-    FLOW_GLOBAL_VARIABLE_LOCAL_MODE_OPTIONS = 1,
-    FLOW_GLOBAL_VARIABLE_LOCAL_FMSTEP_OPTIONS = 2,
-    FLOW_GLOBAL_VARIABLE_LOCAL_SSBSTEP_OPTIONS = 3,
-    FLOW_GLOBAL_VARIABLE_LOCAL_AMSTEP_OPTIONS = 4,
-    FLOW_GLOBAL_VARIABLE_LOCAL_FMBANDWIDTH_OPTIONS = 5,
-    FLOW_GLOBAL_VARIABLE_LOCAL_SSBBANDWIDTH_OPTIONS = 6,
-    FLOW_GLOBAL_VARIABLE_LOCAL_AMBANDWIDTH_OPTIONS = 7
+    FLOW_GLOBAL_VARIABLE_NONE
 };
 
 // Native global variables
@@ -90,6 +83,22 @@ extern int32_t get_var_local_region_index();
 extern void set_var_local_region_index(int32_t value);
 extern const char *get_var_local_seek_options();
 extern void set_var_local_seek_options(const char *value);
+extern const char *get_var_local_band_options();
+extern void set_var_local_band_options(const char *value);
+extern const char *get_var_local_mode_options();
+extern void set_var_local_mode_options(const char *value);
+extern const char *get_var_local_fmstep_options();
+extern void set_var_local_fmstep_options(const char *value);
+extern const char *get_var_local_ssbstep_options();
+extern void set_var_local_ssbstep_options(const char *value);
+extern const char *get_var_local_amstep_options();
+extern void set_var_local_amstep_options(const char *value);
+extern const char *get_var_local_fmbandwidth_options();
+extern void set_var_local_fmbandwidth_options(const char *value);
+extern const char *get_var_local_ssbbandwidth_options();
+extern void set_var_local_ssbbandwidth_options(const char *value);
+extern const char *get_var_local_ambandwidth_options();
+extern void set_var_local_ambandwidth_options(const char *value);
 extern int32_t get_var_local_frequency();
 extern void set_var_local_frequency(int32_t value);
 extern int32_t get_var_local_bfo();
