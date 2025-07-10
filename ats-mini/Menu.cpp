@@ -1,4 +1,5 @@
 #include "Common.h"
+#include "Variables.h"
 #include "Themes.h"
 #include "Utils.h"
 #include "Menu.h"
