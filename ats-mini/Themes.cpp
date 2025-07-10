@@ -416,8 +416,7 @@ int getTotalThemes() { return(ITEM_COUNT(theme)); }
 //
 // Turn theme editor on (1) or off (0), or get current status (2)
 //
-bool switchThemeEditor(int8_t state)
-{
+bool switchThemeEditor(int8_t state) {
   static bool themeEditor = false;
   themeEditor = state == 0 ? false : (state == 1 ? true : themeEditor);
   return themeEditor;

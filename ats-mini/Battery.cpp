@@ -21,12 +21,11 @@ static float batteryVolts = 4.0;
 //
 // Measure and return battery voltage
 //
-float batteryMonitor()
-{
+float batteryMonitor() {
   int i, j;
 
   // Read ADC multiple times
-  for(i=j=0 ; i<BATT_ADC_READS ; i++) j += analogRead(VBAT_MON);
+  for (i = j = 0; i < BATT_ADC_READS; i++) j += analogRead(VBAT_MON);
 
   // Calculate average voltage with correction factor
   batteryVolts = ((float)j / BATT_ADC_READS) * BATT_ADC_FACTOR / 1000;
@@ -37,25 +36,24 @@ float batteryMonitor()
   // 25 to 50           1
   // 50 to 75           2
   // 75 to 100          3
-  switch(batteryState)
-  {
-    case 0:
-      if      (batteryVolts > (BATT_SOC_LEVEL1 + BATT_SOC_HYST_2)) batteryState = 1;   // State 0 > 1
-      break;
-    case 1:
-      if      (batteryVolts > (BATT_SOC_LEVEL2 + BATT_SOC_HYST_2)) batteryState = 2;   // State 1 > 2
-      else if (batteryVolts < (BATT_SOC_LEVEL1 - BATT_SOC_HYST_2)) batteryState = 0;   // State 1 > 0
-      break;
-    case 2:
-      if      (batteryVolts > (BATT_SOC_LEVEL3 + BATT_SOC_HYST_2)) batteryState = 3;   // State 2 > 3
-      else if (batteryVolts < (BATT_SOC_LEVEL2 - BATT_SOC_HYST_2)) batteryState = 1;   // State 2 > 1
-      break;
-    case 3:
-      if      (batteryVolts < (BATT_SOC_LEVEL3 - BATT_SOC_HYST_2)) batteryState = 2;   // State 3 > 2
-      break;
-    default:
-      if      (batteryState > 3) batteryState = 0;                                // State (Illegal) > 0
-      break;
+  switch (batteryState) {
+  case 0:
+    if (batteryVolts > (BATT_SOC_LEVEL1 + BATT_SOC_HYST_2)) batteryState = 1;   // State 0 > 1
+    break;
+  case 1:
+    if (batteryVolts > (BATT_SOC_LEVEL2 + BATT_SOC_HYST_2)) batteryState = 2;   // State 1 > 2
+    else if (batteryVolts < (BATT_SOC_LEVEL1 - BATT_SOC_HYST_2)) batteryState = 0;   // State 1 > 0
+    break;
+  case 2:
+    if (batteryVolts > (BATT_SOC_LEVEL3 + BATT_SOC_HYST_2)) batteryState = 3;   // State 2 > 3
+    else if (batteryVolts < (BATT_SOC_LEVEL2 - BATT_SOC_HYST_2)) batteryState = 1;   // State 2 > 1
+    break;
+  case 3:
+    if (batteryVolts < (BATT_SOC_LEVEL3 - BATT_SOC_HYST_2)) batteryState = 2;   // State 3 > 2
+    break;
+  default:
+    if (batteryState > 3) batteryState = 0;                                // State (Illegal) > 0
+    break;
   }
 
   // Return current voltage
@@ -66,9 +64,8 @@ float batteryMonitor()
 // Show last measured battery voltage and status at given screen
 // coordinates. Return true if voltage was drawn.
 //
-bool drawBattery(int x, int y)
-{
-  if(sleepOn()) return false;
+bool drawBattery(int x, int y) {
+  if (sleepOn()) return false;
 
   // Measure battery voltage and status
   batteryMonitor();

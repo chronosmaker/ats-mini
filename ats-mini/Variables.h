@@ -26,6 +26,15 @@ extern int getTotalSsbSteps();
 extern int getTotalAmSteps();
 extern int getTotalFmRegions();
 extern int getTotalUTCOffsets();
+extern int getTotalSteps();
+
+extern int getLastMemory();
+extern int getLastBand();
+extern int getLastBandMode();
+extern int getLastBandwidth(int mode);
+extern int getLastStep(int mode);
+extern int getLastFmRegion();
+extern int getLastUtcOffset();
 
 void init_local_seek_options();
 void init_local_band_options();

@@ -1,5 +1,4 @@
 #include "Common.h"
-#include "Variables.h"
 #include "Themes.h"
 #include "Utils.h"
 #include "Menu.h"
@@ -108,35 +107,6 @@ const Step* getCurrentStep(bool fast) {
   return (&steps[get_var_local_mode_index()][fast && isSSB() ? ssbFastSteps[idx] : idx]);
 }
 
-int getTotalSteps() {
-  switch (get_var_local_mode_index()) {
-  case FM:
-    return (ITEM_COUNT(fmSteps));
-  case LSB:
-    return (ITEM_COUNT(ssbSteps));
-  case USB:
-    return (ITEM_COUNT(ssbSteps));
-  case AM:
-    return (ITEM_COUNT(amSteps));
-  }
-  return 0;
-}
-
-static int getLastStep(int mode) {
-  switch (mode) {
-  case FM:
-    return (LAST_ITEM(fmSteps));
-  case LSB:
-    return (LAST_ITEM(ssbSteps));
-  case USB:
-    return (LAST_ITEM(ssbSteps));
-  case AM:
-    return (LAST_ITEM(amSteps));
-  }
-
-  return (0);
-}
-
 static uint8_t freqInputPos = 0;
 
 static uint8_t getDefaultFreqInputPos(int mode, int step) {
@@ -169,20 +139,6 @@ static uint8_t bwIdx[4] = { 0, 4, 4, 4 };
 
 const Bandwidth* getCurrentBandwidth() {
   return (&bandwidths[get_var_local_mode_index()][bwIdx[get_var_local_mode_index()]]);
-}
-
-static int getLastBandwidth(int mode) {
-  switch (mode) {
-  case FM:
-    return (LAST_ITEM(fmBandwidths));
-  case LSB:
-    return (LAST_ITEM(ssbBandwidths));
-  case USB:
-    return (LAST_ITEM(ssbBandwidths));
-  case AM:
-    return (LAST_ITEM(amBandwidths));
-  }
-  return (0);
 }
 
 static void setBandwidth() {
@@ -276,7 +232,7 @@ void doFmRegion(int dir) {
   if (get_var_local_mode_index() != FM)
     return;
 
-  FmRegionIdx = wrap_range(FmRegionIdx, dir, 0, LAST_ITEM(fmRegions));
+  FmRegionIdx = wrap_range(FmRegionIdx, dir, 0, getLastFmRegion());
   rx.setFMDeEmphasis(fmRegions[FmRegionIdx].value);
 }
 
@@ -320,7 +276,7 @@ static void doRDSMode(int dir) {
 }
 
 static void doUTCOffset(int dir) {
-  utcOffsetIdx = wrap_range(utcOffsetIdx, dir, 0, LAST_ITEM(utcOffsets));
+  utcOffsetIdx = wrap_range(utcOffsetIdx, dir, 0, getLastUtcOffset());
   clockRefreshTime();
 }
 
@@ -375,7 +331,7 @@ bool tuneToMemory(const Memory* memory) {
 }
 
 void doMemory(int dir) {
-  set_var_local_seek_index(wrap_range(get_var_local_seek_index(), dir, 0, LAST_ITEM(memories) + 2));
+  set_var_local_seek_index(wrap_range(get_var_local_seek_index(), dir, 0, getLastMemory() + 2));
   int32_t memoryIdx = get_var_local_seek_index() - 2;
   if (memoryIdx >= 0) {
     tuneToMemory(&memories[memoryIdx]);
@@ -384,10 +340,10 @@ void doMemory(int dir) {
 
 void doSeekMemory(int dir) {
   int32_t current = get_var_local_seek_index() - 2;
-  int32_t next = wrap_range(current, dir, 0, LAST_ITEM(memories));
+  int32_t next = wrap_range(current, dir, 0, getLastMemory());
 
   while (!tuneToMemory(&memories[next])) {
-    next = wrap_range(next, dir, 0, LAST_ITEM(memories));
+    next = wrap_range(next, dir, 0, getLastMemory());
     if (next == current) {
       break;
     }
@@ -415,7 +371,7 @@ void doSaveMemory() {
 
 static void clickMemory(uint8_t idx, bool shortPress) {
   // // Must have a valid index
-  // if (idx > LAST_ITEM(memories))
+  // if (idx > getLastMemory())
   //   return;
 
   // // If clicking on an empty memory slot, save to it
@@ -476,7 +432,7 @@ void doMode(int dir) {
 
   // Change AM/LSB/USB modes, do not allow FM mode
   do
-    set_var_local_mode_index(wrap_range(get_var_local_mode_index(), dir, 0, LAST_ITEM(bandModeDesc)));
+    set_var_local_mode_index(wrap_range(get_var_local_mode_index(), dir, 0, getLastBandMode()));
   while (get_var_local_mode_index() == FM);
 
   // Save current band settings
@@ -517,7 +473,7 @@ void doBand(int dir) {
   set_var_local_step_index(stepIdx[get_var_local_mode_index()]);
 
   // Change band
-  bandIdx = wrap_range(bandIdx, dir, 0, LAST_ITEM(bands));
+  bandIdx = wrap_range(bandIdx, dir, 0, getLastBand());
   set_var_local_band_index(bandIdx);
 
   // Enable the new band
@@ -780,7 +736,7 @@ void useBand(const Band* band) {
 
 void selectBand(uint8_t idx, bool drawLoadingSSB) {
   // Set band and mode
-  int32_t bandIdx = min(idx, LAST_ITEM(bands));
+  int32_t bandIdx = min(idx, getLastBand());
   set_var_local_band_index(bandIdx);
   set_var_local_mode_index(bands[bandIdx].bandMode);
 

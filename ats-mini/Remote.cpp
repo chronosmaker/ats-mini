@@ -1,4 +1,5 @@
 #include "Common.h"
+#include "Variables.h"
 #include "Themes.h"
 #include "Utils.h"
 #include "Menu.h"
@@ -10,8 +11,7 @@ static uint32_t remoteTimer = millis();
 static uint8_t remoteSeqnum = 0;
 static bool remoteLogOn = false;
 
-static uint8_t char2nibble(char key)
-{
+static uint8_t char2nibble(char key) {
   if ((key >= '0') && (key <= '9'))
     return (key - '0');
   if ((key >= 'A') && (key <= 'F'))
@@ -24,8 +24,7 @@ static uint8_t char2nibble(char key)
 //
 // Capture current screen image to the remote
 //
-static void remoteCaptureScreen()
-{
+static void remoteCaptureScreen() {
   /*
   uint16_t width  = spr.width();
   uint16_t height = spr.height();
@@ -65,8 +64,7 @@ static void remoteCaptureScreen()
   */
 }
 
-char readSerialChar()
-{
+char readSerialChar() {
   char key;
 
   while (!Serial.available())
@@ -76,50 +74,35 @@ char readSerialChar()
   return key;
 }
 
-long int readSerialInteger()
-{
+long int readSerialInteger() {
   long int result = 0;
-  while (true)
-  {
+  while (true) {
     char ch = Serial.peek();
-    if (ch == 0xFF)
-    {
+    if (ch == 0xFF) {
       continue;
-    }
-    else if ((ch >= '0') && (ch <= '9'))
-    {
+    } else if ((ch >= '0') && (ch <= '9')) {
       ch = readSerialChar();
       // Can overflow, but it's ok
       result = result * 10 + (ch - '0');
-    }
-    else
-    {
+    } else {
       return result;
     }
   }
 }
 
-void readSerialString(char *bufStr, uint8_t bufLen)
-{
+void readSerialString(char* bufStr, uint8_t bufLen) {
   uint8_t length = 0;
-  while (true)
-  {
+  while (true) {
     char ch = Serial.peek();
-    if (ch == 0xFF)
-    {
+    if (ch == 0xFF) {
       continue;
-    }
-    else if (ch == ',' || ch < ' ')
-    {
+    } else if (ch == ',' || ch < ' ') {
       bufStr[length] = '\0';
       return;
-    }
-    else
-    {
+    } else {
       ch = readSerialChar();
       bufStr[length] = ch;
-      if (++length >= bufLen - 1)
-      {
+      if (++length >= bufLen - 1) {
         bufStr[length] = '\0';
         return;
       }
@@ -127,21 +110,18 @@ void readSerialString(char *bufStr, uint8_t bufLen)
   }
 }
 
-static bool expectNewline()
-{
+static bool expectNewline() {
   char ch;
   while ((ch = Serial.peek()) == 0xFF)
     ;
-  if (ch == '\r')
-  {
+  if (ch == '\r') {
     Serial.read();
     return true;
   }
   return false;
 }
 
-static bool showError(const char *message)
-{
+static bool showError(const char* message) {
   // Consume the remaining input
   while (Serial.available())
     readSerialChar();
@@ -149,21 +129,17 @@ static bool showError(const char *message)
   return false;
 }
 
-static void remoteGetMemories()
-{
-  for (uint8_t i = 0; i < getTotalMemories(); i++)
-  {
-    if (memories[i].freq)
-    {
+static void remoteGetMemories() {
+  for (uint8_t i = 0; i < getTotalMemories(); i++) {
+    if (memories[i].freq) {
       uint32_t freq = (memories[i].mode == LSB || memories[i].mode == USB) ? memories[i].freq * 1000 + memories[i].hz100 * 100 : (memories[i].mode == AM) ? memories[i].freq * 1000
-                                                                                                                                                          : memories[i].freq * 10000;
+        : memories[i].freq * 10000;
       Serial.printf("#%02d,%s,%ld,%s\r\n", i + 1, bands[memories[i].band].bandName, freq, bandModeDesc[memories[i].mode]);
     }
   }
 }
 
-static bool remoteSetMemory()
-{
+static bool remoteSetMemory() {
   Serial.print('#');
   Memory mem;
   uint32_t freq = 0;
@@ -179,10 +155,8 @@ static bool remoteSetMemory()
   if (readSerialChar() != ',')
     return showError("Expected ','");
   mem.band = 0xFF;
-  for (int i = 0; i < getTotalBands(); i++)
-  {
-    if (strcmp(bands[i].bandName, band) == 0)
-    {
+  for (int i = 0; i < getTotalBands(); i++) {
+    if (strcmp(bands[i].bandName, band) == 0) {
       mem.band = i;
       break;
     }
@@ -200,10 +174,8 @@ static bool remoteSetMemory()
     return showError("Expected newline");
   Serial.println();
   mem.mode = 15;
-  for (int i = 0; i < getTotalModes(); i++)
-  {
-    if (strcmp(bandModeDesc[i], mode) == 0)
-    {
+  for (int i = 0; i < getTotalModes(); i++) {
+    if (strcmp(bandModeDesc[i], mode) == 0) {
       mem.mode = i;
       break;
     }
@@ -211,38 +183,27 @@ static bool remoteSetMemory()
   if (mem.mode == 15)
     return showError("No such mode");
 
-  if (mem.mode == LSB || mem.mode == USB)
-  {
+  if (mem.mode == LSB || mem.mode == USB) {
     mem.freq = freq / 1000;
     mem.hz100 = (freq % 1000) / 100;
-  }
-  else if (mem.mode == AM)
-  {
+  } else if (mem.mode == AM) {
     mem.freq = freq / 1000;
     mem.hz100 = 0;
-  }
-  else
-  {
+  } else {
     mem.freq = freq / 10000;
     mem.hz100 = 0;
   }
 
-  if (!isMemoryInBand(&bands[mem.band], &mem))
-  {
-    if (!freq)
-    {
+  if (!isMemoryInBand(&bands[mem.band], &mem)) {
+    if (!freq) {
       // Clear slot
       memories[slot - 1] = mem;
       return true;
-    }
-    else
-    {
+    } else {
       // Handle duplicate band names (15M)
       mem.band = 0xFF;
-      for (int i = getTotalBands() - 1; i >= 0; i--)
-      {
-        if (strcmp(bands[i].bandName, band) == 0)
-        {
+      for (int i = getTotalBands() - 1; i >= 0; i--) {
+        if (strcmp(bands[i].bandName, band) == 0) {
           mem.band = i;
           break;
         }
@@ -261,22 +222,18 @@ static bool remoteSetMemory()
 //
 // Set current color theme from the remote
 //
-static void remoteSetColorTheme()
-{
+static void remoteSetColorTheme() {
   Serial.print("Enter a string of hex colors (x0001x0002...): ");
 
-  uint8_t *p = (uint8_t *)&(TH.bg);
+  uint8_t* p = (uint8_t*)&(TH.bg);
 
-  for (int i = 0;; i += sizeof(uint16_t))
-  {
-    if (i >= sizeof(ColorTheme) - offsetof(ColorTheme, bg))
-    {
+  for (int i = 0;; i += sizeof(uint16_t)) {
+    if (i >= sizeof(ColorTheme) - offsetof(ColorTheme, bg)) {
       Serial.println(" Ok");
       break;
     }
 
-    if (readSerialChar() != 'x')
-    {
+    if (readSerialChar() != 'x') {
       Serial.println(" Err");
       break;
     }
@@ -294,13 +251,11 @@ static void remoteSetColorTheme()
 //
 // Print current color theme to the remote
 //
-static void remoteGetColorTheme()
-{
+static void remoteGetColorTheme() {
   Serial.printf("Color theme %s: ", TH.name);
-  const uint8_t *p = (uint8_t *)&(TH.bg);
+  const uint8_t* p = (uint8_t*)&(TH.bg);
 
-  for (int i = 0; i < sizeof(ColorTheme) - offsetof(ColorTheme, bg); i += sizeof(uint16_t))
-  {
+  for (int i = 0; i < sizeof(ColorTheme) - offsetof(ColorTheme, bg); i += sizeof(uint16_t)) {
     Serial.printf("x%02X%02X", p[i + 1], p[i]);
   }
 
@@ -310,8 +265,7 @@ static void remoteGetColorTheme()
 //
 // Print current status to the remote
 //
-void remotePrintStatus()
-{
+void remotePrintStatus() {
   // Prepare information ready to be sent
   float remoteVoltage = batteryMonitor();
 
@@ -326,30 +280,28 @@ void remotePrintStatus()
 
   // Remote serial
   Serial.printf("%u,%u,%d,%d,%s,%s,%s,%s,%hu,%hu,%hu,%hu,%hu,%.2f,%hu\r\n",
-                APP_VERSION,
-                get_var_local_frequency(),
-                get_var_local_bfo(),
-                getCurrentBand()->bandCal,
-                getCurrentBand()->bandName,
-                bandModeDesc[get_var_local_mode_index()],
-                getCurrentStep()->desc,
-                getCurrentBandwidth()->desc,
-                agcIdx,
-                get_var_speaker_volume(),
-                remoteRssi,
-                remoteSnr,
-                tuningCapacitor,
-                remoteVoltage,
-                remoteSeqnum);
+    APP_VERSION,
+    get_var_local_frequency(),
+    get_var_local_bfo(),
+    getCurrentBand()->bandCal,
+    getCurrentBand()->bandName,
+    bandModeDesc[get_var_local_mode_index()],
+    getCurrentStep()->desc,
+    getCurrentBandwidth()->desc,
+    agcIdx,
+    get_var_speaker_volume(),
+    remoteRssi,
+    remoteSnr,
+    tuningCapacitor,
+    remoteVoltage,
+    remoteSeqnum);
 }
 
 //
 // Tick remote time, periodically printing status
 //
-void remoteTickTime()
-{
-  if (remoteLogOn && (millis() - remoteTimer >= 500))
-  {
+void remoteTickTime() {
+  if (remoteLogOn && (millis() - remoteTimer >= 500)) {
     // Mark time and increment diagnostic sequence number
     remoteTimer = millis();
     remoteSeqnum++;
@@ -361,12 +313,10 @@ void remoteTickTime()
 //
 // Recognize and execute given remote command
 //
-int remoteDoCommand(char key)
-{
+int remoteDoCommand(char key) {
   int event = 0;
 
-  switch (key)
-  {
+  switch (key) {
   case 'R': // Rotate Encoder Clockwise
     event |= 1 << REMOTE_DIRECTION;
     event |= REMOTE_EEPROM;

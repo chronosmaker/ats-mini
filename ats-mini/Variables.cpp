@@ -193,6 +193,68 @@ int getTotalUTCOffsets() {
   return (ITEM_COUNT(utcOffsets));
 }
 
+int getTotalSteps() {
+  switch (get_var_local_mode_index()) {
+  case FM:
+    return (ITEM_COUNT(fmSteps));
+  case LSB:
+    return (ITEM_COUNT(ssbSteps));
+  case USB:
+    return (ITEM_COUNT(ssbSteps));
+  case AM:
+    return (ITEM_COUNT(amSteps));
+  }
+  return 0;
+}
+
+int getLastMemory() {
+  return (LAST_ITEM(memories));
+}
+
+int getLastBand() {
+  return (LAST_ITEM(bands));
+}
+
+int getLastBandMode() {
+  return (LAST_ITEM(bandModeDesc));
+}
+
+int getLastBandwidth(int mode) {
+  switch (mode) {
+  case FM:
+    return (LAST_ITEM(fmBandwidths));
+  case LSB:
+    return (LAST_ITEM(ssbBandwidths));
+  case USB:
+    return (LAST_ITEM(ssbBandwidths));
+  case AM:
+    return (LAST_ITEM(amBandwidths));
+  }
+  return (0);
+}
+
+int getLastStep(int mode) {
+  switch (mode) {
+  case FM:
+    return (LAST_ITEM(fmSteps));
+  case LSB:
+    return (LAST_ITEM(ssbSteps));
+  case USB:
+    return (LAST_ITEM(ssbSteps));
+  case AM:
+    return (LAST_ITEM(amSteps));
+  }
+  return (0);
+}
+
+int getLastFmRegion() {
+  return (LAST_ITEM(fmRegions));
+}
+
+int getLastUtcOffset() {
+  return (LAST_ITEM(utcOffsets));
+}
+
 void init_local_seek_options() {
   int total = getTotalMemories();
   const size_t base_len = strlen("自动搜索\n手动搜索");
@@ -266,7 +328,6 @@ void init_local_fmbandwidth_options() {
   }
   set_var_local_fmbandwidth_options(result);
   free(result); // 避免内存泄漏
-
 }
 
 void init_local_ssbbandwidth_options() {

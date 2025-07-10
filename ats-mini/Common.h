@@ -26,10 +26,6 @@
 // Number of memory slots
 #define MEMORY_COUNT 50
 
-// Compute number of items in an array
-#define ITEM_COUNT(array) (sizeof(array) / sizeof((array)[0]))
-#define LAST_ITEM(array) (ITEM_COUNT(array) - 1)
-
 // Modes
 #define FM 0
 #define LSB 1
@@ -102,6 +98,10 @@
 #define NET_AP_CONNECT 2 // Create access point, connect to a network normally, if possible
 #define NET_CONNECT 3    // Connect to a network normally, if possible
 #define NET_SYNC 4       // Connect to sync time, then disconnect
+
+// Compute number of items in an array
+#define ITEM_COUNT(array) (sizeof(array) / sizeof((array)[0]))
+#define LAST_ITEM(array) (ITEM_COUNT(array) - 1)
 
 //
 // Data Types

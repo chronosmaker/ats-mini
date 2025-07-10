@@ -14,7 +14,7 @@ void ButtonTracker::reset() {
 
 ButtonTracker::State ButtonTracker::update(bool currentState, unsigned int debounceInterval) {
   unsigned long now = millis();
-  State result = {false, false, false, false};
+  State result = { false, false, false, false };
 
   // Debounce logic
   if (currentState != lastState) {

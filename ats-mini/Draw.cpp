@@ -48,7 +48,7 @@ void drawWiFiIndicator(int x, int y) {
 //
 // Draw network status
 //
-bool drawWiFiStatus(const char *statusLine1, const char *statusLine2, int x, int y) {
+bool drawWiFiStatus(const char* statusLine1, const char* statusLine2, int x, int y) {
   /*
   if(statusLine1 || statusLine2)
   {
@@ -66,7 +66,7 @@ bool drawWiFiStatus(const char *statusLine1, const char *statusLine2, int x, int
 //
 // Draw zoomed menu item
 //
-void drawZoomedMenu(const char *text) {
+void drawZoomedMenu(const char* text) {
   // if (!zoomMenu) return;
   /*
   spr.fillSmoothRoundRect(RDS_OFFSET_X - 70 + 1, RDS_OFFSET_Y - 3 + 1, 148, 26, 4, TH.menu_bg);
@@ -80,7 +80,7 @@ void drawZoomedMenu(const char *text) {
 //
 // Show overlay message in large letters
 //
-void drawMessage(const char *msg) {
+void drawMessage(const char* msg) {
   if (sleepOn()) return;
   /*
   spr.setTextDatum(MC_DATUM);
@@ -95,7 +95,7 @@ void drawMessage(const char *msg) {
 //
 // Draw band and mode indicators
 //
-void drawBandAndMode(const char *band, const char *mode, int x, int y) {
+void drawBandAndMode(const char* band, const char* mode, int x, int y) {
   /*
   spr.setTextDatum(TC_DATUM);
   spr.setTextColor(TH.band_text, TH.bg);
@@ -308,7 +308,7 @@ void drawStereoIndicator(int x, int y, bool stereo) {
 //
 // Draw RDS station name (also CB channel, etc)
 //
-void drawStationName(const char *name, int x, int y) {
+void drawStationName(const char* name, int x, int y) {
   /*
   spr.setTextDatum(TC_DATUM);
   spr.setTextColor(TH.rds_text, TH.bg);
@@ -319,7 +319,7 @@ void drawStationName(const char *name, int x, int y) {
 //
 // Draw long (EIBI) station name
 //
-void drawLongStationName(const char *name, int x, int y) {
+void drawLongStationName(const char* name, int x, int y) {
   /*
   int width = spr.textWidth(name, 2);
   spr.setTextColor(TH.rds_text, TH.bg);
@@ -340,7 +340,7 @@ void drawLongStationName(const char *name, int x, int y) {
 //
 // Draw screen according to given command
 //
-void drawScreen(const char *statusLine1, const char *statusLine2) {
+void drawScreen(const char* statusLine1, const char* statusLine2) {
   if (sleepOn()) return;
   /*
   // Clear screen buffer
