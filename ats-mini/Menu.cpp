@@ -1,124 +1,47 @@
-#include "math.h"
 #include "Common.h"
+#include "Variables.h"
 #include "Themes.h"
 #include "Utils.h"
 #include "Menu.h"
 #include "Draw.h"
 #include "EIBI.h"
 
-//
-// Bands Menu
-//
-// TO CONFIGURE YOUR OWN BAND PLAN:
-// Add new bands by inserting new lines in the table below. Remove
-// bands by deleting lines. Change bands by editing lines below.
-//
-// NOTE:
-// You have to RESET EEPROM after adding or removing lines in this
-// table. Turn your receiver on with the encoder push button pressed
-// at first time to RESET the EEPROM.
-//
+Band* getCurrentBand() { return (&bands[get_var_local_band_index()]); }
 
-// Band limits are expanded to align with the nearest tuning scale mark
-Band bands[] =
-    {
-        {"VHF", FM_BAND_TYPE, FM, 6400, 10800, 10390, 2, 0, 0},
-        // All band. LW, MW and SW (from 150kHz to 30MHz)
-        {"ALL", SW_BAND_TYPE, AM, 150, 30000, 15000, 1, 4, 0},
-        {"11M", SW_BAND_TYPE, AM, 25600, 26100, 25850, 1, 4, 0},
-        {"13M", SW_BAND_TYPE, AM, 21500, 21900, 21650, 1, 4, 0},
-        {"15M", SW_BAND_TYPE, AM, 18900, 19100, 18950, 1, 4, 0},
-        {"16M", SW_BAND_TYPE, AM, 17500, 18100, 17650, 1, 4, 0},
-        {"19M", SW_BAND_TYPE, AM, 15100, 15900, 15450, 1, 4, 0},
-        {"22M", SW_BAND_TYPE, AM, 13500, 13900, 13650, 1, 4, 0},
-        {"25M", SW_BAND_TYPE, AM, 11000, 13000, 11850, 1, 4, 0},
-        {"31M", SW_BAND_TYPE, AM, 9000, 11000, 9650, 1, 4, 0},
-        {"41M", SW_BAND_TYPE, AM, 7000, 9000, 7300, 1, 4, 0},
-        {"49M", SW_BAND_TYPE, AM, 5000, 7000, 6000, 1, 4, 0},
-        {"60M", SW_BAND_TYPE, AM, 4000, 5100, 4950, 1, 4, 0},
-        {"75M", SW_BAND_TYPE, AM, 3500, 4000, 3950, 1, 4, 0},
-        {"90M", SW_BAND_TYPE, AM, 3000, 3500, 3300, 1, 4, 0},
-        {"MW3", MW_BAND_TYPE, AM, 1700, 3500, 2500, 1, 4, 0},
-        {"MW2", MW_BAND_TYPE, AM, 495, 1701, 783, 2, 4, 0},
-        {"MW1", MW_BAND_TYPE, AM, 150, 1800, 810, 3, 4, 0},
-        {"160M", MW_BAND_TYPE, LSB, 1800, 2000, 1900, 5, 4, 0},
-        {"80M", SW_BAND_TYPE, LSB, 3500, 4000, 3800, 5, 4, 0},
-        {"40M", SW_BAND_TYPE, LSB, 7000, 7300, 7150, 5, 4, 0},
-        {"30M", SW_BAND_TYPE, LSB, 10000, 10200, 10125, 5, 4, 0},
-        {"20M", SW_BAND_TYPE, USB, 14000, 14400, 14100, 5, 4, 0},
-        {"17M", SW_BAND_TYPE, USB, 18000, 18200, 18115, 5, 4, 0},
-        {"15M", SW_BAND_TYPE, USB, 21000, 21500, 21225, 5, 4, 0},
-        {"12M", SW_BAND_TYPE, USB, 24800, 25000, 24940, 5, 4, 0},
-        {"10M", SW_BAND_TYPE, USB, 28000, 29700, 28500, 5, 4, 0},
-        // https://www.hfunderground.com/wiki/CB
-        {"CB", SW_BAND_TYPE, AM, 25000, 30000, 27135, 0, 4, 0},
+static const char* menu[] =
+{
+    "Mode",
+    "Band",
+    "Volume",
+    "Step",
+    "Seek",
+    "Memory",
+    "Squelch",
+    "Bandwidth",
+    "AGC/ATTN",
+    "AVC",
+    "SoftMute",
+    "Settings",
+    "Scan",
 };
 
-int getTotalBands() { return (ITEM_COUNT(bands)); }
-Band *getCurrentBand() { return (&bands[get_var_local_band_index()]); }
-
-static const char *menu[] =
-    {
-        "Mode",
-        "Band",
-        "Volume",
-        "Step",
-        "Seek",
-        "Memory",
-        "Squelch",
-        "Bandwidth",
-        "AGC/ATTN",
-        "AVC",
-        "SoftMute",
-        "Settings",
-        "Scan",
+static const char* settings[] =
+{
+    "Brightness",
+    "Calibration",
+    "RDS",
+    "UTC Offset",
+    "FM Region",
+    "Theme",
+    "UI Layout",
+    "Zoom Menu",
+    "Scroll Dir.",
+    "Sleep",
+    "Sleep Mode",
+    "Load EiBi",
+    "Wi-Fi",
+    "About",
 };
-
-static const char *settings[] =
-    {
-        "Brightness",
-        "Calibration",
-        "RDS",
-        "UTC Offset",
-        "FM Region",
-        "Theme",
-        "UI Layout",
-        "Zoom Menu",
-        "Scroll Dir.",
-        "Sleep",
-        "Sleep Mode",
-        "Load EiBi",
-        "Wi-Fi",
-        "About",
-};
-
-//
-// FM Region Menu
-//
-const FMRegion fmRegions[] = {
-    // 50uS de-emphasis
-    {0x1, "EU/JP/AU"},
-    // 75uS de-emphasis
-    {0x2, "US"},
-};
-
-int getTotalFmRegions() { return (ITEM_COUNT(fmRegions)); }
-
-//
-// Mode Menu
-//
-
-const char *bandModeDesc[] = {"FM", "LSB", "USB", "AM"};
-
-int getTotalModes() { return (ITEM_COUNT(bandModeDesc)); }
-
-//
-// Memory Menu
-//
-
-Memory memories[MEMORY_COUNT];
-
-int getTotalMemories() { return (ITEM_COUNT(memories)); }
 
 //
 // RDS Menu
@@ -126,15 +49,15 @@ int getTotalMemories() { return (ITEM_COUNT(memories)); }
 
 uint8_t rdsModeIdx = 0;
 static const RDSMode rdsMode[] =
-    {
-        {RDS_PS, "PS"},
-        {RDS_PS | RDS_CT, "PS+CT"},
-        {RDS_PS | RDS_PI, "PS+PI"},
-        {RDS_PS | RDS_PI | RDS_CT, "PS+PI+CT"},
-        {RDS_PS | RDS_PI | RDS_RT | RDS_PT, "ALL-CT (EU)"},
-        {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_RBDS, "ALL-CT (US)"},
-        {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT, "ALL (EU)"},
-        {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT | RDS_RBDS, "ALL (US)"},
+{
+    {RDS_PS, "PS"},
+    {RDS_PS | RDS_CT, "PS+CT"},
+    {RDS_PS | RDS_PI, "PS+PI"},
+    {RDS_PS | RDS_PI | RDS_CT, "PS+PI+CT"},
+    {RDS_PS | RDS_PI | RDS_RT | RDS_PT, "ALL-CT (EU)"},
+    {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_RBDS, "ALL-CT (US)"},
+    {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT, "ALL (EU)"},
+    {RDS_PS | RDS_PI | RDS_RT | RDS_PT | RDS_CT | RDS_RBDS, "ALL (US)"},
 };
 
 uint8_t getRDSMode() { return (rdsMode[rdsModeIdx].mode); }
@@ -144,119 +67,49 @@ uint8_t getRDSMode() { return (rdsMode[rdsModeIdx].mode); }
 //
 
 uint8_t sleepModeIdx = SLEEP_LOCKED;
-static const char *sleepModeDesc[] =
-    {"Locked", "Unlocked", "CPU Sleep"};
+static const char* sleepModeDesc[] =
+{ "Locked", "Unlocked", "CPU Sleep" };
 
-//
-// UTC Offset Menu
-//
 uint8_t utcOffsetIdx = 8;
-const UTCOffset utcOffsets[] =
-    {
-        {-8 * 2, "UTC-8", "Fairbanks"},
-        {-7 * 2, "UTC-7", "San Francisco"},
-        {-6 * 2, "UTC-6", "Denver"},
-        {-5 * 2, "UTC-5", "Houston"},
-        {-4 * 2, "UTC-4", "New York"},
-        {-3 * 2, "UTC-3", "Rio de Janeiro"},
-        {-2 * 2, "UTC-2", "Sandwich Islands"},
-        {-1 * 2, "UTC-1", "Nuuk"},
-        {0 * 2, "UTC+0", "Reykjavik"},
-        {1 * 2, "UTC+1", "London"},
-        {2 * 2, "UTC+2", "Berlin"},
-        {3 * 2, "UTC+3", "Moscow"},
-        {4 * 2, "UTC+4", "Yerevan"},
-        {5 * 2, "UTC+5", "Astana"},
-        {6 * 2, "UTC+6", "Omsk"},
-        {7 * 2, "UTC+7", "Novosibirsk"},
-        {8 * 2, "UTC+8", "Beijing"},
-        {9 * 2, "UTC+9", "Yakutsk"},
-        {10 * 2, "UTC+10", "Vladivostok"},
-};
-
 int getCurrentUTCOffset() { return (utcOffsets[utcOffsetIdx].offset); }
-int getTotalUTCOffsets() { return (ITEM_COUNT(utcOffsets)); }
 
 //
 // UI Layout Menu
 //
-static const char *uiLayoutDesc[] =
-    {"Default", "S-Meter"};
+static const char* uiLayoutDesc[] =
+{ "Default", "S-Meter" };
 
 //
 // WiFi Mode Menu
 //
 
 uint8_t wifiModeIdx = NET_OFF;
-static const char *wifiModeDesc[] =
-    {"Off", "AP Only", "AP+Connect", "Connect", "Sync Only"};
-
-//
-// Step Menu
-//
-
-// FM (kHz * 10)
-const Step fmSteps[] =
-    {
-        {1, "10k", 1},
-        {5, "50k", 5},
-        {10, "100k", 10},
-        {20, "200k", 20},
-        {100, "1M", 10},
-};
-
-// SSB (Hz)
-const Step ssbSteps[] =
-    {
-        {10, "10", 1},
-        {25, "25", 1},
-        {50, "50", 1},
-        {100, "100", 1},
-        {500, "500", 1},
-        {1000, "1k", 1},
-        {5000, "5k", 5},
-        {9000, "9k", 9},
-        {10000, "10k", 10},
-};
+static const char* wifiModeDesc[] =
+{ "Off", "AP Only", "AP+Connect", "Connect", "Sync Only" };
 
 static const uint8_t ssbFastSteps[] =
-    {
-        3, //  10Hz -> 100Hz
-        3, //  25Hz -> 100Hz
-        4, //  50Hz -> 500Hz
-        5, // 100Hz -> 1kHz
-        6, // 500Hz -> 5kHz
-        6, //  1kHz -> 5kHz
-        8, //  5kHz -> 10kHz
-        7, //  9kHz -> 9kHz
-        8, // 10kHz -> 10kHz
-};
-
-// AM (kHz)
-const Step amSteps[] =
-    {
-        {1, "1k", 1},
-        {5, "5k", 5},
-        {9, "9k", 9},
-        {10, "10k", 10},
-        {50, "50k", 10},
-        {100, "100k", 10},
-        {1000, "1M", 10},
-};
-
-static const Step *steps[4] = {fmSteps, ssbSteps, ssbSteps, amSteps};
-static uint8_t stepIdx[4] = {2, 5, 5, 1};
-
-const Step *getCurrentStep(bool fast)
 {
+    3, //  10Hz -> 100Hz
+    3, //  25Hz -> 100Hz
+    4, //  50Hz -> 500Hz
+    5, // 100Hz -> 1kHz
+    6, // 500Hz -> 5kHz
+    6, //  1kHz -> 5kHz
+    8, //  5kHz -> 10kHz
+    7, //  9kHz -> 9kHz
+    8, // 10kHz -> 10kHz
+};
+
+static const Step* steps[4] = { fmSteps, ssbSteps, ssbSteps, amSteps };
+static uint8_t stepIdx[4] = { 2, 5, 5, 1 };
+
+const Step* getCurrentStep(bool fast) {
   uint8_t idx = stepIdx[get_var_local_mode_index()];
   return (&steps[get_var_local_mode_index()][fast && isSSB() ? ssbFastSteps[idx] : idx]);
 }
 
-int getTotalSteps()
-{
-  switch (get_var_local_mode_index())
-  {
+int getTotalSteps() {
+  switch (get_var_local_mode_index()) {
   case FM:
     return (ITEM_COUNT(fmSteps));
   case LSB:
@@ -269,23 +122,8 @@ int getTotalSteps()
   return 0;
 }
 
-int getTotalFmSteps()
-{
-  return (ITEM_COUNT(fmSteps));
-}
-int getTotalSsbSteps()
-{
-  return (ITEM_COUNT(ssbSteps));
-}
-int getTotalAmSteps()
-{
-  return (ITEM_COUNT(amSteps));
-}
-
-static int getLastStep(int mode)
-{
-  switch (mode)
-  {
+static int getLastStep(int mode) {
+  switch (mode) {
   case FM:
     return (LAST_ITEM(fmSteps));
   case LSB:
@@ -301,95 +139,40 @@ static int getLastStep(int mode)
 
 static uint8_t freqInputPos = 0;
 
-static uint8_t getDefaultFreqInputPos(int mode, int step)
-{
+static uint8_t getDefaultFreqInputPos(int mode, int step) {
   return (uint8_t)(log10(step) * 2) + (mode == AM ? 6 : 0);
 }
 
-void resetFreqInputPos()
-{
+void resetFreqInputPos() {
   freqInputPos = getDefaultFreqInputPos(get_var_local_mode_index(), getCurrentStep(false)->step);
 }
 
-uint8_t getFreqInputPos()
-{
+uint8_t getFreqInputPos() {
   return freqInputPos;
 }
 
-int getFreqInputStep()
-{
+int getFreqInputStep() {
   return freqInputPos % 2 ? 5 * pow(10, (freqInputPos - (get_var_local_mode_index() == AM ? 6 : 0) - 1) / 2) : pow(10, (freqInputPos - (get_var_local_mode_index() == AM ? 6 : 0)) / 2);
 }
 
-static uint8_t getMinFreqInputPos()
-{
+static uint8_t getMinFreqInputPos() {
   return getDefaultFreqInputPos(get_var_local_mode_index(), steps[get_var_local_mode_index()][0].step);
 }
 
-static uint8_t getMaxFreqInputPos()
-{
+static uint8_t getMaxFreqInputPos() {
   return (uint8_t)log10(getCurrentBand()->maximumFreq) * 2 + (get_var_local_mode_index() != FM ? 6 : -2);
 }
 
-//
-// Bandwidth Menu
-//
+static const Bandwidth* bandwidths[4] = { fmBandwidths, ssbBandwidths, ssbBandwidths, amBandwidths };
 
-const Bandwidth fmBandwidths[] =
-    {
-        {0, "Auto"}, // Automatic - default
-        {1, "110k"}, // Force wide (110 kHz) channel filter.
-        {2, "84k"},
-        {3, "60k"},
-        {4, "40k"}};
+static uint8_t bwIdx[4] = { 0, 4, 4, 4 };
 
-const Bandwidth ssbBandwidths[] =
-    {
-        {4, "0.5k"},
-        {5, "1.0k"},
-        {0, "1.2k"},
-        {1, "2.2k"},
-        {2, "3.0k"},
-        {3, "4.0k"}};
-
-const Bandwidth amBandwidths[] =
-    {
-        {4, "1.0k"},
-        {5, "1.8k"},
-        {3, "2.0k"},
-        {6, "2.5k"},
-        {2, "3.0k"},
-        {1, "4.0k"},
-        {0, "6.0k"}};
-
-static const Bandwidth *bandwidths[4] =
-    {
-        fmBandwidths, ssbBandwidths, ssbBandwidths, amBandwidths};
-
-static uint8_t bwIdx[4] = {0, 4, 4, 4};
-
-int getTotalFmBandwidths()
-{
-  return (ITEM_COUNT(fmBandwidths));
-}
-int getTotalSsbBandwidths()
-{
-  return (ITEM_COUNT(ssbBandwidths));
-}
-int getTotalAmBandwidths()
-{
-  return (ITEM_COUNT(amBandwidths));
-}
-
-const Bandwidth *getCurrentBandwidth()
-{
+const Bandwidth* getCurrentBandwidth() {
   return (&bandwidths[get_var_local_mode_index()][bwIdx[get_var_local_mode_index()]]);
 }
 
-static int getLastBandwidth(int mode)
-{
-  switch (mode)
-  {
+static int getLastBandwidth(int mode) {
+  switch (mode) {
   case FM:
     return (LAST_ITEM(fmBandwidths));
   case LSB:
@@ -399,16 +182,13 @@ static int getLastBandwidth(int mode)
   case AM:
     return (LAST_ITEM(amBandwidths));
   }
-
   return (0);
 }
 
-static void setBandwidth()
-{
+static void setBandwidth() {
   uint8_t idx = getCurrentBandwidth()->idx;
 
-  switch (get_var_local_mode_index())
-  {
+  switch (get_var_local_mode_index()) {
   case FM:
     rx.setFmBandwidth(idx);
     break;
@@ -427,8 +207,7 @@ static void setBandwidth()
 }
 
 // Seek mode. Pass true to toggle, false to return the current one
-uint8_t seekMode(bool toggle)
-{
+uint8_t seekMode(bool toggle) {
   static uint8_t mode = SEEK_DEFAULT;
 
   mode = toggle ? (mode == SEEK_DEFAULT ? SEEK_SCHEDULE : SEEK_DEFAULT) : mode;
@@ -444,67 +223,55 @@ uint8_t seekMode(bool toggle)
 // Encoder input handlers
 //
 
-void doSelectDigit(int dir)
-{
+void doSelectDigit(int dir) {
   freqInputPos = clamp_range(freqInputPos, -dir, getMinFreqInputPos(), getMaxFreqInputPos());
 }
 
-void doVolume(int dir)
-{
+void doVolume(int dir) {
   int32_t volume = clamp_range(get_var_speaker_volume(), dir, 0, 30);
   set_var_speaker_volume(volume);
   if (!muteOn())
     rx.setVolume(volume * 2);
 }
 
-static void clickVolume(bool shortPress)
-{
+static void clickVolume(bool shortPress) {
   if (shortPress)
     muteOn(!muteOn());
 }
 
-static void clickSquelch(bool shortPress)
-{
+static void clickSquelch(bool shortPress) {
   if (shortPress)
     set_var_local_squelch(0);
 }
 
-static void clickSeek(bool shortPress)
-{
+static void clickSeek(bool shortPress) {
   if (shortPress)
     seekMode(true);
 }
 
-static void doTheme(int dir)
-{
+static void doTheme(int dir) {
   themeIdx = wrap_range(themeIdx, dir, 0, getTotalThemes() - 1);
 }
 
-static void doUILayout(int dir)
-{
+static void doUILayout(int dir) {
   // uiLayoutIdx = uiLayoutIdx > LAST_ITEM(uiLayoutDesc) ? UI_DEFAULT : wrap_range(uiLayoutIdx, dir, 0, LAST_ITEM(uiLayoutDesc));
 }
 
-void doAvc(int dir)
-{
+void doAvc(int dir) {
   // Only allow for AM and SSB modes
   if (get_var_local_mode_index() == FM)
     return;
 
-  if (isSSB())
-  {
+  if (isSSB()) {
     SsbAvcIdx = wrap_range(SsbAvcIdx, 2 * dir, 12, 90);
     rx.setAvcAmMaxGain(SsbAvcIdx);
-  }
-  else
-  {
+  } else {
     AmAvcIdx = wrap_range(AmAvcIdx, 2 * dir, 12, 90);
     rx.setAvcAmMaxGain(AmAvcIdx);
   }
 }
 
-void doFmRegion(int dir)
-{
+void doFmRegion(int dir) {
   // Only allow for FM mode
   if (get_var_local_mode_index() != FM)
     return;
@@ -513,8 +280,7 @@ void doFmRegion(int dir)
   rx.setFMDeEmphasis(fmRegions[FmRegionIdx].value);
 }
 
-void doCal(int dir)
-{
+void doCal(int dir) {
   int32_t bandIdx = get_var_local_band_index();
   bands[bandIdx].bandCal = clamp_range(bands[bandIdx].bandCal, 10 * dir, -MAX_CAL, MAX_CAL);
 
@@ -524,66 +290,55 @@ void doCal(int dir)
     updateBFO(get_var_local_bfo(), true);
 }
 
-void doBrt(int dir)
-{
+void doBrt(int dir) {
   int32_t currentBrt = clamp_range(get_var_screen_brightness(), dir, get_var_screen_brightness_min(), get_var_screen_brightness_max());
   set_var_screen_brightness(currentBrt);
   if (!sleepOn())
     ledcWrite(PIN_LCD_BL, currentBrt * 10);
 }
 
-static void doSleep(int dir)
-{
+static void doSleep(int dir) {
   currentSleep = clamp_range(currentSleep, 5 * dir, 0, 255);
 }
 
-static void doSleepMode(int dir)
-{
+static void doSleepMode(int dir) {
   sleepModeIdx = wrap_range(sleepModeIdx, dir, 0, LAST_ITEM(sleepModeDesc));
 }
 
-static void doWiFiMode(int dir)
-{
+static void doWiFiMode(int dir) {
   wifiModeIdx = wrap_range(wifiModeIdx, dir, 0, LAST_ITEM(wifiModeDesc));
 }
 
-static void clickWiFiMode(uint8_t mode, bool shortPress)
-{
+static void clickWiFiMode(uint8_t mode, bool shortPress) {
   netInit(mode);
 }
 
-static void doRDSMode(int dir)
-{
+static void doRDSMode(int dir) {
   rdsModeIdx = wrap_range(rdsModeIdx, dir, 0, LAST_ITEM(rdsMode));
   if (!(getRDSMode() & RDS_CT))
     clockReset();
 }
 
-static void doUTCOffset(int dir)
-{
+static void doUTCOffset(int dir) {
   utcOffsetIdx = wrap_range(utcOffsetIdx, dir, 0, LAST_ITEM(utcOffsets));
   clockRefreshTime();
 }
 
-static void doZoom(int dir)
-{
+static void doZoom(int dir) {
   // zoomMenu = !zoomMenu;
 }
 
-static void doScrollDir(int dir)
-{
+static void doScrollDir(int dir) {
   scrollDirection = (scrollDirection == 1) ? -1 : 1;
 }
 
-uint8_t doAbout(int dir)
-{
+uint8_t doAbout(int dir) {
   static uint8_t aboutScreen = 0;
   aboutScreen = clamp_range(aboutScreen, dir, 0, 2);
   return aboutScreen;
 }
 
-bool tuneToMemory(const Memory *memory)
-{
+bool tuneToMemory(const Memory* memory) {
   // Must have frequency
   if (!memory->freq)
     return (false);
@@ -596,8 +351,8 @@ bool tuneToMemory(const Memory *memory)
   int32_t bandIdx = get_var_local_band_index();
   // Must differ from the current band, frequency and modulation
   if (memory->band == bandIdx &&
-      memory->freq == bands[bandIdx].currentFreq &&
-      memory->mode == bands[bandIdx].bandMode)
+    memory->freq == bands[bandIdx].currentFreq &&
+    memory->mode == bands[bandIdx].bandMode)
     return (true);
   // Save current band settings
   bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
@@ -619,40 +374,32 @@ bool tuneToMemory(const Memory *memory)
   return (true);
 }
 
-void doMemory(int dir)
-{
+void doMemory(int dir) {
   set_var_local_seek_index(wrap_range(get_var_local_seek_index(), dir, 0, LAST_ITEM(memories) + 2));
   int32_t memoryIdx = get_var_local_seek_index() - 2;
-  if (memoryIdx >= 0)
-  {
+  if (memoryIdx >= 0) {
     tuneToMemory(&memories[memoryIdx]);
   }
 }
 
-void doSeekMemory(int dir)
-{
+void doSeekMemory(int dir) {
   int32_t current = get_var_local_seek_index() - 2;
   int32_t next = wrap_range(current, dir, 0, LAST_ITEM(memories));
 
-  while (!tuneToMemory(&memories[next]))
-  {
+  while (!tuneToMemory(&memories[next])) {
     next = wrap_range(next, dir, 0, LAST_ITEM(memories));
-    if (next == current)
-    {
+    if (next == current) {
       break;
     }
   }
-  if (next != current)
-  {
+  if (next != current) {
     set_var_local_seek_index(next + 2);
   }
 }
 
-void doSaveMemory()
-{
+void doSaveMemory() {
   int32_t idx = get_var_local_seek_index() - 2;
-  if (!memories[idx].freq)
-  {
+  if (!memories[idx].freq) {
     Memory newMemory;
     newMemory.freq = get_var_local_frequency() + get_var_local_bfo() / 1000;
     newMemory.hz100 = (get_var_local_bfo() % 1000) / 100;
@@ -661,15 +408,12 @@ void doSaveMemory()
 
     memories[idx] = newMemory;
     tuneToMemory(&memories[idx]);
-  }
-  else
-  {
+  } else {
     memories[idx].freq = 0;
   }
 }
 
-static void clickMemory(uint8_t idx, bool shortPress)
-{
+static void clickMemory(uint8_t idx, bool shortPress) {
   // // Must have a valid index
   // if (idx > LAST_ITEM(memories))
   //   return;
@@ -683,8 +427,7 @@ static void clickMemory(uint8_t idx, bool shortPress)
   // // On a click, do nothing, slot already activated in doMemory()
 }
 
-void doStep(int dir)
-{
+void doStep(int dir) {
   uint8_t idx = stepIdx[get_var_local_mode_index()];
 
   idx = wrap_range(idx, dir, 0, getLastStep(get_var_local_mode_index()));
@@ -701,8 +444,7 @@ void doStep(int dir)
     rx.setSeekAmSpacing(steps[get_var_local_mode_index()][idx].spacing);
 }
 
-void doAgc(int dir)
-{
+void doAgc(int dir) {
   if (get_var_local_mode_index() == FM)
     agcIdx = FmAgcIdx = wrap_range(FmAgcIdx, dir, 0, 27);
   else if (isSSB())
@@ -723,8 +465,7 @@ void doAgc(int dir)
   rx.setAutomaticGainControl(disableAgc, agcNdx);
 }
 
-void doMode(int dir)
-{
+void doMode(int dir) {
   int32_t bandIdx = get_var_local_band_index();
   // This is our current mode for the current band
   set_var_local_mode_index(bands[bandIdx].bandMode);
@@ -749,13 +490,11 @@ void doMode(int dir)
   selectBand(bandIdx);
 }
 
-void doSquelch(int dir)
-{
+void doSquelch(int dir) {
   set_var_local_squelch(clamp_range(get_var_local_squelch(), dir, 0, 127));
 }
 
-void doSoftMute(int dir)
-{
+void doSoftMute(int dir) {
   // Nothing to do if FM mode
   if (get_var_local_mode_index() == FM)
     return;
@@ -768,8 +507,7 @@ void doSoftMute(int dir)
   rx.setAmSoftMuteMaxAttenuation(softMuteMaxAttIdx);
 }
 
-void doBand(int dir)
-{
+void doBand(int dir) {
   int32_t bandIdx = get_var_local_band_index();
   // Save current band settings
   bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
@@ -786,8 +524,7 @@ void doBand(int dir)
   selectBand(bandIdx);
 }
 
-void doBandwidth(int dir)
-{
+void doBandwidth(int dir) {
   uint8_t idx = bwIdx[get_var_local_mode_index()];
 
   idx = wrap_range(idx, dir, 0, getLastBandwidth(get_var_local_mode_index()));
@@ -799,8 +536,7 @@ void doBandwidth(int dir)
 // Handle encoder input in menu
 //
 
-static void clickMenu(int cmd, bool shortPress)
-{
+static void clickMenu(int cmd, bool shortPress) {
   // switch (cmd)
   // {
   // case MENU_MEMORY:
@@ -832,8 +568,7 @@ static void clickMenu(int cmd, bool shortPress)
   // }
 }
 
-static void clickSettings(int cmd, bool shortPress)
-{
+static void clickSettings(int cmd, bool shortPress) {
   // switch (cmd)
   // {
   // case MENU_CALIBRATION:
@@ -851,15 +586,13 @@ static void clickSettings(int cmd, bool shortPress)
   // }
 }
 
-bool doSideBar(uint16_t cmd, int dir)
-{
+bool doSideBar(uint16_t cmd, int dir) {
   // Ignore idle encoder
   if (!dir)
     return (false);
 
-  switch (cmd)
-  {
-  // Menus and list-based options must take scrollDirection into account
+  switch (cmd) {
+    // Menus and list-based options must take scrollDirection into account
   case CMD_MODE:
     doMode(scrollDirection * dir);
     break;
@@ -940,10 +673,8 @@ bool doSideBar(uint16_t cmd, int dir)
   return (true);
 }
 
-bool clickHandler(uint16_t cmd, bool shortPress)
-{
-  switch (cmd)
-  {
+bool clickHandler(uint16_t cmd, bool shortPress) {
+  switch (cmd) {
   case CMD_MENU:
     // clickMenu(menuIdx, shortPress);
     break;
@@ -976,15 +707,13 @@ bool clickHandler(uint16_t cmd, bool shortPress)
 }
 
 // Switch radio to given band
-void useBand(const Band *band)
-{
+void useBand(const Band* band) {
   // Set current frequency and mode, reset BFO
   set_var_local_frequency(band->currentFreq);
   set_var_local_mode_index(band->bandMode);
   set_var_local_bfo(0);
 
-  if (band->bandMode == FM)
-  {
+  if (band->bandMode == FM) {
     rx.setFM(band->minimumFreq, band->maximumFreq, band->currentFreq, getCurrentStep()->step);
     // rx.setTuneFrequencyAntennaCapacitor(0);
     rx.setSeekFmLimits(band->minimumFreq, band->maximumFreq);
@@ -999,19 +728,14 @@ void useBand(const Band *band)
     rx.setRdsConfig(1, 2, 2, 2, 2);
     rx.setGpioCtl(1, 0, 0); // G8PTN: Enable GPIO1 as output
     rx.setGpio(0, 0, 0);    // G8PTN: Set GPIO1 = 0
-  }
-  else
-  {
-    if (band->bandMode == AM)
-    {
+  } else {
+    if (band->bandMode == AM) {
       rx.setAM(band->minimumFreq, band->maximumFreq, band->currentFreq, getCurrentStep()->step);
       // More sensitive seek thresholds
       // https://github.com/pu2clr/SI4735/issues/7#issuecomment-810963604
       rx.setSeekAmRssiThreshold(15); // default is 25
       rx.setSeekAmSNRThreshold(5);   // default is 5
-    }
-    else
-    {
+    } else {
       // Configure SI4732 for SSB (SI4732 step not used, set to 0)
       rx.setSSB(band->minimumFreq, band->maximumFreq, band->currentFreq, 0, get_var_local_mode_index());
       // G8PTN: Always enabled
@@ -1054,8 +778,7 @@ void useBand(const Band *band)
 // Selecting given band
 //
 
-void selectBand(uint8_t idx, bool drawLoadingSSB)
-{
+void selectBand(uint8_t idx, bool drawLoadingSSB) {
   // Set band and mode
   int32_t bandIdx = min(idx, LAST_ITEM(bands));
   set_var_local_band_index(bandIdx);
@@ -1090,8 +813,7 @@ void selectBand(uint8_t idx, bool drawLoadingSSB)
 // Draw functions
 //
 
-static void drawCommon(const char *title, int x, int y, int sx, bool cursor = false)
-{
+static void drawCommon(const char* title, int x, int y, int sx, bool cursor = false) {
   /*
   spr.setTextDatum(MC_DATUM);
 
@@ -1109,8 +831,7 @@ static void drawCommon(const char *title, int x, int y, int sx, bool cursor = fa
   */
 }
 
-static void drawMenu(int x, int y, int sx)
-{
+static void drawMenu(int x, int y, int sx) {
   /*
   spr.setTextDatum(MC_DATUM);
 
@@ -1140,8 +861,7 @@ static void drawMenu(int x, int y, int sx)
   */
 }
 
-static void drawSettings(int x, int y, int sx)
-{
+static void drawSettings(int x, int y, int sx) {
   /*
   spr.setTextDatum(MC_DATUM);
 
@@ -1171,8 +891,7 @@ static void drawSettings(int x, int y, int sx)
   */
 }
 
-static void drawMode(int x, int y, int sx)
-{
+static void drawMode(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_MODE], x, y, sx, true);
 
@@ -1193,8 +912,7 @@ static void drawMode(int x, int y, int sx)
   */
 }
 
-static void drawStep(int x, int y, int sx)
-{
+static void drawStep(int x, int y, int sx) {
   /*
   int count = getLastStep(get_var_local_mode_index()) + 1;
   int idx   = stepIdx[get_var_local_mode_index()] + count;
@@ -1216,8 +934,7 @@ static void drawStep(int x, int y, int sx)
   */
 }
 
-static void drawSeek(int x, int y, int sx)
-{
+static void drawSeek(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_SEEK], x, y, sx);
   drawZoomedMenu(menu[MENU_SEEK]);
@@ -1235,8 +952,7 @@ static void drawSeek(int x, int y, int sx)
   */
 }
 
-static void drawBand(int x, int y, int sx)
-{
+static void drawBand(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_BAND], x, y, sx, true);
 
@@ -1256,8 +972,7 @@ static void drawBand(int x, int y, int sx)
   */
 }
 
-static void drawBandwidth(int x, int y, int sx)
-{
+static void drawBandwidth(int x, int y, int sx) {
   /*
   int count = getLastBandwidth(get_var_local_mode_index()) + 1;
   int idx   = bwIdx[get_var_local_mode_index()] + count;
@@ -1279,8 +994,7 @@ static void drawBandwidth(int x, int y, int sx)
   */
 }
 
-static void drawSleepMode(int x, int y, int sx)
-{
+static void drawSleepMode(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_SLEEPMODE], x, y, sx, true);
 
@@ -1300,8 +1014,7 @@ static void drawSleepMode(int x, int y, int sx)
   */
 }
 
-static void drawWiFiMode(int x, int y, int sx)
-{
+static void drawWiFiMode(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_WIFIMODE], x, y, sx, true);
 
@@ -1321,8 +1034,7 @@ static void drawWiFiMode(int x, int y, int sx)
   */
 }
 
-static void drawTheme(int x, int y, int sx)
-{
+static void drawTheme(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_THEME], x, y, sx, true);
 
@@ -1342,8 +1054,7 @@ static void drawTheme(int x, int y, int sx)
   */
 }
 
-static void drawUILayout(int x, int y, int sx)
-{
+static void drawUILayout(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_UI], x, y, sx, true);
 
@@ -1368,8 +1079,7 @@ static void drawUILayout(int x, int y, int sx)
   */
 }
 
-static void drawRDSMode(int x, int y, int sx)
-{
+static void drawRDSMode(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_RDS], x, y, sx, true);
 
@@ -1389,8 +1099,7 @@ static void drawRDSMode(int x, int y, int sx)
   */
 }
 
-static void drawUTCOffset(int x, int y, int sx)
-{
+static void drawUTCOffset(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_UTCOFFSET], x, y, sx, true);
 
@@ -1415,8 +1124,7 @@ static void drawUTCOffset(int x, int y, int sx)
   */
 }
 
-static void drawMemory(int x, int y, int sx)
-{
+static void drawMemory(int x, int y, int sx) {
   /*
   char label_memory[16];
   sprintf(label_memory, "%s %2.2d", menu[MENU_MEMORY], memoryIdx + 1);
@@ -1451,8 +1159,7 @@ static void drawMemory(int x, int y, int sx)
   */
 }
 
-static void drawVolume(int x, int y, int sx)
-{
+static void drawVolume(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_VOLUME], x, y, sx);
   drawZoomedMenu(menu[MENU_VOLUME]);
@@ -1471,8 +1178,7 @@ static void drawVolume(int x, int y, int sx)
   */
 }
 
-static void drawAgc(int x, int y, int sx)
-{
+static void drawAgc(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_AGC_ATT], x, y, sx);
   drawZoomedMenu(menu[MENU_AGC_ATT]);
@@ -1497,8 +1203,7 @@ static void drawAgc(int x, int y, int sx)
   */
 }
 
-static void drawSquelch(int x, int y, int sx)
-{
+static void drawSquelch(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_SQUELCH], x, y, sx);
   drawZoomedMenu(menu[MENU_SQUELCH]);
@@ -1516,8 +1221,7 @@ static void drawSquelch(int x, int y, int sx)
   */
 }
 
-static void drawSoftMuteMaxAtt(int x, int y, int sx)
-{
+static void drawSoftMuteMaxAtt(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_SOFTMUTE], x, y, sx);
   drawZoomedMenu(menu[MENU_SOFTMUTE]);
@@ -1530,8 +1234,7 @@ static void drawSoftMuteMaxAtt(int x, int y, int sx)
   */
 }
 
-static void drawCal(int x, int y, int sx)
-{
+static void drawCal(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_CALIBRATION], x, y, sx);
   drawZoomedMenu(settings[MENU_CALIBRATION]);
@@ -1543,8 +1246,7 @@ static void drawCal(int x, int y, int sx)
   */
 }
 
-static void drawAvc(int x, int y, int sx)
-{
+static void drawAvc(int x, int y, int sx) {
   /*
   drawCommon(menu[MENU_AVC], x, y, sx);
   drawZoomedMenu(menu[MENU_AVC]);
@@ -1563,8 +1265,7 @@ static void drawAvc(int x, int y, int sx)
   */
 }
 
-static void drawFmRegion(int x, int y, int sx)
-{
+static void drawFmRegion(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_FM_REGION], x, y, sx, true);
 
@@ -1589,8 +1290,7 @@ static void drawFmRegion(int x, int y, int sx)
   */
 }
 
-static void drawBrt(int x, int y, int sx)
-{
+static void drawBrt(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_BRIGHTNESS], x, y, sx);
   drawZoomedMenu(settings[MENU_BRIGHTNESS]);
@@ -1601,8 +1301,7 @@ static void drawBrt(int x, int y, int sx)
   */
 }
 
-static void drawSleep(int x, int y, int sx)
-{
+static void drawSleep(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_SLEEP], x, y, sx);
   drawZoomedMenu(settings[MENU_SLEEP]);
@@ -1613,8 +1312,7 @@ static void drawSleep(int x, int y, int sx)
   */
 }
 
-static void drawZoom(int x, int y, int sx)
-{
+static void drawZoom(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_ZOOM], x, y, sx);
   drawZoomedMenu(settings[MENU_ZOOM]);
@@ -1625,8 +1323,7 @@ static void drawZoom(int x, int y, int sx)
   */
 }
 
-static void drawScrollDir(int x, int y, int sx)
-{
+static void drawScrollDir(int x, int y, int sx) {
   /*
   drawCommon(settings[MENU_SCROLL], x, y, sx);
   drawZoomedMenu(settings[MENU_SCROLL]);
@@ -1639,8 +1336,7 @@ static void drawScrollDir(int x, int y, int sx)
   */
 }
 
-static void drawInfo(int x, int y, int sx)
-{
+static void drawInfo(int x, int y, int sx) {
   /*
   char text[16];
 
@@ -1716,8 +1412,7 @@ static void drawInfo(int x, int y, int sx)
 //
 // Draw side bar (menu or information)
 //
-void drawSideBar(uint16_t cmd, int x, int y, int sx)
-{
+void drawSideBar(uint16_t cmd, int x, int y, int sx) {
   if (sleepOn())
     return;
   /*

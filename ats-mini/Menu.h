@@ -3,9 +3,6 @@
 
 #include "Common.h"
 
-// Number of memory slots
-#define MEMORY_COUNT 20
-
 // Band Types
 #define FM_BAND_TYPE 0
 #define MW_BAND_TYPE 1
@@ -55,27 +52,10 @@
 // Data Types
 //
 
-typedef struct
-{
+typedef struct {
   uint8_t mode;     // Combination of RDS_* values
-  const char *desc; // Mode description
+  const char* desc; // Mode description
 } RDSMode;
-
-//
-// Global Variables
-//
-
-extern Band bands[];
-extern Memory memories[];
-extern const UTCOffset utcOffsets[];
-extern const char *bandModeDesc[];
-extern const FMRegion fmRegions[];
-extern const Step fmSteps[];
-extern const Step ssbSteps[];
-extern const Step amSteps[];
-extern const Bandwidth fmBandwidths[];
-extern const Bandwidth ssbBandwidths[];
-extern const Bandwidth amBandwidths[];
 
 //
 // Utility functions to change menu values
@@ -83,31 +63,27 @@ extern const Bandwidth amBandwidths[];
 
 static inline int min(int x, int y) { return (x < y ? x : y); }
 
-static inline int wrap_range(int v, int dir, int vMin, int vMax)
-{
+static inline int wrap_range(int v, int dir, int vMin, int vMax) {
   v += dir;
   v = v > vMax ? vMin + (v - vMax - 1) : v < vMin ? vMax - (vMin - v - 1)
-                                                  : v;
+    : v;
   return (v);
 }
 
-static inline int clamp_range(int v, int dir, int vMin, int vMax)
-{
+static inline int clamp_range(int v, int dir, int vMin, int vMax) {
   v += dir;
   v = v > vMax ? vMax : v < vMin ? vMin
-                                 : v;
+    : v;
   return (v);
 }
 
 // These are menu commands
-static inline bool isMenuMode(uint16_t cmd)
-{
+static inline bool isMenuMode(uint16_t cmd) {
   return ((cmd >= CMD_BAND) && (cmd < CMD_SETTINGS));
 }
 
 // These are settings
-static inline bool isSettingsMode(uint16_t cmd)
-{
+static inline bool isSettingsMode(uint16_t cmd) {
   return ((cmd >= CMD_SETTINGS) && (cmd < CMD_ABOUT));
 }
 
@@ -118,28 +94,15 @@ void doSelectDigit(int dir);
 bool clickHandler(uint16_t cmd, bool shortPress);
 void selectBand(uint8_t idx, bool drawLoadingSSB = true);
 
-extern int getTotalBands();
-extern int getTotalModes();
-extern int getTotalMemories();
-extern int getTotalSteps();
-extern int getTotalFmSteps();
-extern int getTotalSsbSteps();
-extern int getTotalAmSteps();
-extern int getTotalFmBandwidths();
-extern int getTotalSsbBandwidths();
-extern int getTotalAmBandwidths();
-
-Band *getCurrentBand();
+Band* getCurrentBand();
 uint8_t getFreqInputPos();
 int getFreqInputStep();
-const Step *getCurrentStep(bool fast = false);
-const Bandwidth *getCurrentBandwidth();
+const Step* getCurrentStep(bool fast = false);
+const Bandwidth* getCurrentBandwidth();
 uint8_t getRDSMode();
 
 int getCurrentUTCOffset();
-int getTotalUTCOffsets();
-const UTCOffset *getUTCOffset(uint8_t idx);
-int getTotalFmRegions();
+const UTCOffset* getUTCOffset(uint8_t idx);
 
 void doSoftMute(int dir);
 void doAgc(int dir);

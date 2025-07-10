@@ -1,8 +1,9 @@
 // =================================
 // INCLUDE FILES
 // =================================
-
+#include "math.h"
 #include "Common.h"
+#include "Variables.h"
 #include <Wire.h>
 #include "EEPROM.h"
 #include "Rotary.h"
@@ -99,29 +100,26 @@ SI4735_fixed rx;
 //
 
 // 刷屏回调函数
-void my_disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
-{
+void my_disp_flush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p) {
   uint32_t w = area->x2 - area->x1 + 1;
   uint32_t h = area->y2 - area->y1 + 1;
 
   tft.startWrite();
   tft.setAddrWindow(area->x1, area->y1, w, h);
-  tft.pushColors((uint16_t *)&color_p->full, w * h, true);
+  tft.pushColors((uint16_t*)&color_p->full, w * h, true);
   tft.endWrite();
 
   // 通知LVGL刷新完成
   lv_disp_flush_ready(disp_drv);
 }
 
-void tft_init()
-{
+void tft_init() {
   tft.begin();        /* TFT init */
   tft.setRotation(3); /* Landscape orientation, flipped */
 
   // Detect and fix the mirrored & inverted display
   // https://github.com/esp32-si4732/ats-mini/issues/41
-  if (tft.readcommand8(ST7789_RDDID, 3) == 0x93)
-  {
+  if (tft.readcommand8(ST7789_RDDID, 3) == 0x93) {
     tft.invertDisplay(0);
     tft.writecommand(TFT_MADCTL);
     tft.writedata(TFT_MAD_MV | TFT_MAD_MX | TFT_MAD_MY | TFT_MAD_BGR);
@@ -148,8 +146,7 @@ void tft_init()
   lv_disp_drv_register(&disp_drv);
 }
 
-void setup()
-{
+void setup() {
   // Enable serial port
   Serial.begin(115200);
 
@@ -159,13 +156,10 @@ void setup()
   // Initialize flash file system
   diskInit();
 
-  if (psramFound())
-  {
+  if (psramFound()) {
     Serial.print("Free PSRAM: ");
     Serial.println(ESP.getFreePsram()); // 输出剩余PSRAM容量
-  }
-  else
-  {
+  } else {
     Serial.println("PSRAM未启用, 请检查配置!");
     while (1)
       ;
@@ -175,8 +169,7 @@ void setup()
   Wire.begin(ESP32_I2C_SDA, ESP32_I2C_SCL);
 
   // 初始化扩展 IO
-  if (!io.begin(Wire, TCA9555_ADDR, ESP32_I2C_SDA, ESP32_I2C_SCL))
-  {
+  if (!io.begin(Wire, TCA9555_ADDR, ESP32_I2C_SDA, ESP32_I2C_SCL)) {
     Serial.println("TCA9555 not detected");
     while (1)
       ;
@@ -221,8 +214,7 @@ void setup()
 
   // Press and hold Encoder button to force an EEPROM reset
   // Note: EEPROM reset is recommended after firmware updates
-  if (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW)
-  {
+  if (io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW) {
     netClearPreferences();
     eepromInvalidate();
     diskInit(true);
@@ -245,8 +237,7 @@ void setup()
 
   // Looks for the I2C bus address and set it.  Returns 0 if error
   int16_t si4735Addr = rx.getDeviceI2CAddress(RESET_PIN);
-  if (!si4735Addr)
-  {
+  if (!si4735Addr) {
     // ledcWrite(PIN_LCD_BL, 255);  // Default value 255 = 100%
     // tft.setTextSize(2);
     // tft.setTextColor(TH.text_warn, TH.bg);
@@ -273,182 +264,11 @@ void setup()
   io.pinMode(PIN_MAX97220_EN, INPUT);
 
   // If EEPROM contents are ok...
-  if (eepromVerify())
-  {
+  if (eepromVerify()) {
     // Load configuration from EEPROM
     eepromLoadConfig();
-
-    int total = getTotalMemories();
-    char local_seek_options[256] = "自动搜索\n手动搜索";
-    for (int i = 0; i < total; i++)
-    {
-      char buffer[10];
-      if (memories[i].freq)
-      {
-        sprintf(buffer, "\n%02u-%u", i + 1, memories[i].freq);
-      }
-      else
-      {
-        sprintf(buffer, "\n%02u-_____", i + 1);
-      }
-      strncat(local_seek_options, buffer, sizeof(local_seek_options) - strlen(local_seek_options) - 1);
-    }
-    set_var_local_seek_options(local_seek_options);
-
-    total = getTotalBands();
-    size_t total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(bands[i].bandName) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_band_options = (char *)malloc(total_len);
-    *local_band_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_band_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_band_options, bands[i].bandName); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_band_options(local_band_options);
-    free(local_band_options); // 避免内存泄漏
-
-    total = getTotalModes();
-    total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(bandModeDesc[i]) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_mode_options = (char *)malloc(total_len);
-    *local_mode_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_mode_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_mode_options, bandModeDesc[i]); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_mode_options(local_mode_options);
-    free(local_mode_options); // 避免内存泄漏
-
-    total = getTotalFmSteps();
-    total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(fmSteps[i].desc) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_fmstep_options = (char *)malloc(total_len);
-    *local_fmstep_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_fmstep_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_fmstep_options, fmSteps[i].desc); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_fmstep_options(local_fmstep_options);
-    free(local_fmstep_options); // 避免内存泄漏
-
-    total = getTotalSsbSteps();
-    total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(ssbSteps[i].desc) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_ssbstep_options = (char *)malloc(total_len);
-    *local_ssbstep_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_ssbstep_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_ssbstep_options, ssbSteps[i].desc); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_ssbstep_options(local_ssbstep_options);
-    free(local_ssbstep_options); // 避免内存泄漏
-
-    total = getTotalAmSteps();
-    total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(amSteps[i].desc) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_amstep_options = (char *)malloc(total_len);
-    *local_amstep_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_amstep_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_amstep_options, amSteps[i].desc); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_amstep_options(local_amstep_options);
-    free(local_amstep_options); // 避免内存泄漏
-
-    total = getTotalFmBandwidths();
-    total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(fmBandwidths[i].desc) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_fmbandwidth_options = (char *)malloc(total_len);
-    *local_fmbandwidth_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_fmbandwidth_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_fmbandwidth_options, fmBandwidths[i].desc); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_fmbandwidth_options(local_fmbandwidth_options);
-    free(local_fmbandwidth_options); // 避免内存泄漏
-
-    total = getTotalSsbBandwidths();
-    total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(ssbBandwidths[i].desc) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_ssbbandwidth_options = (char *)malloc(total_len);
-    *local_ssbbandwidth_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_ssbbandwidth_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_ssbbandwidth_options, ssbBandwidths[i].desc); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_ssbbandwidth_options(local_ssbbandwidth_options);
-    free(local_ssbbandwidth_options); // 避免内存泄漏
-
-    total = getTotalAmBandwidths();
-    total_len = 1; // 包含结尾 '\0'
-    for (size_t i = 0; i < total; i++)
-    {
-      total_len += strlen(amBandwidths[i].desc) + 1; // 每个字符串长度 + 换行符
-    }
-    char *local_ambandwidth_options = (char *)malloc(total_len);
-    *local_ambandwidth_options = '\0'; // 确保初始为空字符串
-    for (size_t i = 0; i < total; i++)
-    {
-      if (i > 0)
-      {
-        strcat(local_ambandwidth_options, "\n"); // 非首元素添加换行
-      }
-      strcat(local_ambandwidth_options, amBandwidths[i].desc); // 安全追加（因预分配足够空间）
-    }
-    set_var_local_ambandwidth_options(local_ambandwidth_options);
-    free(local_ambandwidth_options); // 避免内存泄漏
-  }
-  else
-  {
+    init_variables();
+  } else {
     // Save default configuration to EEPROM
     eepromSaveConfig();
   }
@@ -461,8 +281,7 @@ void setup()
   rx.setMaxSeekTime(SEEK_TIMEOUT);
 
   // Show help screen on first run
-  if (eepromFirstRun())
-  {
+  if (eepromFirstRun()) {
     // Clear screen buffer
     // spr.fillSprite(TH.bg);
     // drawAboutHelp(0);
@@ -497,8 +316,7 @@ void setup()
 }
 
 // 中断服务函数（IRAM_ATTR确保在RAM中运行）
-ICACHE_RAM_ATTR void handleIOInterrupt()
-{
+ICACHE_RAM_ATTR void handleIOInterrupt() {
   ioInterrupt = true;
 }
 
@@ -509,32 +327,26 @@ ICACHE_RAM_ATTR void handleIOInterrupt()
 // will reboot during attachInterrupt call. The ICACHE_RAM_ATTR macro
 // places this function into RAM.
 //
-ICACHE_RAM_ATTR void rotaryEncoder1()
-{
+ICACHE_RAM_ATTR void rotaryEncoder1() {
   // Rotary encoder events
   uint8_t encoderStatus = encoder1.process();
-  if (encoderStatus)
-  {
+  if (encoderStatus) {
     encoderCount1 = encoderStatus == DIR_CW ? 1 : -1;
     // seekStop = true;
   }
 }
 
-ICACHE_RAM_ATTR void rotaryEncoder2()
-{
+ICACHE_RAM_ATTR void rotaryEncoder2() {
   // Rotary encoder events
   uint8_t encoderStatus = encoder2.process();
-  if (encoderStatus)
-  {
+  if (encoderStatus) {
     encoderCount2 = encoderStatus == DIR_CW ? 1 : -1;
   }
 }
 
-void updateIOStatus()
-{
+void updateIOStatus() {
   uint16_t all_val = io.read();
-  for (int i = 0; i <= 15; i++)
-  {
+  for (int i = 0; i <= 15; i++) {
     int val = all_val & 1;
     if (!val)
       Serial.printf("GPIO: %d is LOW\n", i);
@@ -561,10 +373,8 @@ void updateIOStatus()
 //
 // Main event loop
 //
-void loop()
-{
-  if (ioInterrupt)
-  {
+void loop() {
+  if (ioInterrupt) {
     ioInterrupt = false;
     updateIOStatus();
   }
@@ -572,8 +382,7 @@ void loop()
   pb1st = pb1.update(ioStatus.pb1 == LOW);
   pb2st = pb2.update(ioStatus.pb2 == LOW);
 
-  switch (get_var_page_name())
-  {
+  switch (get_var_page_name()) {
   case PageName_Main:
     updatePageMain();
     break;
@@ -614,13 +423,11 @@ void loop()
     break;
   }
 
-  if (encoderCount1)
-  {
+  if (encoderCount1) {
     encoderCount1 = 0;
   }
 
-  if (encoderCount2)
-  {
+  if (encoderCount2) {
     encoderCount2 = 0;
   }
 

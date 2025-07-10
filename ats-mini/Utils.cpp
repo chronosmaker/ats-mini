@@ -25,21 +25,20 @@ static uint32_t clockTimer = 0;
 static uint8_t clockSeconds = 0;
 static uint8_t clockMinutes = 0;
 static uint8_t clockHours = 0;
-static char clockText[8] = {0};
+static char clockText[8] = { 0 };
 
 //
 // Get firmware version and build time, as a string
 //
-const char *getVersion(bool shorter)
-{
+const char* getVersion(bool shorter) {
   static char versionString[35] = "\0";
 
   sprintf(versionString, "%s%sF/W: v%1.1d.%2.2d %s",
-          shorter ? "" : FIRMWARE_NAME,
-          shorter ? "" : " ",
-          APP_VERSION / 100,
-          APP_VERSION % 100,
-          __DATE__);
+    shorter ? "" : FIRMWARE_NAME,
+    shorter ? "" : " ",
+    APP_VERSION / 100,
+    APP_VERSION % 100,
+    __DATE__);
 
   return (versionString);
 }
@@ -47,22 +46,20 @@ const char *getVersion(bool shorter)
 //
 // Get MAC address
 //
-const char *getMACAddress()
-{
+const char* getMACAddress() {
   static char macString[20] = "\0";
 
-  if (!macString[0])
-  {
+  if (!macString[0]) {
     uint64_t mac = ESP.getEfuseMac();
     sprintf(
-        macString,
-        "%02X:%02X:%02X:%02X:%02X:%02X",
-        (uint8_t)mac,
-        (uint8_t)(mac >> 8),
-        (uint8_t)(mac >> 16),
-        (uint8_t)(mac >> 24),
-        (uint8_t)(mac >> 32),
-        (uint8_t)(mac >> 40));
+      macString,
+      "%02X:%02X:%02X:%02X:%02X:%02X",
+      (uint8_t)mac,
+      (uint8_t)(mac >> 8),
+      (uint8_t)(mac >> 16),
+      (uint8_t)(mac >> 24),
+      (uint8_t)(mac >> 32),
+      (uint8_t)(mac >> 40));
   }
   return (macString);
 }
@@ -70,10 +67,8 @@ const char *getMACAddress()
 //
 // Load SSB patch into SI4735
 //
-void loadSSB(uint8_t bandwidth, bool draw)
-{
-  if (!ssbLoaded)
-  {
+void loadSSB(uint8_t bandwidth, bool draw) {
+  if (!ssbLoaded) {
     if (draw)
       drawMessage("Loading SSB");
     // You can try rx.setI2CFastModeCustom(700000); or greater value
@@ -84,8 +79,7 @@ void loadSSB(uint8_t bandwidth, bool draw)
   }
 }
 
-void unloadSSB()
-{
+void unloadSSB() {
   // Just mark SSB patch as unloaded
   ssbLoaded = false;
 }
@@ -93,19 +87,15 @@ void unloadSSB()
 //
 // Mute sound on (1) or off (0), or get current status (2)
 //
-bool muteOn(int x)
-{
-  if ((x == 0) && muted)
-  {
+bool muteOn(int x) {
+  if ((x == 0) && muted) {
     rx.setVolume(get_var_speaker_volume() * 2);
     // Enable audio amplifier to restore speaker output
     io.pinMode(PIN_NS4160_EN, INPUT);
     io.pinMode(PIN_MAX97220_EN, INPUT);
     rx.setHardwareAudioMute(false);
     muted = false;
-  }
-  else if ((x == 1) && !muted)
-  {
+  } else if ((x == 1) && !muted) {
     rx.setVolume(0);
     // Disable audio amplifier to silence speaker
     io.pinMode(PIN_NS4160_EN, OUTPUT);
@@ -124,17 +114,12 @@ bool muteOn(int x)
 // Do not drive PIN_AMP_EN here because a short impulse can trigger amplifier mode D,
 // see the NS4160 datasheet https://esp32-si4732.github.io/ats-mini/hardware.html#datasheets
 //
-void tempMuteOn(bool x)
-{
-  if (!muteOn(2))
-  {
-    if (x)
-    {
+void tempMuteOn(bool x) {
+  if (!muteOn(2)) {
+    if (x) {
       rx.setVolume(0);
       rx.setHardwareAudioMute(true);
-    }
-    else
-    {
+    } else {
       rx.setVolume(get_var_speaker_volume() * 2);
       rx.setHardwareAudioMute(false);
     }
@@ -144,10 +129,8 @@ void tempMuteOn(bool x)
 //
 // Turn sleep on (1) or off (0), or get current status (2)
 //
-bool sleepOn(int x)
-{
-  if ((x == 1) && !sleep_on)
-  {
+bool sleepOn(int x) {
+  if ((x == 1) && !sleep_on) {
     sleep_on = true;
     ledcWrite(PIN_LCD_BL, 0);
     // spr.fillSprite(TFT_BLACK);
@@ -159,8 +142,7 @@ bool sleepOn(int x)
     while (pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW).isPressed)
       delay(100);
 
-    if (sleepModeIdx == SLEEP_LIGHT)
-    {
+    if (sleepModeIdx == SLEEP_LIGHT) {
       // Disable WiFi
       netStop();
 
@@ -168,8 +150,7 @@ bool sleepOn(int x)
       if (get_var_local_squelch_cutoff())
         tempMuteOn(false);
 
-      while (true)
-      {
+      while (true) {
         esp_sleep_enable_ext0_wakeup((gpio_num_t)IOINT_PIN, LOW);
         rtc_gpio_pullup_en((gpio_num_t)IOINT_PIN);
         rtc_gpio_pulldown_dis((gpio_num_t)IOINT_PIN);
@@ -183,8 +164,7 @@ bool sleepOn(int x)
         pb1.reset(); // Reset the button state (its timers could be stale due to CPU sleep)
 
         bool wasLongPressed = false;
-        while (true)
-        {
+        while (true) {
           ButtonTracker::State pb1st = pb1.update(io.digitalRead(ENCODER1_PUSH_BUTTON) == LOW, 0);
           wasLongPressed |= pb1st.isLongPressed;
           if (wasLongPressed || !pb1st.isPressed)
@@ -206,9 +186,7 @@ bool sleepOn(int x)
       // Enable WiFi
       netInit(wifiModeIdx, false);
     }
-  }
-  else if ((x == 0) && sleep_on)
-  {
+  } else if ((x == 0) && sleep_on) {
     sleep_on = false;
     tft.writecommand(ST7789_SLPOUT);
     delay(120);
@@ -229,57 +207,48 @@ bool sleepOn(int x)
 // Set and count time
 //
 
-bool clockAvailable()
-{
+bool clockAvailable() {
   return (clockHasBeenSet);
 }
 
-const char *clockGet()
-{
+const char* clockGet() {
   if (switchThemeEditor())
     return ("00:00");
   else
     return (clockHasBeenSet ? clockText : NULL);
 }
 
-bool clockGetHM(uint8_t *hours, uint8_t *minutes)
-{
+bool clockGetHM(uint8_t* hours, uint8_t* minutes) {
   if (!clockHasBeenSet)
     return (false);
-  else
-  {
+  else {
     *hours = clockHours;
     *minutes = clockMinutes;
     return (true);
   }
 }
 
-void clockReset()
-{
+void clockReset() {
   clockHasBeenSet = false;
   clockText[0] = '\0';
   clockTimer = 0;
   clockHours = clockMinutes = clockSeconds = 0;
 }
 
-static void formatClock(uint8_t hours, uint8_t minutes)
-{
+static void formatClock(uint8_t hours, uint8_t minutes) {
   int t = (int)hours * 60 + minutes + getCurrentUTCOffset() * 30;
   t = t < 0 ? t + 24 * 60 : t;
   sprintf(clockText, "%02d:%02d", (t / 60) % 24, t % 60);
 }
 
-void clockRefreshTime()
-{
+void clockRefreshTime() {
   if (clockHasBeenSet)
     formatClock(clockHours, clockMinutes);
 }
 
-bool clockSet(uint8_t hours, uint8_t minutes, uint8_t seconds)
-{
+bool clockSet(uint8_t hours, uint8_t minutes, uint8_t seconds) {
   // Verify input before setting clock
-  if (!clockHasBeenSet && hours < 24 && minutes < 60 && seconds < 60)
-  {
+  if (!clockHasBeenSet && hours < 24 && minutes < 60 && seconds < 60) {
     clockHasBeenSet = true;
     clockTimer = micros();
     clockHours = hours;
@@ -294,25 +263,21 @@ bool clockSet(uint8_t hours, uint8_t minutes, uint8_t seconds)
   return (false);
 }
 
-bool clockTickTime()
-{
+bool clockTickTime() {
   // Need to set the clock first, then accumulate one second of time
-  if (clockHasBeenSet && (micros() - clockTimer >= 1000000))
-  {
+  if (clockHasBeenSet && (micros() - clockTimer >= 1000000)) {
     uint32_t delta;
 
     delta = (micros() - clockTimer) / 1000000;
     clockTimer += delta * 1000000;
     clockSeconds += delta;
 
-    if (clockSeconds >= 60)
-    {
+    if (clockSeconds >= 60) {
       delta = clockSeconds / 60;
       clockSeconds -= delta * 60;
       clockMinutes += delta;
 
-      if (clockMinutes >= 60)
-      {
+      if (clockMinutes >= 60) {
         delta = clockMinutes / 60;
         clockMinutes -= delta * 60;
         clockHours = (clockHours + delta) % 24;
@@ -331,16 +296,14 @@ bool clockTickTime()
 //
 // Check if given frequency belongs to given band
 //
-bool isFreqInBand(const Band *band, uint16_t freq)
-{
+bool isFreqInBand(const Band* band, uint16_t freq) {
   return ((freq >= band->minimumFreq) && (freq <= band->maximumFreq));
 }
 
 //
 // Check if given memory entry belongs to given band
 //
-bool isMemoryInBand(const Band *band, const Memory *memory)
-{
+bool isMemoryInBand(const Band* band, const Memory* memory) {
   if (memory->freq < band->minimumFreq)
     return (false);
   if (memory->freq > band->maximumFreq)
@@ -430,33 +393,27 @@ int getStrength(int rssi)
 }
 */
 
-int getRssiBar(int rssi)
-{
-  const int am_thresholds[] = {1, 2, 3, 4, 10, 16, 22, 28, 34, 44, 54, 64, 74, 84, 94, 95, 96};
-  const int am_values[] = {1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49};
-  const int fm_thresholds[] = {1, 2, 8, 14, 24, 34, 44, 54, 64, 74, 76, 77};
-  const int fm_values[] = {1, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49};
+int getRssiBar(int rssi) {
+  const int am_thresholds[] = { 1, 2, 3, 4, 10, 16, 22, 28, 34, 44, 54, 64, 74, 84, 94, 95, 96 };
+  const int am_values[] = { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49 };
+  const int fm_thresholds[] = { 1, 2, 8, 14, 24, 34, 44, 54, 64, 74, 76, 77 };
+  const int fm_values[] = { 1, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49 };
   int num_thresholds;
-  const int *thresholds;
-  const int *values;
+  const int* thresholds;
+  const int* values;
 
-  if (get_var_local_mode_index() != FM)
-  {
+  if (get_var_local_mode_index() != FM) {
     num_thresholds = ITEM_COUNT(am_thresholds);
     thresholds = am_thresholds;
     values = am_values;
-  }
-  else
-  {
+  } else {
     num_thresholds = ITEM_COUNT(fm_thresholds);
     thresholds = fm_thresholds;
     values = fm_values;
   }
 
-  for (int i = 0; i < num_thresholds; i++)
-  {
-    if (rssi <= thresholds[i])
-    {
+  for (int i = 0; i < num_thresholds; i++) {
+    if (rssi <= thresholds[i]) {
       if (!i)
         return values[i];
       int interval = thresholds[i] - thresholds[i - 1];
@@ -471,7 +428,6 @@ int getRssiBar(int rssi)
   return values[num_thresholds - 1];
 }
 
-int getSnrBar(int snr)
-{
+int getSnrBar(int snr) {
   return snr * 45 / 128.0;
 }

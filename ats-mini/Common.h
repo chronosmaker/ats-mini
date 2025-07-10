@@ -23,6 +23,13 @@
 #define APP_VERSION 227   // FIRMWARE VERSION
 #define EEPROM_VERSION 71 // EEPROM VERSION (forces reset)
 
+// Number of memory slots
+#define MEMORY_COUNT 50
+
+// Compute number of items in an array
+#define ITEM_COUNT(array) (sizeof(array) / sizeof((array)[0]))
+#define LAST_ITEM(array) (ITEM_COUNT(array) - 1)
+
 // Modes
 #define FM 0
 #define LSB 1
@@ -85,10 +92,6 @@
 #define ENCODER1_PUSH_BUTTON 10
 #define ENCODER2_PUSH_BUTTON 11
 
-// Compute number of items in an array
-#define ITEM_COUNT(array) (sizeof(array) / sizeof((array)[0]))
-#define LAST_ITEM(array) (ITEM_COUNT(array) - 1)
-
 // BFO and Calibration limits (MAX_BFO + MAX_CAL <= 16000)
 #define MAX_BFO 14000 // Maximum range for currentBFO = +/- MAX_BFO
 #define MAX_CAL 2000  // Maximum range for currentCAL = +/- MAX_CAL
@@ -103,8 +106,7 @@
 //
 // Data Types
 //
-typedef struct
-{
+typedef struct {
   int localRadioEnable;
   int netRadioEnable;
   int epAmpEnable;
@@ -115,9 +117,15 @@ typedef struct
   int pb2;
 } IOStatus;
 
-typedef struct
-{
-  const char *bandName;  // Band description
+typedef struct __attribute__((packed)) {
+  uint16_t freq;     // Frequency
+  uint8_t band;      // Band
+  uint8_t mode : 4;  // Modulation
+  uint8_t hz100 : 4; // Hz * 100
+} Memory;
+
+typedef struct {
+  const char* bandName;  // Band description
   uint8_t bandType;      // Band type (FM, MW, or SW)
   uint8_t bandMode;      // Band mode (FM, AM, LSB, or USB)
   uint16_t minimumFreq;  // Minimum frequency of the band
@@ -128,47 +136,34 @@ typedef struct
   int16_t bandCal;       // Calibration value
 } Band;
 
-typedef struct
-{
+typedef struct {
   uint8_t idx;      // SI473X device bandwidth index
-  const char *desc; // Bandwidth description
+  const char* desc; // Bandwidth description
 } Bandwidth;
 
-typedef struct
-{
+typedef struct {
   int step;         // Step
-  const char *desc; // Step description
+  const char* desc; // Step description
   uint8_t spacing;  // Seek spacing
 } Step;
 
-typedef struct __attribute__((packed))
-{
-  uint16_t freq;     // Frequency
-  uint8_t band;      // Band
-  uint8_t mode : 4;  // Modulation
-  uint8_t hz100 : 4; // Hz * 100
-} Memory;
-
-typedef struct
-{
-  uint16_t freq;    // Frequency
-  const char *name; // Frequency name
-} NamedFreq;
-
-typedef struct
-{
-  int8_t offset;    // UTC offset in 30 minute intervals
-  const char *desc; // Short description
-  const char *city; // City name
-} UTCOffset;
-
-typedef struct
-{
+typedef struct {
   // From https://www.skyworksinc.com/-/media/Skyworks/SL/documents/public/application-notes/AN332.pdf
   // Property 0x1100. FM_DEEMPHASIS
   uint8_t value;
-  const char *desc;
+  const char* desc;
 } FMRegion;
+
+typedef struct {
+  int8_t offset;    // UTC offset in 30 minute intervals
+  const char* desc; // Short description
+  const char* city; // City name
+} UTCOffset;
+
+typedef struct {
+  uint16_t freq;    // Frequency
+  const char* name; // Frequency name
+} NamedFreq;
 
 //
 // Global Variables
@@ -210,13 +205,12 @@ extern int8_t agcNdx;
 extern int8_t softMuteMaxAttIdx;
 extern uint8_t disableAgc;
 
-static inline bool isSSB()
-{
+static inline bool isSSB() {
   return (get_var_local_mode_index() > FM && get_var_local_mode_index() < AM);
 }
 
 void updateIOStatus();
-void useBand(const Band *band);
+void useBand(const Band* band);
 bool updateBFO(int newBFO, bool wrap = true);
 bool doSeek(int8_t dir);
 bool clickFreq(bool shortPress);
@@ -232,10 +226,10 @@ float scanGetRSSI(uint16_t freq);
 float scanGetSNR(uint16_t freq);
 
 // Station.c
-const char *getStationName();
-const char *getRadioText();
-const char *getProgramInfo();
-const char *getRdsTime();
+const char* getStationName();
+const char* getRadioText();
+const char* getProgramInfo();
+const char* getRdsTime();
 uint16_t getRdsPiCode();
 void clearStationInfo();
 bool checkRds();
@@ -243,7 +237,7 @@ bool identifyFrequency(uint16_t freq, bool periodic = false);
 
 // Network.cpp
 int8_t getWiFiStatus();
-char *getWiFiIPAddress();
+char* getWiFiIPAddress();
 void netClearPreferences();
 void netInit(uint8_t netMode, bool showStatus = true);
 void netStop();
@@ -253,16 +247,6 @@ bool ntpSyncTime();
 void netRequestConnect();
 void netTickTime();
 
-#define DISABLE_REMOTE
-#ifndef DISABLE_REMOTE
-// Remote.c
-#define REMOTE_CHANGED 1
-#define REMOTE_CLICK 2
-#define REMOTE_EEPROM 4
-#define REMOTE_DIRECTION 8
-void remoteTickTime();
-int remoteDoCommand(char key);
-char readSerialChar();
-#endif
+
 
 #endif // COMMON_H
