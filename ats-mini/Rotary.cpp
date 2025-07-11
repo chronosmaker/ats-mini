@@ -62,14 +62,14 @@
 #include "Arduino.h"
 #include "Rotary.h"
 
-/* The below state table has, for each state (row), the new state
-   to set based on the next encoder output. From left to right in,
-   the table, the encoder outputs are 00, 01, 10, 11, and the value
-   in that position is the new state to set. */
+   /* The below state table has, for each state (row), the new state
+      to set based on the next encoder output. From left to right in,
+      the table, the encoder outputs are 00, 01, 10, 11, and the value
+      in that position is the new state to set. */
 
 #define R_START       0x0
 #ifdef HALF_STEP
-// Use the half-step state table (emits a code at 00 and 11)
+      // Use the half-step state table (emits a code at 00 and 11)
 #define R_CCW_BEGIN   0x1
 #define R_CW_BEGIN    0x2
 #define R_START_M     0x3
@@ -90,7 +90,7 @@ const unsigned char ttable[6][4] = {
   {R_START_M, R_CCW_BEGIN_M, R_START_M, R_START | DIR_CCW},
 };
 #else
-// Use the full-step state table (emits a code at 00 only)
+      // Use the full-step state table (emits a code at 00 only)
 #define R_CW_FINAL  0x1
 #define R_CW_BEGIN  0x2
 #define R_CW_NEXT   0x3

@@ -1,5 +1,4 @@
 #include "Common.h"
-#include "Variables.h"
 #include "Themes.h"
 #include "Utils.h"
 #include "Menu.h"
@@ -317,60 +316,6 @@ int remoteDoCommand(char key) {
   int event = 0;
 
   switch (key) {
-  case 'B': // Band Up
-    doBand(1);
-    break;
-  case 'b': // Band Down
-    doBand(-1);
-    break;
-  case 'M': // Mode Up
-    doMode(1);
-    break;
-  case 'm': // Mode Down
-    doMode(-1);
-    break;
-  case 'S': // Step Up
-    doStep(1);
-    break;
-  case 's': // Step Down
-    doStep(-1);
-    break;
-  case 'W': // Bandwidth Up
-    doBandwidth(1);
-    break;
-  case 'w': // Bandwidth Down
-    doBandwidth(-1);
-    break;
-  case 'A': // AGC/ATTN Up
-    doAgc(1);
-    break;
-  case 'a': // AGC/ATTN Down
-    doAgc(-1);
-    break;
-  case 'V': // Volume Up
-    doVolume(1);
-    break;
-  case 'v': // Volume Down
-    doVolume(-1);
-    break;
-  case 'L': // Backlight Up
-    doBrt(1);
-    break;
-  case 'l': // Backlight Down
-    doBrt(-1);
-    break;
-  case 'O':
-    sleepOn(true);
-    break;
-  case 'o':
-    sleepOn(false);
-    break;
-  case 'I':
-    doCal(1);
-    break;
-  case 'i':
-    doCal(-1);
-    break;
   case 'C':
     remoteLogOn = false;
     remoteCaptureScreen();

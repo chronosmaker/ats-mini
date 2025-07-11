@@ -1,4 +1,4 @@
-#include "Variables.h"
+#include "Common.h"
 
 //
 // Memory Menu
@@ -82,6 +82,10 @@ const Bandwidth amBandwidths[] = {
     {1, "4.0k"},
     {0, "6.0k"} };
 
+const Bandwidth* bandwidths[4] = { fmBandwidths, ssbBandwidths, ssbBandwidths, amBandwidths };
+
+uint8_t bwIdx[4] = { 0, 4, 4, 4 };
+
 //
 // Step Menu
 //
@@ -118,6 +122,23 @@ const Step amSteps[] = {
     {1000, "1M", 10},
 };
 
+const Step* steps[4] = { fmSteps, ssbSteps, ssbSteps, amSteps };
+
+uint8_t stepIdx[4] = { 2, 5, 5, 1 };
+
+const uint8_t ssbFastSteps[] =
+{
+    3, //  10Hz -> 100Hz
+    3, //  25Hz -> 100Hz
+    4, //  50Hz -> 500Hz
+    5, // 100Hz -> 1kHz
+    6, // 500Hz -> 5kHz
+    6, //  1kHz -> 5kHz
+    8, //  5kHz -> 10kHz
+    7, //  9kHz -> 9kHz
+    8, // 10kHz -> 10kHz
+};
+
 //
 // FM Region Menu
 //
@@ -152,6 +173,8 @@ const UTCOffset utcOffsets[] = {
     {9 * 2, "UTC+9", "Yakutsk"},
     {10 * 2, "UTC+10", "Vladivostok"},
 };
+
+uint8_t utcOffsetIdx = 8;
 
 int getTotalMemories() {
   return (ITEM_COUNT(memories));
@@ -253,6 +276,23 @@ int getLastFmRegion() {
 
 int getLastUtcOffset() {
   return (LAST_ITEM(utcOffsets));
+}
+
+Band* getCurrentBand() {
+  return (&bands[get_var_local_band_index()]);
+}
+
+const Bandwidth* getCurrentBandwidth() {
+  return (&bandwidths[get_var_local_mode_index()][bwIdx[get_var_local_mode_index()]]);
+}
+
+const Step* getCurrentStep(bool fast) {
+  uint8_t idx = stepIdx[get_var_local_mode_index()];
+  return (&steps[get_var_local_mode_index()][fast && isSSB() ? ssbFastSteps[idx] : idx]);
+}
+
+int getCurrentUTCOffset() {
+  return (utcOffsets[utcOffsetIdx].offset);
 }
 
 void init_local_seek_options() {

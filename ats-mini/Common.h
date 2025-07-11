@@ -7,6 +7,7 @@
 #include <screens.h>
 #include <vars.h>
 #include <actions.h>
+#include "Store.h"
 #include "Storage.h"
 #include "SI4735-fixed.h"
 #include "Button.h"
@@ -24,7 +25,7 @@
 #define EEPROM_VERSION 71 // EEPROM VERSION (forces reset)
 
 // Number of memory slots
-#define MEMORY_COUNT 50
+#define MEMORY_COUNT 30
 
 // Modes
 #define FM 0
@@ -52,13 +53,6 @@
 #define SLEEP_LIGHT 2    // ESP32 light sleep
 
 // SI4732/5 PINs
-// #define PIN_POWER_ON  15            // GPIO15   External LDO regulator enable (1 = Enable)
-// #define RESET_PIN     16            // GPIO16   SI4732/5 Reset
-// #define ESP32_I2C_SCL 17            // GPIO17   SI4732/5 Clock
-// #define ESP32_I2C_SDA 18            // GPIO18   SI4732/5 Data
-// #define AUDIO_MUTE     3            // GPIO3    Hardware L/R mute, controlled via SI4735 code (1 = Mute)
-// #define PIN_AMP_EN    10            // GPIO10   Hardware Audio Amplifer enable (1 = Enable)
-
 #define ESP32_I2C_SDA 17 // GPIO17   SI4732/5 Data
 #define ESP32_I2C_SCL 18 // GPIO18   SI4732/5 Clock
 #define AUDIO_MUTE 13    // GPIO13   Hardware L/R mute, controlled via SI4735 code (1 = Mute)
@@ -69,17 +63,17 @@
 #define PIN_PCM5102A_LRCLK 12
 
 // Display PINs
-#define PIN_LCD_BL 38 // GPIO38   LCD backlight (PWM brightness control)
 // All other pins are defined by the TFT_eSPI library
+#define PIN_LCD_BL 38 // GPIO38   LCD backlight (PWM brightness control)
 
 // Rotary Enconder PINs
-// #define ENCODER_PIN_A  2            // GPIO02
-// #define ENCODER_PIN_B  1            // GPIO01
-// #define ENCODER_PUSH_BUTTON 21      // GPIO21
 #define ENCODER1_PIN_A 21 // GPIO21
 #define ENCODER1_PIN_B 14 // GPIO14
 #define ENCODER2_PIN_A 1  // GPIO01
 #define ENCODER2_PIN_B 2  // GPIO02
+
+// Battery Monitor PIN
+#define VBAT_MON  4       // GPIO04
 
 // 扩展IO配置参数
 #define TCA9555_ADDR 0x20 // 默认I2C地址 (A0-A2接地)
@@ -109,6 +103,26 @@
 #define ITEM_COUNT(array) (sizeof(array) / sizeof((array)[0]))
 #define LAST_ITEM(array) (ITEM_COUNT(array) - 1)
 
+inline int min(int x, int y) {
+  return (x < y ? x : y);
+}
+
+inline int wrap_range(int v, int dir, int vMin, int vMax) {
+  v += dir;
+  v = v > vMax ? vMin + (v - vMax - 1) : v < vMin ? vMax - (vMin - v - 1) : v;
+  return (v);
+}
+
+inline int clamp_range(int v, int dir, int vMin, int vMax) {
+  v += dir;
+  v = v > vMax ? vMax : v < vMin ? vMin : v;
+  return (v);
+}
+
+inline bool isSSB() {
+  return (get_var_local_mode_index() > FM && get_var_local_mode_index() < AM);
+}
+
 //
 // Data Types
 //
@@ -122,49 +136,6 @@ typedef struct {
   int pb1;
   int pb2;
 } IOStatus;
-
-typedef struct __attribute__((packed)) {
-  uint16_t freq;     // Frequency
-  uint8_t band;      // Band
-  uint8_t mode : 4;  // Modulation
-  uint8_t hz100 : 4; // Hz * 100
-} Memory;
-
-typedef struct {
-  const char* bandName;  // Band description
-  uint8_t bandType;      // Band type (FM, MW, or SW)
-  uint8_t bandMode;      // Band mode (FM, AM, LSB, or USB)
-  uint16_t minimumFreq;  // Minimum frequency of the band
-  uint16_t maximumFreq;  // Maximum frequency of the band
-  uint16_t currentFreq;  // Default frequency or current frequency
-  int8_t currentStepIdx; // Default frequency step
-  int8_t bandwidthIdx;   // Index of the table bandwidthFM, bandwidthAM or bandwidthSSB;
-  int16_t bandCal;       // Calibration value
-} Band;
-
-typedef struct {
-  uint8_t idx;      // SI473X device bandwidth index
-  const char* desc; // Bandwidth description
-} Bandwidth;
-
-typedef struct {
-  int step;         // Step
-  const char* desc; // Step description
-  uint8_t spacing;  // Seek spacing
-} Step;
-
-typedef struct {
-  // From https://www.skyworksinc.com/-/media/Skyworks/SL/documents/public/application-notes/AN332.pdf
-  // Property 0x1100. FM_DEEMPHASIS
-  uint8_t value;
-  const char* desc;
-} FMRegion;
-
-typedef struct {
-  int8_t offset;    // UTC offset in 30 minute intervals
-  const char* desc; // Short description
-  const char* city; // City name
-} UTCOffset;
 
 typedef struct {
   uint16_t freq;    // Frequency
@@ -193,7 +164,6 @@ extern TFT_eSPI tft;
 extern uint16_t currentSleep;
 extern uint8_t sleepModeIdx;
 extern int8_t scrollDirection;
-extern uint8_t utcOffsetIdx;
 
 extern int8_t FmAgcIdx;
 extern int8_t AmAgcIdx;
@@ -211,15 +181,10 @@ extern int8_t agcNdx;
 extern int8_t softMuteMaxAttIdx;
 extern uint8_t disableAgc;
 
-static inline bool isSSB() {
-  return (get_var_local_mode_index() > FM && get_var_local_mode_index() < AM);
-}
-
 void updateIOStatus();
 void useBand(const Band* band);
 bool updateBFO(int newBFO, bool wrap = true);
 bool doSeek(int8_t dir);
-bool clickFreq(bool shortPress);
 uint8_t doAbout(int dir);
 
 // Battery.c
@@ -237,7 +202,6 @@ const char* getRadioText();
 const char* getProgramInfo();
 const char* getRdsTime();
 uint16_t getRdsPiCode();
-void clearStationInfo();
 bool checkRds();
 bool identifyFrequency(uint16_t freq, bool periodic = false);
 
@@ -252,7 +216,5 @@ bool ntpSyncTime();
 
 void netRequestConnect();
 void netTickTime();
-
-
 
 #endif // COMMON_H

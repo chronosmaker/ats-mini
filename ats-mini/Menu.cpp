@@ -1,12 +1,9 @@
 #include "Common.h"
-#include "Variables.h"
 #include "Themes.h"
 #include "Utils.h"
 #include "Menu.h"
 #include "Draw.h"
 #include "EIBI.h"
-
-Band* getCurrentBand() { return (&bands[get_var_local_band_index()]); }
 
 static const char* menu[] =
 {
@@ -70,9 +67,6 @@ uint8_t sleepModeIdx = SLEEP_LOCKED;
 static const char* sleepModeDesc[] =
 { "Locked", "Unlocked", "CPU Sleep" };
 
-uint8_t utcOffsetIdx = 8;
-int getCurrentUTCOffset() { return (utcOffsets[utcOffsetIdx].offset); }
-
 //
 // UI Layout Menu
 //
@@ -86,82 +80,6 @@ static const char* uiLayoutDesc[] =
 uint8_t wifiModeIdx = NET_OFF;
 static const char* wifiModeDesc[] =
 { "Off", "AP Only", "AP+Connect", "Connect", "Sync Only" };
-
-static const uint8_t ssbFastSteps[] =
-{
-    3, //  10Hz -> 100Hz
-    3, //  25Hz -> 100Hz
-    4, //  50Hz -> 500Hz
-    5, // 100Hz -> 1kHz
-    6, // 500Hz -> 5kHz
-    6, //  1kHz -> 5kHz
-    8, //  5kHz -> 10kHz
-    7, //  9kHz -> 9kHz
-    8, // 10kHz -> 10kHz
-};
-
-static const Step* steps[4] = { fmSteps, ssbSteps, ssbSteps, amSteps };
-static uint8_t stepIdx[4] = { 2, 5, 5, 1 };
-
-const Step* getCurrentStep(bool fast) {
-  uint8_t idx = stepIdx[get_var_local_mode_index()];
-  return (&steps[get_var_local_mode_index()][fast && isSSB() ? ssbFastSteps[idx] : idx]);
-}
-
-static uint8_t freqInputPos = 0;
-
-static uint8_t getDefaultFreqInputPos(int mode, int step) {
-  return (uint8_t)(log10(step) * 2) + (mode == AM ? 6 : 0);
-}
-
-void resetFreqInputPos() {
-  freqInputPos = getDefaultFreqInputPos(get_var_local_mode_index(), getCurrentStep(false)->step);
-}
-
-uint8_t getFreqInputPos() {
-  return freqInputPos;
-}
-
-int getFreqInputStep() {
-  return freqInputPos % 2 ? 5 * pow(10, (freqInputPos - (get_var_local_mode_index() == AM ? 6 : 0) - 1) / 2) : pow(10, (freqInputPos - (get_var_local_mode_index() == AM ? 6 : 0)) / 2);
-}
-
-static uint8_t getMinFreqInputPos() {
-  return getDefaultFreqInputPos(get_var_local_mode_index(), steps[get_var_local_mode_index()][0].step);
-}
-
-static uint8_t getMaxFreqInputPos() {
-  return (uint8_t)log10(getCurrentBand()->maximumFreq) * 2 + (get_var_local_mode_index() != FM ? 6 : -2);
-}
-
-static const Bandwidth* bandwidths[4] = { fmBandwidths, ssbBandwidths, ssbBandwidths, amBandwidths };
-
-static uint8_t bwIdx[4] = { 0, 4, 4, 4 };
-
-const Bandwidth* getCurrentBandwidth() {
-  return (&bandwidths[get_var_local_mode_index()][bwIdx[get_var_local_mode_index()]]);
-}
-
-static void setBandwidth() {
-  uint8_t idx = getCurrentBandwidth()->idx;
-
-  switch (get_var_local_mode_index()) {
-  case FM:
-    rx.setFmBandwidth(idx);
-    break;
-  case AM:
-    rx.setBandwidth(idx, 1);
-    break;
-  case LSB:
-  case USB:
-    // Set Audio
-    rx.setSSBAudioBandwidth(idx);
-    // If audio bandwidth selected is about 2 kHz or below, it is
-    // recommended to set Sideband Cutoff Filter to 0.
-    rx.setSSBSidebandCutoffFilter(idx == 0 || idx == 4 || idx == 5 ? 0 : 1);
-    break;
-  }
-}
 
 // Seek mode. Pass true to toggle, false to return the current one
 uint8_t seekMode(bool toggle) {
@@ -179,11 +97,6 @@ uint8_t seekMode(bool toggle) {
 //
 // Encoder input handlers
 //
-
-void doSelectDigit(int dir) {
-  freqInputPos = clamp_range(freqInputPos, -dir, getMinFreqInputPos(), getMaxFreqInputPos());
-}
-
 void doVolume(int dir) {
   int32_t volume = clamp_range(get_var_speaker_volume(), dir, 0, 30);
   set_var_speaker_volume(volume);
@@ -212,20 +125,6 @@ static void doTheme(int dir) {
 
 static void doUILayout(int dir) {
   // uiLayoutIdx = uiLayoutIdx > LAST_ITEM(uiLayoutDesc) ? UI_DEFAULT : wrap_range(uiLayoutIdx, dir, 0, LAST_ITEM(uiLayoutDesc));
-}
-
-void doAvc(int dir) {
-  // Only allow for AM and SSB modes
-  if (get_var_local_mode_index() == FM)
-    return;
-
-  if (isSSB()) {
-    SsbAvcIdx = wrap_range(SsbAvcIdx, 2 * dir, 12, 90);
-    rx.setAvcAmMaxGain(SsbAvcIdx);
-  } else {
-    AmAvcIdx = wrap_range(AmAvcIdx, 2 * dir, 12, 90);
-    rx.setAvcAmMaxGain(AmAvcIdx);
-  }
 }
 
 void doFmRegion(int dir) {
@@ -295,81 +194,6 @@ uint8_t doAbout(int dir) {
   return aboutScreen;
 }
 
-bool tuneToMemory(const Memory* memory) {
-  // Must have frequency
-  if (!memory->freq)
-    return (false);
-  // Must have valid band index
-  if (memory->band >= getTotalBands())
-    return (false);
-  // Band must contain frequency and modulation
-  if (!isMemoryInBand(&bands[memory->band], memory))
-    return (false);
-  int32_t bandIdx = get_var_local_band_index();
-  // Must differ from the current band, frequency and modulation
-  if (memory->band == bandIdx &&
-    memory->freq == bands[bandIdx].currentFreq &&
-    memory->mode == bands[bandIdx].bandMode)
-    return (true);
-  // Save current band settings
-  bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
-  bands[bandIdx].currentStepIdx = stepIdx[get_var_local_mode_index()];
-
-  set_var_local_step_index(stepIdx[get_var_local_mode_index()]);
-
-  // Load frequency and modulation from memory slot
-  bands[memory->band].currentFreq = memory->freq;
-  bands[memory->band].bandMode = memory->mode;
-
-  // Enable the new band
-  selectBand(memory->band);
-
-  // Update BFO if present in memory slot
-  if (memory->hz100)
-    updateBFO(memory->hz100 * 100);
-
-  return (true);
-}
-
-void doMemory(int dir) {
-  set_var_local_seek_index(wrap_range(get_var_local_seek_index(), dir, 0, getLastMemory() + 2));
-  int32_t memoryIdx = get_var_local_seek_index() - 2;
-  if (memoryIdx >= 0) {
-    tuneToMemory(&memories[memoryIdx]);
-  }
-}
-
-void doSeekMemory(int dir) {
-  int32_t current = get_var_local_seek_index() - 2;
-  int32_t next = wrap_range(current, dir, 0, getLastMemory());
-
-  while (!tuneToMemory(&memories[next])) {
-    next = wrap_range(next, dir, 0, getLastMemory());
-    if (next == current) {
-      break;
-    }
-  }
-  if (next != current) {
-    set_var_local_seek_index(next + 2);
-  }
-}
-
-void doSaveMemory() {
-  int32_t idx = get_var_local_seek_index() - 2;
-  if (!memories[idx].freq) {
-    Memory newMemory;
-    newMemory.freq = get_var_local_frequency() + get_var_local_bfo() / 1000;
-    newMemory.hz100 = (get_var_local_bfo() % 1000) / 100;
-    newMemory.mode = get_var_local_mode_index();
-    newMemory.band = get_var_local_band_index();
-
-    memories[idx] = newMemory;
-    tuneToMemory(&memories[idx]);
-  } else {
-    memories[idx].freq = 0;
-  }
-}
-
 static void clickMemory(uint8_t idx, bool shortPress) {
   // // Must have a valid index
   // if (idx > getLastMemory())
@@ -384,109 +208,8 @@ static void clickMemory(uint8_t idx, bool shortPress) {
   // // On a click, do nothing, slot already activated in doMemory()
 }
 
-void doStep(int dir) {
-  uint8_t idx = stepIdx[get_var_local_mode_index()];
-
-  idx = wrap_range(idx, dir, 0, getLastStep(get_var_local_mode_index()));
-  bands[get_var_local_band_index()].currentStepIdx = stepIdx[get_var_local_mode_index()] = idx;
-
-  set_var_local_step_index(idx);
-
-  rx.setFrequencyStep(steps[get_var_local_mode_index()][idx].step);
-
-  // Set seek spacing
-  if (get_var_local_mode_index() == FM)
-    rx.setSeekFmSpacing(steps[get_var_local_mode_index()][idx].spacing);
-  else
-    rx.setSeekAmSpacing(steps[get_var_local_mode_index()][idx].spacing);
-}
-
-void doAgc(int dir) {
-  if (get_var_local_mode_index() == FM)
-    agcIdx = FmAgcIdx = wrap_range(FmAgcIdx, dir, 0, 27);
-  else if (isSSB())
-    agcIdx = SsbAgcIdx = wrap_range(SsbAgcIdx, dir, 0, 1);
-  else
-    agcIdx = AmAgcIdx = wrap_range(AmAgcIdx, dir, 0, 37);
-
-  // Process agcIdx to generate disableAgc and agcIdx
-  // agcIdx     0 1 2 3 4 5 6  ..... n    (n:    FM = 27, AM = 37, SSB = 1)
-  // agcNdx     0 0 1 2 3 4 5  ..... n -1 (n -1: FM = 26, AM = 36, SSB = 0)
-  // disableAgc 0 1 1 1 1 1 1  ..... 1
-
-  // if true, disable AGC; else, AGC is enabled
-  disableAgc = agcIdx > 0 ? 1 : 0;
-  agcNdx = agcIdx > 1 ? agcIdx - 1 : 0;
-
-  // Configure SI4732/5 (if agcNdx = 0, no attenuation)
-  rx.setAutomaticGainControl(disableAgc, agcNdx);
-}
-
-void doMode(int dir) {
-  int32_t bandIdx = get_var_local_band_index();
-  // This is our current mode for the current band
-  set_var_local_mode_index(bands[bandIdx].bandMode);
-
-  // Cannot change away from FM mode
-  if (get_var_local_mode_index() == FM)
-    return;
-
-  // Change AM/LSB/USB modes, do not allow FM mode
-  do
-    set_var_local_mode_index(wrap_range(get_var_local_mode_index(), dir, 0, getLastBandMode()));
-  while (get_var_local_mode_index() == FM);
-
-  // Save current band settings
-  bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
-  bands[bandIdx].currentStepIdx = stepIdx[get_var_local_mode_index()];
-  bands[bandIdx].bandMode = get_var_local_mode_index();
-
-  set_var_local_step_index(stepIdx[get_var_local_mode_index()]);
-
-  // Enable the new band
-  selectBand(bandIdx);
-}
-
 void doSquelch(int dir) {
   set_var_local_squelch(clamp_range(get_var_local_squelch(), dir, 0, 127));
-}
-
-void doSoftMute(int dir) {
-  // Nothing to do if FM mode
-  if (get_var_local_mode_index() == FM)
-    return;
-
-  if (isSSB())
-    softMuteMaxAttIdx = SsbSoftMuteIdx = wrap_range(SsbSoftMuteIdx, dir, 0, 32);
-  else
-    softMuteMaxAttIdx = AmSoftMuteIdx = wrap_range(AmSoftMuteIdx, dir, 0, 32);
-
-  rx.setAmSoftMuteMaxAttenuation(softMuteMaxAttIdx);
-}
-
-void doBand(int dir) {
-  int32_t bandIdx = get_var_local_band_index();
-  // Save current band settings
-  bands[bandIdx].currentFreq = get_var_local_frequency() + get_var_local_bfo() / 1000;
-  bands[bandIdx].currentStepIdx = stepIdx[get_var_local_mode_index()];
-  bands[bandIdx].bandMode = get_var_local_mode_index();
-
-  set_var_local_step_index(stepIdx[get_var_local_mode_index()]);
-
-  // Change band
-  bandIdx = wrap_range(bandIdx, dir, 0, getLastBand());
-  set_var_local_band_index(bandIdx);
-
-  // Enable the new band
-  selectBand(bandIdx);
-}
-
-void doBandwidth(int dir) {
-  uint8_t idx = bwIdx[get_var_local_mode_index()];
-
-  idx = wrap_range(idx, dir, 0, getLastBandwidth(get_var_local_mode_index()));
-  bands[get_var_local_band_index()].bandwidthIdx = bwIdx[get_var_local_mode_index()] = idx;
-  setBandwidth();
 }
 
 //
@@ -543,93 +266,6 @@ static void clickSettings(int cmd, bool shortPress) {
   // }
 }
 
-bool doSideBar(uint16_t cmd, int dir) {
-  // Ignore idle encoder
-  if (!dir)
-    return (false);
-
-  switch (cmd) {
-    // Menus and list-based options must take scrollDirection into account
-  case CMD_MODE:
-    doMode(scrollDirection * dir);
-    break;
-  case CMD_STEP:
-    doStep(scrollDirection * dir);
-    break;
-  case CMD_AGC:
-    doAgc(dir);
-    break;
-  case CMD_BANDWIDTH:
-    doBandwidth(scrollDirection * dir);
-    break;
-  case CMD_VOLUME:
-    doVolume(dir);
-    break;
-  case CMD_SOFTMUTE:
-    doSoftMute(dir);
-    break;
-  case CMD_BAND:
-    doBand(scrollDirection * dir);
-    break;
-  case CMD_AVC:
-    doAvc(dir);
-    break;
-  case CMD_FM_REGION:
-    doFmRegion(scrollDirection * dir);
-    break;
-  case CMD_SETTINGS:
-    // doSettings(scrollDirection * dir);
-    break;
-  case CMD_BRT:
-    doBrt(dir);
-    break;
-  case CMD_CAL:
-    doCal(dir);
-    break;
-  case CMD_THEME:
-    doTheme(scrollDirection * dir);
-    break;
-  case CMD_UI:
-    doUILayout(scrollDirection * dir);
-    break;
-  case CMD_RDS:
-    doRDSMode(scrollDirection * dir);
-    break;
-  case CMD_MEMORY:
-    doMemory(scrollDirection * dir);
-    break;
-  case CMD_SLEEP:
-    doSleep(dir);
-    break;
-  case CMD_SLEEPMODE:
-    doSleepMode(scrollDirection * dir);
-    break;
-  case CMD_WIFIMODE:
-    doWiFiMode(scrollDirection * dir);
-    break;
-  case CMD_ZOOM:
-    doZoom(dir);
-    break;
-  case CMD_SCROLL:
-    doScrollDir(dir);
-    break;
-  case CMD_UTCOFFSET:
-    doUTCOffset(scrollDirection * dir);
-    break;
-  case CMD_SQUELCH:
-    doSquelch(dir);
-    break;
-  case CMD_ABOUT:
-    doAbout(dir);
-    break;
-  default:
-    return (false);
-  }
-
-  // Encoder input handled
-  return (true);
-}
-
 bool clickHandler(uint16_t cmd, bool shortPress) {
   switch (cmd) {
   case CMD_MENU:
@@ -653,117 +289,12 @@ bool clickHandler(uint16_t cmd, bool shortPress) {
   case CMD_SEEK:
     clickSeek(shortPress);
     break;
-  case CMD_FREQ:
-    return (clickFreq(shortPress));
   default:
     return (false);
   }
 
   // Encoder input handled
   return (true);
-}
-
-// Switch radio to given band
-void useBand(const Band* band) {
-  // Set current frequency and mode, reset BFO
-  set_var_local_frequency(band->currentFreq);
-  set_var_local_mode_index(band->bandMode);
-  set_var_local_bfo(0);
-
-  if (band->bandMode == FM) {
-    rx.setFM(band->minimumFreq, band->maximumFreq, band->currentFreq, getCurrentStep()->step);
-    // rx.setTuneFrequencyAntennaCapacitor(0);
-    rx.setSeekFmLimits(band->minimumFreq, band->maximumFreq);
-
-    // More sensitive seek thresholds
-    // https://github.com/pu2clr/SI4735/issues/7#issuecomment-810963604
-    rx.setSeekFmRssiThreshold(5); // default is 20
-    rx.setSeekFmSNRThreshold(3);  // default is 3
-
-    rx.setFMDeEmphasis(fmRegions[FmRegionIdx].value);
-    rx.RdsInit();
-    rx.setRdsConfig(1, 2, 2, 2, 2);
-    rx.setGpioCtl(1, 0, 0); // G8PTN: Enable GPIO1 as output
-    rx.setGpio(0, 0, 0);    // G8PTN: Set GPIO1 = 0
-  } else {
-    if (band->bandMode == AM) {
-      rx.setAM(band->minimumFreq, band->maximumFreq, band->currentFreq, getCurrentStep()->step);
-      // More sensitive seek thresholds
-      // https://github.com/pu2clr/SI4735/issues/7#issuecomment-810963604
-      rx.setSeekAmRssiThreshold(15); // default is 25
-      rx.setSeekAmSNRThreshold(5);   // default is 5
-    } else {
-      // Configure SI4732 for SSB (SI4732 step not used, set to 0)
-      rx.setSSB(band->minimumFreq, band->maximumFreq, band->currentFreq, 0, get_var_local_mode_index());
-      // G8PTN: Always enabled
-      rx.setSSBAutomaticVolumeControl(1);
-      // G8PTN: Commented out
-      // rx.setSsbSoftMuteMaxAttenuation(softMuteMaxAttIdx);
-      // To move frequency forward, need to move the BFO backwards
-      rx.setSSBBfo(-(get_var_local_bfo() + band->bandCal));
-    }
-
-    // Set the tuning capacitor for SW or MW/LW
-    // rx.setTuneFrequencyAntennaCapacitor((band->bandType == MW_BAND_TYPE || band->bandType == LW_BAND_TYPE) ? 0 : 1);
-
-    // G8PTN: Enable GPIO1 as output
-    rx.setGpioCtl(1, 0, 0);
-    // G8PTN: Set GPIO1 = 1
-    rx.setGpio(1, 0, 0);
-    // Consider the range all defined current band
-    rx.setSeekAmLimits(band->minimumFreq, band->maximumFreq);
-  }
-
-  // Set step and spacing based on mode (FM, AM, SSB)
-  doStep(0);
-  // Set softMuteMaxAttIdx based on mode (AM, SSB)
-  doSoftMute(0);
-  // Set disableAgc and agcNdx values based on mode (FM, AM , SSB)
-  doAgc(0);
-  // Set currentAVC values based on mode (AM, SSB)
-  doAvc(0);
-  // Wait a bit for things to calm down
-  delay(100);
-  // Clear signal strength readings
-  set_var_local_snr(0);
-  set_var_local_snr_bar(getSnrBar(0));
-  set_var_local_rssi(0);
-  set_var_local_rssi_bar(getRssiBar(0));
-}
-
-//
-// Selecting given band
-//
-
-void selectBand(uint8_t idx, bool drawLoadingSSB) {
-  // Set band and mode
-  int32_t bandIdx = min(idx, getLastBand());
-  set_var_local_band_index(bandIdx);
-  set_var_local_mode_index(bands[bandIdx].bandMode);
-
-  // Set tuning step
-  stepIdx[get_var_local_mode_index()] = bands[bandIdx].currentStepIdx;
-
-  // Load SSB patch as needed
-  if (isSSB())
-    loadSSB(getCurrentBandwidth()->idx, drawLoadingSSB);
-  else
-    unloadSSB();
-
-  // Set bandwidth for the current mode
-  setBandwidth();
-
-  // Switch radio to the selected band
-  useBand(&bands[bandIdx]);
-
-  // Clear current station info (RDS/CB)
-  clearStationInfo();
-
-  // Check for named frequencies
-  identifyFrequency(get_var_local_frequency() + get_var_local_bfo() / 1000);
-
-  // Set default digit position based on the current step
-  resetFreqInputPos();
 }
 
 //
@@ -1362,45 +893,6 @@ static void drawInfo(int x, int y, int sx) {
   {
     spr.drawString("Time:", 6+x, 64+y+(2*16), 2);
     spr.drawString(clockGet(), 48+x, 64+y+(2*16), 2);
-  }
-  */
-}
-
-//
-// Draw side bar (menu or information)
-//
-void drawSideBar(uint16_t cmd, int x, int y, int sx) {
-  if (sleepOn())
-    return;
-  /*
-  switch(cmd)
-  {
-    case CMD_MENU:      drawMenu(x, y, sx);      break;
-    case CMD_SETTINGS:  drawSettings(x, y, sx);  break;
-    case CMD_MODE:      drawMode(x, y, sx);      break;
-    case CMD_STEP:      drawStep(x, y, sx);      break;
-    case CMD_SEEK:      drawSeek(x, y, sx);      break;
-    case CMD_BAND:      drawBand(x, y, sx);      break;
-    case CMD_BANDWIDTH: drawBandwidth(x, y, sx); break;
-    case CMD_THEME:     drawTheme(x, y, sx);     break;
-    case CMD_UI:        drawUILayout(x, y, sx);  break;
-    case CMD_VOLUME:    drawVolume(x, y, sx);    break;
-    case CMD_AGC:       drawAgc(x, y, sx);       break;
-    case CMD_SOFTMUTE:  drawSoftMuteMaxAtt(x, y, sx);break;
-    case CMD_CAL:       drawCal(x, y, sx);       break;
-    case CMD_AVC:       drawAvc(x, y, sx);       break;
-    case CMD_FM_REGION: drawFmRegion(x, y, sx);  break;
-    case CMD_BRT:       drawBrt(x, y, sx);       break;
-    case CMD_RDS:       drawRDSMode(x, y, sx);   break;
-    case CMD_MEMORY:    drawMemory(x, y, sx);    break;
-    case CMD_SLEEP:     drawSleep(x, y, sx);     break;
-    case CMD_SLEEPMODE: drawSleepMode(x, y, sx); break;
-    case CMD_WIFIMODE:  drawWiFiMode(x, y, sx);  break;
-    case CMD_ZOOM:      drawZoom(x, y, sx);      break;
-    case CMD_SCROLL:    drawScrollDir(x, y, sx); break;
-    case CMD_UTCOFFSET: drawUTCOffset(x, y, sx); break;
-    case CMD_SQUELCH:   drawSquelch(x, y, sx);   break;
-    default:            drawInfo(x, y, sx);      break;
   }
   */
 }

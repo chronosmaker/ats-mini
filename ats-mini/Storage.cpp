@@ -1,6 +1,5 @@
 #include "EEPROM.h"
 #include "Common.h"
-#include "Variables.h"
 #include "Storage.h"
 #include "Themes.h"
 #include "Menu.h"
@@ -46,8 +45,8 @@ void eepromTickTime() {
   if (itIsTimeToUpdate) {
     eepromWriteBinary(updateBuf, sizeof(updateBuf));
     eepromLoadConfig();
-    selectBand(get_var_local_band_index(), false);
-    rx.setVolume(get_var_speaker_volume() * 2);
+    // selectBand(get_var_local_band_index(), false);
+    // rx.setVolume(get_var_speaker_volume() * 2);
     itIsTimeToUpdate = false;
     itIsTimeToSave = false;
   }

@@ -1,5 +1,4 @@
 #include "Common.h"
-#include "Variables.h"
 #include "Storage.h"
 #include "Themes.h"
 #include "Utils.h"

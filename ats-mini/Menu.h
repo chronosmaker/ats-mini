@@ -51,26 +51,6 @@ typedef struct {
   const char* desc; // Mode description
 } RDSMode;
 
-//
-// Utility functions to change menu values
-//
-
-static inline int min(int x, int y) { return (x < y ? x : y); }
-
-static inline int wrap_range(int v, int dir, int vMin, int vMax) {
-  v += dir;
-  v = v > vMax ? vMin + (v - vMax - 1) : v < vMin ? vMax - (vMin - v - 1)
-    : v;
-  return (v);
-}
-
-static inline int clamp_range(int v, int dir, int vMin, int vMax) {
-  v += dir;
-  v = v > vMax ? vMax : v < vMin ? vMin
-    : v;
-  return (v);
-}
-
 // These are menu commands
 static inline bool isMenuMode(uint16_t cmd) {
   return ((cmd >= CMD_BAND) && (cmd < CMD_SETTINGS));
@@ -82,35 +62,13 @@ static inline bool isSettingsMode(uint16_t cmd) {
 }
 
 uint8_t seekMode(bool toggle = false);
-void drawSideBar(uint16_t cmd, int x, int y, int sx);
-bool doSideBar(uint16_t cmd, int dir);
-void doSelectDigit(int dir);
 bool clickHandler(uint16_t cmd, bool shortPress);
-void selectBand(uint8_t idx, bool drawLoadingSSB = true);
 
-Band* getCurrentBand();
-uint8_t getFreqInputPos();
-int getFreqInputStep();
-const Step* getCurrentStep(bool fast = false);
-const Bandwidth* getCurrentBandwidth();
 uint8_t getRDSMode();
 
-int getCurrentUTCOffset();
-const UTCOffset* getUTCOffset(uint8_t idx);
-
-void doSoftMute(int dir);
-void doAgc(int dir);
-void doAvc(int dir);
 void doFmRegion(int dir);
-void doBandwidth(int dir);
-void doVolume(int dir);
-void doMemory(int dir);
-void doSeekMemory(int dir);
-void doSaveMemory();
 void doBrt(int dir);
 void doCal(int dir);
-void doStep(int dir);
-void doMode(int dir);
-void doBand(int dir);
+void doVolume(int dir);
 
 #endif // MENU_H

@@ -14,15 +14,14 @@
 #define DIR_CW   0x10   // Clockwise step
 #define DIR_CCW  0x20   // Anti-clockwise step
 
-class Rotary
-{
-  public:
-    Rotary(char, char);
-    // Process pin(s)
-    unsigned char process();
-  private:
-    unsigned char state;
-    unsigned char pin1;
-    unsigned char pin2;
+class Rotary {
+public:
+  Rotary(char, char);
+  // Process pin(s)
+  unsigned char process();
+private:
+  unsigned char state;
+  unsigned char pin1;
+  unsigned char pin2;
 };
 #endif

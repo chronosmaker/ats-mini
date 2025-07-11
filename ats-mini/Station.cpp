@@ -131,14 +131,6 @@ uint16_t getRdsPiCode() {
   return (getRDSMode() & RDS_PI ? piCode : 0x0000);
 }
 
-void clearStationInfo() {
-  bufStationName[0] = '\0';
-  bufProgramInfo[0] = '\0';
-  bufRadioText[0] = '\0'; // Multiline!
-  bufRadioText[1] = '\0';
-  piCode = 0x0000;
-}
-
 static bool showStationName(const char* stationName, bool isLong = false) {
   if (stationName && strcmp((isLong && bufStationName[0] == 0xFF) ? bufStationName + 1 : bufStationName, stationName)) {
     // If the name is explicitly marked as long, add 0xFF in front of it

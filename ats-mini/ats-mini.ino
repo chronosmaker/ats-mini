@@ -3,12 +3,12 @@
 // =================================
 #include "math.h"
 #include "Common.h"
-#include "Variables.h"
 #include <Wire.h>
 #include "EEPROM.h"
 #include "Rotary.h"
 #include "Menu.h"
 #include "Utils.h"
+#include "LocalRadio.h"
 #include "PageMain.h"
 #include "PageLocalRadio.h"
 #include "PageNetRadio.h"
