@@ -3,12 +3,6 @@
 
 #include "Common.h"
 
-// Band Types
-#define FM_BAND_TYPE 0
-#define MW_BAND_TYPE 1
-#define SW_BAND_TYPE 2
-#define LW_BAND_TYPE 3
-
 // Commands
 #define CMD_NONE 0x0000
 #define CMD_FREQ 0x0100

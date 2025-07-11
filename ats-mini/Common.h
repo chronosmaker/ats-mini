@@ -32,6 +32,12 @@
 #define USB 2
 #define AM 3
 
+// Band Types
+#define FM_BAND_TYPE 0
+#define MW_BAND_TYPE 1
+#define SW_BAND_TYPE 2
+#define LW_BAND_TYPE 3
+
 // RDS Modes
 #define RDS_PS 0b00000001   // Station name
 #define RDS_CT 0b00000010   // Time

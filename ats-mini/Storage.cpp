@@ -1,5 +1,6 @@
 #include "EEPROM.h"
 #include "Common.h"
+#include "Variables.h"
 #include "Storage.h"
 #include "Themes.h"
 #include "Menu.h"
@@ -23,8 +24,7 @@ static uint8_t updateBuf[EEPROM_SIZE];
 
 // To store any change into the EEPROM, we need at least STORE_TIME
 // milliseconds of inactivity.
-void eepromRequestSave(bool now)
-{
+void eepromRequestSave(bool now) {
   // Underflow is ok here, see eepromTickTime
   storeTime = millis() - (now ? STORE_TIME : 0);
   itIsTimeToSave = true;
@@ -32,8 +32,7 @@ void eepromRequestSave(bool now)
 
 // Buffer new EEPROM contents (possibly from a different thread)
 // and request writing EEPROM (in the main thread).
-bool eepromRequestUpdate(const uint8_t *eepromUpdate, uint32_t size)
-{
+bool eepromRequestUpdate(const uint8_t* eepromUpdate, uint32_t size) {
   if (size != sizeof(updateBuf))
     return (false);
 
@@ -42,11 +41,9 @@ bool eepromRequestUpdate(const uint8_t *eepromUpdate, uint32_t size)
   return (true);
 }
 
-void eepromTickTime()
-{
+void eepromTickTime() {
   // Update EEPROM if requested
-  if (itIsTimeToUpdate)
-  {
+  if (itIsTimeToUpdate) {
     eepromWriteBinary(updateBuf, sizeof(updateBuf));
     eepromLoadConfig();
     selectBand(get_var_local_band_index(), false);
@@ -56,8 +53,7 @@ void eepromTickTime()
   }
 
   // Save configuration if requested
-  if (itIsTimeToSave && ((millis() - storeTime) >= STORE_TIME))
-  {
+  if (itIsTimeToSave && ((millis() - storeTime) >= STORE_TIME)) {
     eepromSaveConfig();
     storeTime = millis();
     itIsTimeToSave = false;
@@ -65,8 +61,7 @@ void eepromTickTime()
 }
 
 // Return true if EEPROM has been written
-bool eepromIsWritten()
-{
+bool eepromIsWritten() {
   bool result = showEepromFlag;
   showEepromFlag = false;
   return (result);
@@ -75,8 +70,7 @@ bool eepromIsWritten()
 // Indirectly forces the reset by setting EEPROM_VERSION = 0, which gets
 // detected in the subsequent check for EEPROM_VERSION.
 // NOTE: EEPROM reset is recommended after firmware updates!
-void eepromInvalidate()
-{
+void eepromInvalidate() {
   // Use EEPROM.begin(EEPROM_SIZE) before use and EEPROM.end() after
   // use to free up memory and avoid memory leaks
   EEPROM.begin(EEPROM_SIZE);
@@ -87,8 +81,7 @@ void eepromInvalidate()
 }
 
 // Return true first time after the settings have been reset
-bool eepromFirstRun()
-{
+bool eepromFirstRun() {
   EEPROM.begin(EEPROM_SIZE);
   bool firstRun = EEPROM.read(EEPROM_VER_ADDR + 2);
   if (firstRun)
@@ -99,19 +92,15 @@ bool eepromFirstRun()
 }
 
 // Check EEPROM contents against EEPROM_VERSION
-bool eepromVerify(const uint8_t *buf)
-{
+bool eepromVerify(const uint8_t* buf) {
   uint8_t appId;
   uint16_t appVer;
 
-  if (buf)
-  {
+  if (buf) {
     appId = buf[EEPROM_BASE_ADDR];
     appVer = buf[EEPROM_VER_ADDR] << 8;
     appVer |= buf[EEPROM_VER_ADDR + 1];
-  }
-  else
-  {
+  } else {
     EEPROM.begin(EEPROM_SIZE);
     appId = EEPROM.read(EEPROM_BASE_ADDR);
     appVer = EEPROM.read(EEPROM_VER_ADDR) << 8;
@@ -126,8 +115,7 @@ bool eepromVerify(const uint8_t *buf)
 // @@@ FIXME: Use EEPROM.update() to avoid writing the same
 //            data in the same memory position. It will save
 //            unnecessary recording.
-void eepromSaveConfig()
-{
+void eepromSaveConfig() {
   // G8PTN: For SSB ensures BFO value is valid with respect to
   // bands[get_var_local_band_index()].currentFreq = currentFrequency
   int16_t currentBFOs = get_var_local_bfo() % 1000;
@@ -152,8 +140,7 @@ void eepromSaveConfig()
   // bands[bandIdx].currentFreq = currentFrequency;
 
   // Store current band settings
-  for (int i = 0; i < getTotalBands(); i++)
-  {
+  for (int i = 0; i < getTotalBands(); i++) {
     EEPROM.write(addr++, bands[i].currentFreq >> 8);   // Stores the current Frequency HIGH byte for the band
     EEPROM.write(addr++, bands[i].currentFreq & 0xFF); // Stores the current Frequency LOW byte for the band
     EEPROM.write(addr++, bands[i].currentStepIdx);     // Stores current step of the band
@@ -163,8 +150,7 @@ void eepromSaveConfig()
 
   // Store current memories
   addr = EEPROM_SETM_ADDR;
-  for (int i = 0; i < getTotalMemories(); i++)
-  {
+  for (int i = 0; i < getTotalMemories(); i++) {
     EEPROM.write(addr++, memories[i].freq >> 8);   // Stores frequency HIGH byte
     EEPROM.write(addr++, memories[i].freq & 0xFF); // Stores frequency LOW byte
     EEPROM.write(addr++, memories[i].mode);        // Stores modulation
@@ -198,8 +184,7 @@ void eepromSaveConfig()
   EEPROM.commit();
 
   addr = EEPROM_SETP_ADDR;
-  for (int i = 0; i < getTotalBands(); i++)
-  {
+  for (int i = 0; i < getTotalBands(); i++) {
     EEPROM.write(addr++, bands[i].bandCal >> 8);   // Stores the current Calibration value (HIGH byte) for the band
     EEPROM.write(addr++, bands[i].bandCal & 0XFF); // Stores the current Calibration value (LOW byte) for the band
     EEPROM.write(addr++, bands[i].bandMode);       // Stores the current Mode value for the band
@@ -217,8 +202,7 @@ void eepromSaveConfig()
   showEepromFlag = true;
 }
 
-void eepromLoadConfig()
-{
+void eepromLoadConfig() {
   int addr;
 
   EEPROM.begin(EEPROM_SIZE);
@@ -233,8 +217,7 @@ void eepromLoadConfig()
   set_var_local_bfo(currentBFO);
 
   // Read current band settings
-  for (int i = 0; i < getTotalBands(); i++)
-  {
+  for (int i = 0; i < getTotalBands(); i++) {
     bands[i].currentFreq = EEPROM.read(addr++) << 8;
     bands[i].currentFreq |= EEPROM.read(addr++);
     bands[i].currentStepIdx = EEPROM.read(addr++);
@@ -243,8 +226,7 @@ void eepromLoadConfig()
 
   // Read current memories
   addr = EEPROM_SETM_ADDR;
-  for (int i = 0; i < getTotalMemories(); i++)
-  {
+  for (int i = 0; i < getTotalMemories(); i++) {
     memories[i].freq = EEPROM.read(addr++) << 8;
     memories[i].freq |= EEPROM.read(addr++);
     memories[i].mode = EEPROM.read(addr++);
@@ -276,8 +258,7 @@ void eepromLoadConfig()
   // uiLayoutIdx = EEPROM.read(addr++); // Reads stored UI Layout index value
 
   addr = EEPROM_SETP_ADDR;
-  for (int i = 0; i < getTotalBands(); i++)
-  {
+  for (int i = 0; i < getTotalBands(); i++) {
     bands[i].bandCal = EEPROM.read(addr++) << 8; // Reads stored Calibration value (HIGH byte) per band
     bands[i].bandCal |= EEPROM.read(addr++);     // Reads stored Calibration value (LOW byte) per band
     bands[i].bandMode = EEPROM.read(addr++);     // Reads stored Mode value per band
@@ -286,30 +267,25 @@ void eepromLoadConfig()
   EEPROM.end();
 }
 
-bool diskInit(bool force)
-{
-  if (force)
-  {
+bool diskInit(bool force) {
+  if (force) {
     LittleFS.end();
     LittleFS.format();
   }
 
   bool mounted = LittleFS.begin(false, "/littlefs", 10, "littlefs");
 
-  if (!mounted)
-  {
+  if (!mounted) {
     // Serial.println("Formatting LittleFS...");
 
-    if (!LittleFS.format())
-    {
+    if (!LittleFS.format()) {
       // Serial.println("ERROR: format failed");
       return (false);
     }
 
     // Serial.println("Re-mounting LittleFS...");
     mounted = LittleFS.begin(false, "/littlefs", 10, "littlefs");
-    if (!mounted)
-    {
+    if (!mounted) {
       // Serial.println("ERROR: remount failed");
       return (false);
     }
@@ -319,8 +295,7 @@ bool diskInit(bool force)
   return (true);
 }
 
-bool eepromReadBinary(uint8_t *buf, uint32_t size)
-{
+bool eepromReadBinary(uint8_t* buf, uint32_t size) {
   if (size < EEPROM_SIZE)
     return (false);
 
@@ -336,8 +311,7 @@ bool eepromReadBinary(uint8_t *buf, uint32_t size)
   return (true);
 }
 
-bool eepromWriteBinary(const uint8_t *buf, uint32_t size)
-{
+bool eepromWriteBinary(const uint8_t* buf, uint32_t size) {
   if (size > EEPROM_SIZE)
     return (false);
 

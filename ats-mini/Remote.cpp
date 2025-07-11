@@ -317,72 +317,47 @@ int remoteDoCommand(char key) {
   int event = 0;
 
   switch (key) {
-  case 'R': // Rotate Encoder Clockwise
-    event |= 1 << REMOTE_DIRECTION;
-    event |= REMOTE_EEPROM;
-    break;
-  case 'r': // Rotate Encoder Counterclockwise
-    event |= -1 << REMOTE_DIRECTION;
-    event |= REMOTE_EEPROM;
-    break;
-  case 'e': // Encoder Push Button
-    event |= REMOTE_CLICK;
-    break;
   case 'B': // Band Up
     doBand(1);
-    event |= REMOTE_EEPROM;
     break;
   case 'b': // Band Down
     doBand(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'M': // Mode Up
     doMode(1);
-    event |= REMOTE_EEPROM;
     break;
   case 'm': // Mode Down
     doMode(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'S': // Step Up
     doStep(1);
-    event |= REMOTE_EEPROM;
     break;
   case 's': // Step Down
     doStep(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'W': // Bandwidth Up
     doBandwidth(1);
-    event |= REMOTE_EEPROM;
     break;
   case 'w': // Bandwidth Down
     doBandwidth(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'A': // AGC/ATTN Up
     doAgc(1);
-    event |= REMOTE_EEPROM;
     break;
   case 'a': // AGC/ATTN Down
     doAgc(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'V': // Volume Up
     doVolume(1);
-    event |= REMOTE_EEPROM;
     break;
   case 'v': // Volume Down
     doVolume(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'L': // Backlight Up
     doBrt(1);
-    event |= REMOTE_EEPROM;
     break;
   case 'l': // Backlight Down
     doBrt(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'O':
     sleepOn(true);
@@ -392,11 +367,9 @@ int remoteDoCommand(char key) {
     break;
   case 'I':
     doCal(1);
-    event |= REMOTE_EEPROM;
     break;
   case 'i':
     doCal(-1);
-    event |= REMOTE_EEPROM;
     break;
   case 'C':
     remoteLogOn = false;
@@ -405,15 +378,12 @@ int remoteDoCommand(char key) {
   case 't':
     remoteLogOn = !remoteLogOn;
     break;
-
   case '$':
     remoteGetMemories();
     break;
   case '#':
     if (remoteSetMemory())
-      event |= REMOTE_EEPROM;
-    break;
-
+      break;
   case 'T':
     Serial.println(switchThemeEditor(!switchThemeEditor()) ? "Theme editor enabled" : "Theme editor disabled");
     break;
@@ -432,7 +402,7 @@ int remoteDoCommand(char key) {
   }
 
   // Command recognized
-  return (event | REMOTE_CHANGED);
+  return (event);
 }
 
 #endif // !DISABLE_REMOTE
