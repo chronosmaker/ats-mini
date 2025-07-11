@@ -4,7 +4,7 @@
 #include "Common.h"
 
 // SSB patch functions
-void loadSSB(uint8_t bandwidth, bool draw = true);
+void loadSSB(uint8_t bandwidth);
 void unloadSSB();
 
 // Get firmware version

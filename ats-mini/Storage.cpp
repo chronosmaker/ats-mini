@@ -45,7 +45,7 @@ void eepromTickTime() {
   if (itIsTimeToUpdate) {
     eepromWriteBinary(updateBuf, sizeof(updateBuf));
     eepromLoadConfig();
-    // selectBand(get_var_local_band_index(), false);
+    // selectBand(get_var_local_band_index());
     // rx.setVolume(get_var_speaker_volume() * 2);
     itIsTimeToUpdate = false;
     itIsTimeToSave = false;

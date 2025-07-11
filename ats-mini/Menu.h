@@ -66,9 +66,7 @@ bool clickHandler(uint16_t cmd, bool shortPress);
 
 uint8_t getRDSMode();
 
-void doFmRegion(int dir);
 void doBrt(int dir);
-void doCal(int dir);
 void doVolume(int dir);
 
 #endif // MENU_H

@@ -127,25 +127,6 @@ static void doUILayout(int dir) {
   // uiLayoutIdx = uiLayoutIdx > LAST_ITEM(uiLayoutDesc) ? UI_DEFAULT : wrap_range(uiLayoutIdx, dir, 0, LAST_ITEM(uiLayoutDesc));
 }
 
-void doFmRegion(int dir) {
-  // Only allow for FM mode
-  if (get_var_local_mode_index() != FM)
-    return;
-
-  FmRegionIdx = wrap_range(FmRegionIdx, dir, 0, getLastFmRegion());
-  rx.setFMDeEmphasis(fmRegions[FmRegionIdx].value);
-}
-
-void doCal(int dir) {
-  int32_t bandIdx = get_var_local_band_index();
-  bands[bandIdx].bandCal = clamp_range(bands[bandIdx].bandCal, 10 * dir, -MAX_CAL, MAX_CAL);
-
-  // If in SSB mode set the SI4732/5 BFO value
-  // This adjusts the BFO while in the calibration menu
-  if (isSSB())
-    updateBFO(get_var_local_bfo(), true);
-}
-
 void doBrt(int dir) {
   int32_t currentBrt = clamp_range(get_var_screen_brightness(), dir, get_var_screen_brightness_min(), get_var_screen_brightness_max());
   set_var_screen_brightness(currentBrt);

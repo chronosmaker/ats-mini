@@ -27,6 +27,9 @@
 // Number of memory slots
 #define MEMORY_COUNT 30
 
+// RSSI check uses IN_ELAPSED_RSSI_TIME * 6 = 1.2s
+#define MIN_ELAPSED_RSSI_TIME 200 
+
 // Modes
 #define FM 0
 #define LSB 1
@@ -182,9 +185,6 @@ extern int8_t softMuteMaxAttIdx;
 extern uint8_t disableAgc;
 
 void updateIOStatus();
-void useBand(const Band* band);
-bool updateBFO(int newBFO, bool wrap = true);
-bool doSeek(int8_t dir);
 uint8_t doAbout(int dir);
 
 // Battery.c

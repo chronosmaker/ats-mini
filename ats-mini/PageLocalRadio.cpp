@@ -6,8 +6,6 @@
 // using namespace eez;
 using namespace eez::flow;
 
-#define MIN_ELAPSED_RSSI_TIME 200 // RSSI check uses IN_ELAPSED_RSSI_TIME * 6 = 1.2s
-
 long elapsedRSSI = millis();
 
 void updatePageLocalRadio() {
